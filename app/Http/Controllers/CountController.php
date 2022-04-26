@@ -54,22 +54,21 @@ class CountController extends Controller
         $dataLog = DB::table('log')
             ->select('log.*', 'log.timestamp')
             ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-20")
-            // ->takeUntil(function ($item) {
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', Carbon::now()->format('Y-m-d'));
 
-            //     return $item['overripe'] == 38;
-            // })
-            // ->take(5)
-            // ->latest('log.timestamp')
+        $allLog = DB::table('log')
+            ->select('log.*', 'log.timestamp')
+            ->orderBy('log.timestamp')
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', Carbon::now()->format('Y-m-d'))
             ->get();
 
-        // dd();
-        // $test = $dataLog->take(5);
+        $countLog = $dataLog->count();
 
-        // dd($dataLog->reverse());
-        // dd($dataLog);
+        $take = 4;
+        $limit = $countLog - $take;
+        $dataLog = $dataLog->skip($limit)->take($take)->get();
 
-        $dataLogJson = json_decode($dataLog, true);
+        $allLogJson = json_decode($allLog, true);
 
         $totalUnripe = 0;
         $totalRipe = 0;
@@ -77,7 +76,9 @@ class CountController extends Controller
         $totalEmptyBunch = 0;
         $totalAbnormal = 0;
 
-        foreach ($dataLogJson as $index => $data) {
+        $test = 0;
+
+        foreach ($allLogJson as $index => $data) {
             $totalUnripe += $data['unripe'];
             $totalRipe += $data['ripe'];
             $totalOverripe += $data['overripe'];
@@ -236,11 +237,12 @@ class CountController extends Controller
     {
         $dateToday = Carbon::now()->format('D, d-m-Y');
 
+        // dd(Carbon::now()->format('d-m-Y'));
         //get all data per hari
         $dataLog = DB::table('log')
             ->select('log.*', 'log.timestamp')
             ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-20")
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', Carbon::now()->format('Y-m-d'))
             ->get();
 
         // $listLoc = DB::table('water_level_list')->pluck('location');
@@ -290,7 +292,7 @@ class CountController extends Controller
         $logMingguan = DB::table('log')
             ->select('log.*')
             ->orderBy('log.timestamp', 'desc')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-20")
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', Carbon::now()->format('Y-m-d'))
             ->first();
 
         // dd($logMingguan);
