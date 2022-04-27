@@ -88,7 +88,7 @@
                     <div class="card">
                         <div class="card-header" style="background-color: #02A452;color:white">
                             <div class=" card-title">
-                                <i class="fas fa-water pr-2"></i>Grafik Grading Palm Oil Hari ini
+                                <i class="fas fa-water pr-2"></i>Grafik Grading Hari ini
                                 {{$dateToday}}
                             </div>
                             <div class="float-right">

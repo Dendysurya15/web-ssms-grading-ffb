@@ -71,7 +71,8 @@
                     <a class="nav-link" data-widget="pushmenu" href="#" role="hover"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    {{-- <a class="nav-link">Selamat datang!</a> --}}
+                    <a class="nav-link">Selamat datang {{ Auth::user()->name}} !</a>
+                    <!-- Right Side Of Navbar -->
                 </li>
             </ul>
 
@@ -88,9 +89,9 @@
                 <span class="brand-text font-weight-light">Palm Oil Grading</span>
             </a>
             <div class="sidebar">
-                <nav class="mt-2">
+                <nav class="" style="height: 100%">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                        data-accordion="false">
+                        data-accordion="false" style="height: 100%">
                         <!-- USER LAB -->
 
                         <!-- TABEL -->
@@ -116,6 +117,14 @@
                                 <i class="nav-icon fa fa-table"></i>
                                 <p>
                                     Tabel Grading
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item fixed-bottom mb-3" heig style="position: absolute;">
+                            <a href="{{ asset('/logout') }}" class="nav-link ">
+                                <i class="nav-icon fa fa-sign-out-alt"></i>
+                                <p>
+                                    Logout
                                 </p>
                             </a>
                         </li>
