@@ -12,7 +12,7 @@
                         Registrasi.</p>
                     <p class="text-secondary"
                         style="margin:1% 3% 0 3%;font-style: italic;font-size: 14px;font-family:  Arial, Helvetica, sans-serif">
-                        Silakan mnegisi form untuk mendaftarkan sebagai user di portal website <span
+                        Silakan mengisi form untuk mendaftarkan sebagai user di portal website <span
                             style="color: #4CAF50">Grading TBS
                             SKM</span>!
                     </p>

@@ -19,11 +19,13 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::get('/', [CountController::class, 'dashboard']);
-Route::get('/dashboard', [CountController::class, 'dashboard']);
-Route::get('/grafik', [CountController::class, 'grafik']);
-Route::get('/tabel', [CountController::class, 'tabel']);
+Route::get('/', [AuthController::class, 'index'])->name('login');
 
+Route::group(['middleware' => 'auth'], function () {
+    Route::get('/dashboard', [CountController::class, 'dashboard']);
+    Route::get('/grafik', [CountController::class, 'grafik']);
+    Route::get('/tabel', [CountController::class, 'tabel']);
+});
 
 //auth
 Route::get('auth_form', [AuthController::class, 'auth_form']);

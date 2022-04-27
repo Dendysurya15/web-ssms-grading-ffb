@@ -14,10 +14,9 @@
                             <div class="row">
                                 <div class="col-sm-5">
                                     <h2 class="m-2 ">
-                                        Tabel Log Palm Oil
+                                        Tabel Log TBS
                                     </h2>
                                 </div>
-
                             </div>
                         </div>
                         <div class="card-body table-responsive">

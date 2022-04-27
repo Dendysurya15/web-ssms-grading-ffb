@@ -9,7 +9,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-6">
-                    <h2 style="color:#013C5E;font-weight: 550">Dashboard Grading Palm Oil
+                    <h2 style="color:#013C5E;font-weight: 550">Dashboard Grading TBS
                     </h2>
                     <p style="color:#013C5E;">Portal website ini digunakan untuk memonitoring data dari prose grading
                         dengan

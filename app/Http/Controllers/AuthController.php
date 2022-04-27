@@ -26,12 +26,12 @@ class AuthController extends Controller
 
         $credentials = $request->only('username', 'password');
         if (Auth::attempt($credentials)) {
-            return redirect()->intended('/')
+            return redirect()->intended('/dashboard')
                 ->withSuccess('Signed in');
         }
 
         // return redirect("login")->withSuccess('Login details are not valid');
-        return Redirect::back()->withErrors(['msg' => 'Username atau password yang dimasukkan salah']);
+        return Redirect::back()->withErrors(['msg' => 'Username/password yang dimasukkan salah']);
     }
 
     public function registration()
@@ -53,7 +53,7 @@ class AuthController extends Controller
         auth()->login($newUser);
 
         // dd(Auth::user()->name);
-        return redirect("/")->withSuccess('You have signed-in');
+        return redirect("/dashboard")->withSuccess('You have signed-in');
     }
 
     public function create(array $data)
@@ -79,6 +79,6 @@ class AuthController extends Controller
         Session::flush();
         Auth::logout();
 
-        return Redirect('login');
+        return Redirect('/');
     }
 }

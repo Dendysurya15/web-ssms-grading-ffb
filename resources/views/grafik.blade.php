@@ -13,7 +13,7 @@
                     <div class="card card-red">
                         <div class="card-header">
                             <div class=" card-title">
-                                <i class="fas fa-water pr-2"></i>Grading Palm Oil Hari ini
+                                <i class="fas fa-water pr-2"></i>Grading TBS Hari ini
                                 {{$dateToday}}
                             </div>
                             <div class="float-right">
@@ -82,7 +82,7 @@
                     <div class="card">
                         <div class="card-header" style="background-color: #013C5E;color:white">
                             <div class=" card-title">
-                                <i class="fas fa-water pr-2"></i>Grafik Total Hitung Palm Oil dalam seminggu
+                                <i class="fas fa-water pr-2"></i>Grafik Total Hitung TBS dalam seminggu
                             </div>
                             <div class="float-right">
                                 <div class="list-inline">

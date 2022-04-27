@@ -86,7 +86,7 @@
             <a href="{{ asset('/') }}" class="brand-link">
                 <img src="{{ asset('img/CBI-logo.png') }}" alt="Covid Tracker"
                     class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light">Palm Oil Grading</span>
+                <span class="brand-text font-weight-light">Grading TBS SKM</span>
             </a>
             <div class="sidebar">
                 <nav class="" style="height: 100%">
@@ -108,7 +108,7 @@
                             <a href="{{ asset('/grafik') }}" class="nav-link">
                                 <i class="nav-icon fa fa-chart-pie"></i>
                                 <p>
-                                    Grafik Grading FFB
+                                    Grafik Grading TBS
                                 </p>
                             </a>
                         </li>
