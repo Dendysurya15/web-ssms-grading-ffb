@@ -32,6 +32,84 @@
                             </div>
 
                         </div>
+
+                        <div class="card-body">
+                            <form class="list-inline-item col-md-5" action="{{ route('dashboard') }}" method="get">
+                                <select name="id" class="form-control-sm text-center">
+                                    onchange="this.form.submit()">
+                                    <option value="" selected disabled>Pilih Kategori TBS</option>
+                                    @foreach ($nama_kategori_tbs as $key => $list)
+                                    <option value="{{$key}}">{{$list}}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                            @if ($arrLogHariini['data'])
+                            <div class="chart" id="logHariini">
+                            </div>
+                            @else
+                            @if(isset($msg))
+                            {{ $msg }}
+                            @endif
+                            @endif
+
+                        </div><!-- /.card-body -->
+                    </div><!-- Curah Hujan -->
+
+
+                    <!-- Curah Hujan -->
+                    {{-- <div class="card card-cyan"> --}}
+                        {{-- <div class="card-header"> --}}
+                            {{-- <h3 class="card-title"> --}}
+
+                                {{-- </h3> --}}
+                            {{-- <div class="float-right"> --}}
+                                {{-- <div class="list-inline">
+                                    <h5 class="list-inline-item">Lokasi</h5>
+                                    <form class="list-inline-item col-md-5" action="{{ route('water_level_grafik') }}"
+                                        method="get">
+                                        <select name="id" class="form-control-sm" onchange="this.form.submit()">
+                                            <option value="" selected disabled>Pilih Lokasi</option>
+                                            @foreach ($listLoc as $key => $list)
+                                            <option value="{{$key}}">{{$list}}</option>
+                                            @endforeach
+                                        </select>
+                                    </form>
+                                </div> --}}
+                                {{-- </div> --}}
+                            {{-- </div> --}}
+                        {{-- <div class="card-body">
+                            <div class="chart" id="awsPerMinggu">
+                            </div>
+                        </div><!-- /.card-body --> --}}
+                        {{-- </div><!-- Curah Hujan --> --}}
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <!-- Curah Hujan -->
+                    <div class="card card-red">
+                        <div class="card-header">
+                            <div class=" card-title">
+                                <i class="fas fa-water pr-2"></i>Grading TBS Hari ini
+                                {{$dateToday}}
+                            </div>
+                            <div class="float-right">
+                                <div class="list-inline">
+                                    {{-- <h5 class="list-inline-item">Lokasi</h5> --}}
+                                    {{-- <form class="list-inline-item col-md-5"
+                                        action="{{ route('water_level_grafik') }}" method="get">
+                                        <select name="id" class="form-control-sm" onchange="this.form.submit()">
+                                            <option value="" selected disabled>Pilih Lokasi</option>
+                                            @foreach ($listLoc as $key => $list)
+                                            <option value="{{$key}}">{{$list}}</option>
+                                            @endforeach
+                                        </select>
+                                    </form> --}}
+                                </div>
+                            </div>
+
+                        </div>
                         <div class="card-body">
                             @if ($arrLogHariini['data'])
                             <div class="chart" id="logHariini">
@@ -82,7 +160,7 @@
                     <div class="card">
                         <div class="card-header" style="background-color: #013C5E;color:white">
                             <div class=" card-title">
-                                <i class="fas fa-water pr-2"></i>Grafik Total Hitung TBS dalam seminggu
+                                <i class="fas fa-water pr-2"></i>Grafik Total Hitung per kategori TBS dalam seminggu
                             </div>
                             <div class="float-right">
                                 <div class="list-inline">
@@ -157,12 +235,13 @@
     ]);
 
     var optionsLogHariIIni = {
-      chartArea: {},
+        chartArea: {},
       theme: 'material',
-        legend: {
-            position: 'top',
-      },
-      height: 300
+        colors:['#001E3C', '#AB221D','#FF9800','#BE8C64','#4CAF50'],
+        legend: { position: 'top',
+        textStyle: {fontSize: 15}},
+        lineWidth: 2,
+        height:400,
     };
 
     var arrLogHariini = new google.visualization.LineChart(document.getElementById('logHariini'));
