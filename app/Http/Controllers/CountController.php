@@ -40,7 +40,11 @@ class CountController extends Controller
             ->select('log.*')
             ->orderBy('log.timestamp', 'desc')
             ->get();
-        $dataLog = json_decode($dataLog, true);
+
+        // dd($dataLog);
+
+        // dd($dataLog);
+        // $dataLog = json_decode($dataLog, true);
 
         // dd($dataLog[0]['unripe']);
         return view('tabel', ['dataLog' => $dataLog]);
@@ -253,56 +257,72 @@ class CountController extends Controller
 
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
 
-        // dd(Carbon::now()->format('d-m-Y'));
-        //get all data per hari
-        $dataLog = DB::table('log')
-            ->select('log.*', 'log.timestamp')
-            ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-22")
-            ->get();
+        $convert = new DateTime("2022-04-22 00:00:00");
+        $to = $convert->format('Y-m-d H:i:s');
 
-        // $listLoc = DB::table('water_level_list')->pluck('location');
+        $dateFrom = Carbon::parse($to)->subDays();
+        $dateFrom = $dateFrom->format('Y-m-d H:i:s');
 
-        // dd($dataLog);
+        $from = date($dateFrom);
+        $to = $convert->format('Y-m-d H:i:s');
 
-        $logHariini      = '';
-        $LogHarianView = '';
+        $logHariini = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%H') as jam_ke"))
+            ->whereBetween('log.timestamp', [$from, $to])
+            ->orderBy('log.timestamp', 'asc')
+            ->get()
+            ->groupBy('jam_ke');
 
-        $arrLogHariini = [
-            'plot1'     => '',
-            'plot2'     => '',
-            'plot3'     => '',
-            'plot4'     => '',
-            'plot5'     => '',
-            'data'      => ''
-        ];
+        $arrLogPerhari = array();
+        $sumUnripe = 0;
+        $sumRipe = 0;
+        $sumOverripe = 0;
+        $sumEmptyBunch = 0;
+        $sumAbnormal = 0;
+        $arrlogPerHariView = '';
 
-        if (!$dataLog->isEmpty()) {
-            $dataLogHariIni = json_decode(json_encode($dataLog), true);
-            foreach ($dataLogHariIni as $value) {
+        if (!$logHariini->isEmpty()) {
+
+            foreach ($logHariini as $inc =>  $value) {
+                foreach ($value as $key => $data) {
+                    $sumUnripe += $data->unripe;
+                    $sumRipe += $data->ripe;
+                    $sumOverripe += $data->overripe;
+                    $sumEmptyBunch += $data->empty_bunch;
+                    $sumAbnormal += $data->abnormal;
+                }
+                $arrLogPerhari[$inc]['jam'] = $inc . ':00';
+                $arrLogPerhari[$inc]['harianUnripe'] = $sumUnripe;
+                $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
+                $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
+                $arrLogPerhari[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+                $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
+            }
+
+            $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
+            foreach ($arrLogPerhari as $value) {
 
                 //Perhari
-                $jam        = date('H:i:s', strtotime($value['timestamp']));
-                $logHariini .=
-                    "[{v:'" . $jam . "'}, {v:" . $value['unripe'] . ", f:'" . $value['unripe'] . "'},
-                    {v:" . $value['ripe'] . ", f:'" . $value['ripe'] . "'},
-                    {v:" . $value['overripe'] . ", f:'" . $value['overripe'] . "'},   
-                    {v:" . $value['empty_bunch'] . ", f:'" . $value['empty_bunch'] . "'},     
-                    {v:" . $value['abnormal'] . ", f:'" . $value['abnormal'] . "'}                             
+                $jam        = date('H:i:s', strtotime($value['jam']));
+                $arrlogPerHariView .=
+                    "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . "'},
+                    {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . "'},
+                    {v:" . $value['harianOverripe'] . ", f:'" . $value['harianOverripe'] . "'},   
+                    {v:" . $value['harianEmptyBunch'] . ", f:'" . $value['harianEmptyBunch'] . "'},     
+                    {v:" . $value['harianAbnormal'] . ", f:'" . $value['harianAbnormal'] . "'}                             
                 ],";
             }
 
-            // dd($logHariini);
-
-            $arrLogHariini = [
+            $LogPerHariView = [
                 'plot1'     => 'Unripe',
                 'plot2'     => 'Ripe',
                 'plot3'     => 'Overripe',
                 'plot4'     => 'Empty Bunch',
                 'plot5'     => 'Abnormal',
-                'data'      => $logHariini
+                'data'      => $arrlogPerHariView
             ];
         }
+
         //data mingguan 
 
         $logMingguan = DB::table('log')
@@ -322,15 +342,12 @@ class CountController extends Controller
 
         $pastWeek = date($dateParse);
 
-        // dd($pastWeek);
         $logMingguan = DB::table('log')
             ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as day_month"))
             ->whereBetween('log.timestamp', [$pastWeek, $to])
             ->orderBy('log.timestamp', 'asc')
             ->get()
             ->groupBy('day_month');
-
-        // dd($logMingguan);
 
         if (!$logMingguan->isEmpty()) {
             foreach ($logMingguan as $sub_array) {
@@ -339,7 +356,7 @@ class CountController extends Controller
                 }
             }
             // dd($logMingguan);
-            $arrLogPerhari = array();
+            $arrLogSeminggu = array();
 
             $LogPerhari = '';
 
@@ -359,19 +376,19 @@ class CountController extends Controller
                     $totalEmptyBunchHarian += $data['empty_bunch'];
                     $totalAbnormalHarian += $data['abnormal'];
 
-                    $arrLogPerhari[$index]['hari'] = $data['nameDay'];
-                    $arrLogPerhari[$index]['timestamp'] = $data['timestamp'];
-                    $arrLogPerhari[$index]['unripe'] = $totalUnripeHarian;
-                    $arrLogPerhari[$index]['ripe'] = $totalRipeHarian;
-                    $arrLogPerhari[$index]['overripe'] = $totalOverripeHarian;
-                    $arrLogPerhari[$index]['empty_bunch'] = $totalEmptyBunchHarian;
-                    $arrLogPerhari[$index]['abnormal'] = $totalAbnormalHarian;
+                    $arrLogSeminggu[$index]['hari'] = $data['nameDay'];
+                    $arrLogSeminggu[$index]['timestamp'] = $data['timestamp'];
+                    $arrLogSeminggu[$index]['unripe'] = $totalUnripeHarian;
+                    $arrLogSeminggu[$index]['ripe'] = $totalRipeHarian;
+                    $arrLogSeminggu[$index]['overripe'] = $totalOverripeHarian;
+                    $arrLogSeminggu[$index]['empty_bunch'] = $totalEmptyBunchHarian;
+                    $arrLogSeminggu[$index]['abnormal'] = $totalAbnormalHarian;
                 }
             }
 
-            // dd($arrLogPerhari);
+            // dd($arrLogSeminggu);
             //ubah skema array per minggu menjadi ploting pada grafik
-            foreach ($arrLogPerhari as $value) {
+            foreach ($arrLogSeminggu as $value) {
 
                 //Perhari
                 $jam        = $value['hari'];
@@ -384,7 +401,7 @@ class CountController extends Controller
                     ],";
             }
 
-            $LogHarianView = [
+            $LogMingguanView = [
                 'plot1'     => 'Unripe',
                 'plot2'     => 'Ripe',
                 'plot3'     => 'Overripe',
@@ -395,8 +412,8 @@ class CountController extends Controller
 
 
             return view('grafik', [
-                'arrLogHariini' => $arrLogHariini,
-                'LogHarianView' => $LogHarianView,
+                'LogPerHariView' => $LogPerHariView,
+                'LogMingguanView' => $LogMingguanView,
                 'dateToday' => $dateToday,
                 'nama_kategori_tbs' => $nama_kategori_tbs,
             ]);
