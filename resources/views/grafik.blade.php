@@ -33,13 +33,12 @@
 
                         </div>
                         <div class="card-body">
-                            @if ($LogPerHariView['data'])
+
+                            @if ($LogPerHariView['data'] != '')
                             <div class="chart" id="logHariini">
                             </div>
                             @else
-                            @if(isset($msg))
-                            {{ $msg }}
-                            @endif
+                            Tidak ada data dalam 24 jam terakhir
                             @endif
 
                         </div><!-- /.card-body -->
@@ -94,13 +93,12 @@
                             <div class="row">
 
                                 <div class="col">
-                                    @if ($LogMingguanView['data'])
+
+                                    @if ($LogMingguanView['data'] != '')
                                     <div id="logMingguan">
                                     </div>
                                     @else
-                                    @if(isset($msg))
-                                    {{ $msg }}
-                                    @endif
+                                    Tidak ada data satu minggu ini
                                     @endif
                                 </div>
 
@@ -138,40 +136,8 @@
   google.charts.setOnLoadCallback(drawChart);
 
   function drawChart() {  
-    
-    var plot_unripe = '<?php echo $LogPerHariView['plot1']; ?>';
-    var plot_ripe = '<?php echo $LogPerHariView['plot2']; ?>';
-    var plot_overripe = '<?php echo $LogPerHariView['plot3']; ?>';
-    var plot_empty_bunch = '<?php echo $LogPerHariView['plot4']; ?>';
-    var plot_abnormal = '<?php echo $LogPerHariView['plot5']; ?>';
-    
-    var dataLogHariini = new google.visualization.DataTable();
-    dataLogHariini.addColumn('string', 'Name');
-    dataLogHariini.addColumn('number', plot_unripe);
-    dataLogHariini.addColumn('number', plot_ripe);
-    dataLogHariini.addColumn('number', plot_overripe);
-    dataLogHariini.addColumn('number', plot_empty_bunch);
-    dataLogHariini.addColumn('number', plot_abnormal);
-    dataLogHariini.addRows([
-      <?php echo $LogPerHariView['data']; ?>
-    ]);
-
-    var optionsLogHariIIni = {
-        chartArea: {},
-      theme: 'material',
-        colors:['#001E3C', '#AB221D','#FF9800','#BE8C64','#4CAF50'],
-        legend: { position: 'top',
-        textStyle: {fontSize: 15}},
-        lineWidth: 2,
-        height:400,
-    };
-
-    var arrLogHariini = new google.visualization.LineChart(document.getElementById('logHariini'));
-    arrLogHariini.draw(dataLogHariini,optionsLogHariIIni );
-   
-    
- //perminggu
- var plot_perhari_unripe = '<?php echo $LogMingguanView['plot1']; ?>';
+     //perminggu
+     var plot_perhari_unripe = '<?php echo $LogMingguanView['plot1']; ?>';
     var plot_perhari_ripe = '<?php echo $LogMingguanView['plot2']; ?>';
     var plot_perhari_overripe = '<?php echo $LogMingguanView['plot3']; ?>';
     var plot_perhari_emptybunch = '<?php echo $LogMingguanView['plot4']; ?>';
@@ -199,8 +165,39 @@
     };       
    
     var logHarianView = new google.visualization.ColumnChart(document.getElementById('logMingguan'));
-    logHarianView.draw(dataPerhari,optionsLogPerhari );  
-  }  
+    logHarianView.draw(dataPerhari,optionsLogPerhari); 
+    
+    var plot_unripe = '<?php  $LogPerHariView['plot1']; ?>';
+    var plot_ripe = '<?php  $LogPerHariView['plot2']; ?>';
+    var plot_overripe = '<?php  $LogPerHariView['plot3']; ?>';
+    var plot_empty_bunch = '<?php  $LogPerHariView['plot4']; ?>';
+    var plot_abnormal = '<?php  $LogPerHariView['plot5']; ?>';
+    
+    var dataLogHariini = new google.visualization.DataTable();
+    dataLogHariini.addColumn('string', 'Name');
+    dataLogHariini.addColumn('number', plot_unripe);
+    dataLogHariini.addColumn('number', plot_ripe);
+    dataLogHariini.addColumn('number', plot_overripe);
+    dataLogHariini.addColumn('number', plot_empty_bunch);
+    dataLogHariini.addColumn('number', plot_abnormal);
+    dataLogHariini.addRows([
+      <?php echo $LogPerHariView['data']; ?>
+    ]);
+
+    var optionsLogHariIIni = {
+        chartArea: {},
+      theme: 'material',
+        colors:['#001E3C', '#AB221D','#FF9800','#BE8C64','#4CAF50'],
+        legend: { position: 'top',
+        textStyle: {fontSize: 15}},
+        lineWidth: 2,
+        height:400,
+    };
+
+    var arrLogHariini = new google.visualization.LineChart(document.getElementById('logHariini'));
+    arrLogHariini.draw(dataLogHariini,optionsLogHariIIni );
+
+}
   $(window).resize(function() {
     drawStuff();
   });

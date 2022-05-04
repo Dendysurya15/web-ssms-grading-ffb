@@ -254,10 +254,13 @@ class CountController extends Controller
     public function grafik()
     {
         $dateToday = Carbon::now()->format('d-m-Y');
+        // dd($dateToday)
 
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
 
-        $convert = new DateTime("2022-04-22 00:00:00");
+        $convert = new DateTime(Carbon::now());
+
+        // dd($convert);
         $to = $convert->format('Y-m-d H:i:s');
 
         $dateFrom = Carbon::parse($to)->subDays();
@@ -266,13 +269,17 @@ class CountController extends Controller
         $from = date($dateFrom);
         $to = $convert->format('Y-m-d H:i:s');
 
+        // dd($from);
+
         $logHariini = DB::table('log')
-            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%H') as jam_ke"))
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
             ->whereBetween('log.timestamp', [$from, $to])
-            ->orderBy('log.timestamp', 'asc')
+            ->orderBy('log.timestamp')
             ->get()
             ->groupBy('jam_ke');
 
+
+        // dd($logHariini);
         $arrLogPerhari = array();
         $sumUnripe = 0;
         $sumRipe = 0;
@@ -280,6 +287,14 @@ class CountController extends Controller
         $sumEmptyBunch = 0;
         $sumAbnormal = 0;
         $arrlogPerHariView = '';
+        $LogPerHariView = [
+            'plot1'     => 'Unripe',
+            'plot2'     => 'Ripe',
+            'plot3'     => 'Overripe',
+            'plot4'     => 'Empty Bunch',
+            'plot5'     => 'Abnormal',
+            'data'      => ''
+        ];
 
         if (!$logHariini->isEmpty()) {
 
@@ -291,7 +306,7 @@ class CountController extends Controller
                     $sumEmptyBunch += $data->empty_bunch;
                     $sumAbnormal += $data->abnormal;
                 }
-                $arrLogPerhari[$inc]['jam'] = $inc . ':00';
+                $arrLogPerhari[$inc]['timestamp'] = $data->timestamp;
                 $arrLogPerhari[$inc]['harianUnripe'] = $sumUnripe;
                 $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
                 $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
@@ -299,11 +314,13 @@ class CountController extends Controller
                 $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
             }
 
+            // dd($arrLogPerhari);
+
             $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
             foreach ($arrLogPerhari as $value) {
 
                 //Perhari
-                $jam        = date('H:i:s', strtotime($value['jam']));
+                $jam        = date('H:i:s', strtotime($value['timestamp']));
                 $arrlogPerHariView .=
                     "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . "'},
                     {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . "'},
@@ -323,8 +340,15 @@ class CountController extends Controller
             ];
         }
 
+        $LogMingguanView = [
+            'plot1'     => 'Unripe',
+            'plot2'     => 'Ripe',
+            'plot3'     => 'Overripe',
+            'plot4'     => 'Empty Bunch',
+            'plot5'     => 'Abnormal',
+            'data'      => ''
+        ];
         //data mingguan 
-
         $logMingguan = DB::table('log')
             ->select('log.*')
             ->orderBy('log.timestamp', 'desc')
@@ -385,8 +409,6 @@ class CountController extends Controller
                     $arrLogSeminggu[$index]['abnormal'] = $totalAbnormalHarian;
                 }
             }
-
-            // dd($arrLogSeminggu);
             //ubah skema array per minggu menjadi ploting pada grafik
             foreach ($arrLogSeminggu as $value) {
 
@@ -394,11 +416,11 @@ class CountController extends Controller
                 $jam        = $value['hari'];
                 $LogPerhari .=
                     "[{v:'" . $jam . "'}, {v:" . $value['unripe'] . ", f:'" . $value['unripe'] . "'},
-                        {v:" . $value['ripe'] . ", f:'" . $value['ripe'] . "'},
-                        {v:" . $value['overripe'] . ", f:'" . $value['overripe'] . "'},   
-                        {v:" . $value['empty_bunch'] . ", f:'" . $value['empty_bunch'] . "'},     
-                        {v:" . $value['abnormal'] . ", f:'" . $value['abnormal'] . "'}                             
-                    ],";
+                    {v:" . $value['ripe'] . ", f:'" . $value['ripe'] . "'},
+                    {v:" . $value['overripe'] . ", f:'" . $value['overripe'] . "'},   
+                    {v:" . $value['empty_bunch'] . ", f:'" . $value['empty_bunch'] . "'},     
+                    {v:" . $value['abnormal'] . ", f:'" . $value['abnormal'] . "'}                             
+                ],";
             }
 
             $LogMingguanView = [
@@ -410,15 +432,13 @@ class CountController extends Controller
                 'data'      => $LogPerhari
             ];
 
-
+            // dd($LogMingguanView);
             return view('grafik', [
                 'LogPerHariView' => $LogPerHariView,
                 'LogMingguanView' => $LogMingguanView,
                 'dateToday' => $dateToday,
                 'nama_kategori_tbs' => $nama_kategori_tbs,
             ]);
-        } else {
-            return view('grafik', ['nama_kategori_tbs' => $nama_kategori_tbs, 'arrLogHariini' => $arrLogHariini, 'LogHarianView' => $LogHarianView, 'dateToday' => $dateToday, 'msg' => 'Tidak ada Log  hari ini']);
         }
     }
 
