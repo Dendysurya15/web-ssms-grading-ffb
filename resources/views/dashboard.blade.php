@@ -98,9 +98,7 @@
                                     <div id="logHariini" {{-- style="width: 100%; height: 300px;" --}}>
                                     </div>
                                     @else
-                                    @if(isset($msg))
-                                    {{ $msg }}
-                                    @endif
+                                    Tidak ada data yg dikirim
                                     @endif
                                 </div>
 

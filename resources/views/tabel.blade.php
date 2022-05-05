@@ -71,7 +71,7 @@
 <!-- Bootstrap 4 -->
 <script src="{{ asset('/public/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- ChartJS -->
-<script src="{{ asset('/public/plugins/chart.js/Chart.min.js') }}"></script>
+<script src="{{ asset('/public/plufgins/chart.js/Chart.min.js') }}"></script>
 <!-- AdminLTE App -->
 <script src="{{ asset('/public/js/adminlte.min.js') }}"></script>
 <!-- AdminLTE for demo purposes -->

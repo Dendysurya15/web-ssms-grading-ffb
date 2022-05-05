@@ -53,57 +53,6 @@ class CountController extends Controller
     public function dashboard()
     {
         $dateToday = Carbon::now()->format('d-m-Y');
-
-        $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
-        //get all data per hari
-        $dataLog = DB::table('log')
-            ->select('log.*', 'log.timestamp')
-            ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-25");
-
-        $allLog = DB::table('log')
-            ->select('log.*', 'log.timestamp')
-            ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-20")
-            ->get();
-
-        $countLog = $dataLog->count();
-
-        $take = 10;
-        $limit = $countLog - $take;
-        $dataLog = $dataLog->skip($limit)->take($take)->get();
-
-        $allLogJson = json_decode($allLog, true);
-
-        $totalUnripe = 0;
-        $totalRipe = 0;
-        $totalOverripe = 0;
-        $totalEmptyBunch = 0;
-        $totalAbnormal = 0;
-
-        foreach ($allLogJson as $index => $data) {
-            $totalUnripe += $data['unripe'];
-            $totalRipe += $data['ripe'];
-            $totalOverripe += $data['overripe'];
-            $totalEmptyBunch += $data['empty_bunch'];
-            $totalAbnormal += $data['abnormal'];
-        }
-        $totalAll = $totalUnripe + $totalRipe + $totalOverripe + $totalEmptyBunch + $totalAbnormal;
-        $arrAllLog = array($totalUnripe, $totalRipe, $totalOverripe, $totalEmptyBunch, $totalAbnormal);
-        $prctgeAll = array();
-
-        // dd(count($arrAllLog));
-        foreach ($arrAllLog as $index => $data) {
-            $hasil = ($data / $totalAll) * 100;
-            $prctgeAll[$index]['kategori'] = $nama_kategori_tbs[$index];
-            $prctgeAll[$index]['total'] = $data;
-            $prctgeAll[$index]['persentase'] = round($hasil, 2);
-        }
-
-        // dd($prctgeAll[0]['kategori']);
-
-        $logHariini      = '';
-
         $arrLogHariini = [
             'plot1'     => '',
             'plot2'     => '',
@@ -113,56 +62,97 @@ class CountController extends Controller
             'data'      => ''
         ];
 
-        if (!$dataLog->isEmpty()) {
-            $dataLogHariIni = json_decode(json_encode($dataLog), true);
-            foreach ($dataLogHariIni as $value) {
+        $totalUnripe = 0;
+        $totalRipe = 0;
+        $totalOverripe = 0;
+        $totalEmptyBunch = 0;
+        $totalAbnormal = 0;
+        $prctgeAll = array();
 
-                //Perhari
-                $jam        = date('H:i:s', strtotime($value['timestamp']));
-                $logHariini .=
-                    "[{v:'" . $jam . "'}, {v:" . $value['unripe'] . ", f:'" . $value['unripe'] . "'},
-                    {v:" . $value['ripe'] . ", f:'" . $value['ripe'] . " buah'},
-                    {v:" . $value['overripe'] . ", f:'" . $value['overripe'] . " buah'},   
-                    {v:" . $value['empty_bunch'] . ", f:'" . $value['empty_bunch'] . " buah '},     
-                    {v:" . $value['abnormal'] . ", f:'" . $value['abnormal'] . " buah '}                             
-                ],";
+        $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
+        //get all data per hari
+        $dataLog = DB::table('log')
+            ->select('log.*', 'log.timestamp')
+            ->orderBy('log.timestamp')
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-05-05");
+
+        $allLog = DB::table('log')
+            ->select('log.*', 'log.timestamp')
+            ->orderBy('log.timestamp')
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-05-05")
+            ->get();
+
+        if ($dataLog->exists() && !is_null($allLog)) {
+
+            $countLog = $dataLog->count();
+
+            $take = 10;
+            $limit = $countLog - $take;
+            $dataLog = $dataLog->skip($limit)->take($take)->get();
+
+            $allLogJson = json_decode($allLog, true);
+
+            foreach ($allLogJson as $index => $data) {
+                $totalUnripe += $data['unripe'];
+                $totalRipe += $data['ripe'];
+                $totalOverripe += $data['overripe'];
+                $totalEmptyBunch += $data['empty_bunch'];
+                $totalAbnormal += $data['abnormal'];
+            }
+            $totalAll = $totalUnripe + $totalRipe + $totalOverripe + $totalEmptyBunch + $totalAbnormal;
+            $arrAllLog = array($totalUnripe, $totalRipe, $totalOverripe, $totalEmptyBunch, $totalAbnormal);
+
+            // dd(count($arrAllLog));
+            foreach ($arrAllLog as $index => $data) {
+                $hasil = ($data / $totalAll) * 100;
+                $prctgeAll[$index]['kategori'] = $nama_kategori_tbs[$index];
+                $prctgeAll[$index]['total'] = $data;
+                $prctgeAll[$index]['persentase'] = round($hasil, 2);
             }
 
-            // dd($logHariini);
+            // dd($prctgeAll[0]['kategori']);
 
-            $arrLogHariini = [
-                'plot1'     => 'Unripe',
-                'plot2'     => 'Ripe',
-                'plot3'     => 'Overripe',
-                'plot4'     => 'Empty Bunch',
-                'plot5'     => 'Abnormal',
-                'data'      => $logHariini
-            ];
+            $logHariini      = '';
 
-            // dd($logHariini);
-            return view('dashboard', [
-                'arrLogHariini' => $arrLogHariini,
-                'prctgeAll' => $prctgeAll,
-                'dateToday' => $dateToday,
-                'totalUnripe' => $totalUnripe,
-                'totalRipe' => $totalRipe,
-                'totalOverripe' => $totalOverripe,
-                'totalEmptyBunch' => $totalEmptyBunch,
-                'totalAbnormal' => $totalAbnormal
-            ]);
-        } else {
-            return view('dashboard',  [
-                'arrLogHariini' => $arrLogHariini,
-                'dateToday' => $dateToday,
-                'prctgeAll' => $prctgeAll,
-                'msg' => 'Tidak ada Log  hari ini',
-                'totalUnripe' => $totalUnripe,
-                'totalRipe' => $totalRipe,
-                'totalOverripe' => $totalOverripe,
-                'totalEmptyBunch' => $totalEmptyBunch,
-                'totalAbnormal' => $totalAbnormal
-            ]);
+            if (!$dataLog->isEmpty()) {
+                $dataLogHariIni = json_decode(json_encode($dataLog), true);
+                foreach ($dataLogHariIni as $value) {
+
+                    //Perhari
+                    $jam        = date('H:i:s', strtotime($value['timestamp']));
+                    $logHariini .=
+                        "[{v:'" . $jam . "'}, {v:" . $value['unripe'] . ", f:'" . $value['unripe'] . "'},
+                        {v:" . $value['ripe'] . ", f:'" . $value['ripe'] . " buah'},
+                        {v:" . $value['overripe'] . ", f:'" . $value['overripe'] . " buah'},   
+                        {v:" . $value['empty_bunch'] . ", f:'" . $value['empty_bunch'] . " buah '},     
+                        {v:" . $value['abnormal'] . ", f:'" . $value['abnormal'] . " buah '}                             
+                    ],";
+                }
+
+                // dd($logHariini);
+
+                $arrLogHariini = [
+                    'plot1'     => 'Unripe',
+                    'plot2'     => 'Ripe',
+                    'plot3'     => 'Overripe',
+                    'plot4'     => 'Empty Bunch',
+                    'plot5'     => 'Abnormal',
+                    'data'      => $logHariini
+                ];
+            }
         }
+
+        // dd($logHariini);
+        return view('dashboard', [
+            'arrLogHariini' => $arrLogHariini,
+            'prctgeAll' => $prctgeAll,
+            'dateToday' => $dateToday,
+            'totalUnripe' => $totalUnripe,
+            'totalRipe' => $totalRipe,
+            'totalOverripe' => $totalOverripe,
+            'totalEmptyBunch' => $totalEmptyBunch,
+            'totalAbnormal' => $totalAbnormal
+        ]);
     }
 
     /**
@@ -269,7 +259,7 @@ class CountController extends Controller
         $from = date($dateFrom);
         $to = $convert->format('Y-m-d H:i:s');
 
-        // dd($from);
+        // dd($to);
 
         $logHariini = DB::table('log')
             ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
@@ -281,11 +271,7 @@ class CountController extends Controller
 
         // dd($logHariini);
         $arrLogPerhari = array();
-        $sumUnripe = 0;
-        $sumRipe = 0;
-        $sumOverripe = 0;
-        $sumEmptyBunch = 0;
-        $sumAbnormal = 0;
+
         $arrlogPerHariView = '';
         $LogPerHariView = [
             'plot1'     => 'Unripe',
@@ -296,9 +282,16 @@ class CountController extends Controller
             'data'      => ''
         ];
 
+        // dd($logHariini);
+
         if (!$logHariini->isEmpty()) {
 
             foreach ($logHariini as $inc =>  $value) {
+                $sumUnripe = 0;
+                $sumRipe = 0;
+                $sumOverripe = 0;
+                $sumEmptyBunch = 0;
+                $sumAbnormal = 0;
                 foreach ($value as $key => $data) {
                     $sumUnripe += $data->unripe;
                     $sumRipe += $data->ripe;
@@ -352,13 +345,14 @@ class CountController extends Controller
         $logMingguan = DB::table('log')
             ->select('log.*')
             ->orderBy('log.timestamp', 'desc')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-22")
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', Carbon::now()->format('Y-m-d'))
             ->first();
 
-        // dd($logMingguan);
+        $to = !is_null($logMingguan) ?  $logMingguan->timestamp : Carbon::now()->format('Y-m-d');
 
-        $to = $logMingguan->timestamp;
+        // dd($to);
         $convert = new DateTime($to);
+        // dd($convert);
         $to = $convert->format('Y-m-d H:i:s');
 
         $dateParse = Carbon::parse($to)->subDays(7);
@@ -373,6 +367,8 @@ class CountController extends Controller
             ->get()
             ->groupBy('day_month');
 
+        // dd($logMingguan);
+
         if (!$logMingguan->isEmpty()) {
             foreach ($logMingguan as $sub_array) {
                 foreach ($sub_array as $data) {
@@ -386,13 +382,12 @@ class CountController extends Controller
 
             $logMingguanJson = json_decode($logMingguan, true);
 
-            $totalUnripeHarian = 0;
-            $totalRipeHarian = 0;
-            $totalOverripeHarian = 0;
-            $totalEmptyBunchHarian = 0;
-            $totalAbnormalHarian = 0;
-
             foreach ($logMingguanJson as $index => $sub_array) {
+                $totalUnripeHarian = 0;
+                $totalRipeHarian = 0;
+                $totalOverripeHarian = 0;
+                $totalEmptyBunchHarian = 0;
+                $totalAbnormalHarian = 0;
                 foreach ($sub_array as $data) {
                     $totalUnripeHarian += $data['unripe'];
                     $totalRipeHarian += $data['ripe'];
@@ -409,10 +404,13 @@ class CountController extends Controller
                     $arrLogSeminggu[$index]['abnormal'] = $totalAbnormalHarian;
                 }
             }
+
+            // dd($arrLogSeminggu);
             //ubah skema array per minggu menjadi ploting pada grafik
             foreach ($arrLogSeminggu as $value) {
 
                 //Perhari
+
                 $jam        = $value['hari'];
                 $LogPerhari .=
                     "[{v:'" . $jam . "'}, {v:" . $value['unripe'] . ", f:'" . $value['unripe'] . "'},

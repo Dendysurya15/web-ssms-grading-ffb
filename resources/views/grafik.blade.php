@@ -11,7 +11,7 @@
                 <div class="col">
                     <!-- Curah Hujan -->
                     <div class="card card-red">
-                        <div class="card-header">
+                        <div class="card-header" style="background-color: #02A452;color:white">
                             <div class=" card-title">
                                 <i class="fas fa-water pr-2"></i>Grading TBS dalam 24 jam terakhir
                                 {{$dateToday}}
@@ -79,7 +79,7 @@
                 <div class="col-md-12">
                     <!-- Curah Hujan -->
                     <div class="card">
-                        <div class="card-header" style="background-color: #013C5E;color:white">
+                        <div class="card-header" style="background-color: #02A452;color:white">
                             <div class=" card-title">
                                 <i class="fas fa-water pr-2"></i>Grafik Total Hitung per kategori TBS dalam seminggu
                             </div>
@@ -167,11 +167,11 @@
     var logHarianView = new google.visualization.ColumnChart(document.getElementById('logMingguan'));
     logHarianView.draw(dataPerhari,optionsLogPerhari); 
     
-    var plot_unripe = '<?php  $LogPerHariView['plot1']; ?>';
-    var plot_ripe = '<?php  $LogPerHariView['plot2']; ?>';
-    var plot_overripe = '<?php  $LogPerHariView['plot3']; ?>';
-    var plot_empty_bunch = '<?php  $LogPerHariView['plot4']; ?>';
-    var plot_abnormal = '<?php  $LogPerHariView['plot5']; ?>';
+    var plot_unripe = '<?php echo  $LogPerHariView['plot1']; ?>';
+    var plot_ripe = '<?php echo   $LogPerHariView['plot2']; ?>';
+    var plot_overripe = '<?php echo   $LogPerHariView['plot3']; ?>';
+    var plot_empty_bunch = '<?php echo  $LogPerHariView['plot4']; ?>';
+    var plot_abnormal = '<?php echo  $LogPerHariView['plot5']; ?>';
     
     var dataLogHariini = new google.visualization.DataTable();
     dataLogHariini.addColumn('string', 'Name');
