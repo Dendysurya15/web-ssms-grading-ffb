@@ -6,6 +6,8 @@
     </div>
 </footer>
 
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.11.5/datatables.min.js"></script>
+
 <script src="{{ asset('js/js_tabel/jquery-3.5.1.js') }}"></script>
 <script src="{{ asset('js/js_tabel/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/js_tabel/dataTables.buttons.min.js') }}"></script>

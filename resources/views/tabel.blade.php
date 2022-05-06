@@ -34,22 +34,6 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($dataLog as $value)
-                                        <tr>
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>
-                                                <?php
-                                                        $tanggal = date('H:i:s d-m-Y', strtotime($value->timestamp));
-                                                        ?>
-                                                {{ $tanggal }}
-                                            </td>
-                                            <td>{{$value->unripe}}</td>
-                                            <td>{{ $value->ripe }}</td>
-                                            <td>{{ $value->overripe }}</td>
-                                            <td>{{ $value->empty_bunch }}</td>
-                                            <td>{{ $value->abnormal }}</td>
-                                        </tr>
-                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -84,6 +68,18 @@
     $(function() {
         $('#rekapWaterLevel').DataTable({
             "searching": true,
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('data') }}",
+            columns: [
+            { data: 'id', name: 'id' },
+            { data: 'timestamp', name: 'timestamp' },
+            { data: 'unripe', name: 'unripe' },
+            { data: 'ripe', name: 'ripe' },
+            { data: 'overripe', name: 'overripe' },
+            { data: 'empty_bunch', name: 'empty_bunch' },
+            { data: 'abnormal', name: 'abnormal' },
+        ],
         });
     });
 </script>

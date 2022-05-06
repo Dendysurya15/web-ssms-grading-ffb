@@ -24,7 +24,10 @@ Route::get('/', [AuthController::class, 'index'])->name('login');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [CountController::class, 'dashboard'])->name('dashboard');
     Route::get('/grafik', [CountController::class, 'grafik']);
-    Route::get('/tabel', [CountController::class, 'tabel']);
+    Route::get('/tabel', function () {
+        return view('tabel');
+    })->name('tabel');
+    Route::get('/data', [CountController::class, 'tabel'])->name('data');
 });
 
 //auth

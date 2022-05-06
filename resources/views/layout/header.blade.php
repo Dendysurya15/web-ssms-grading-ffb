@@ -26,6 +26,8 @@
     <!--download-->
     <script type="text/javascript" src="{{ asset('js/loader.js') }}"></script>
 
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.11.5/datatables.min.css" />
+
     <!--download-->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/buttons.dataTables.min.css') }}" />
     <!--download-->

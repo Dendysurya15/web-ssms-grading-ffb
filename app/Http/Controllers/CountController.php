@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\Datatables\Datatables;
 
 class CountController extends Controller
 {
@@ -38,16 +39,8 @@ class CountController extends Controller
     {
         $dataLog = DB::table('log')
             ->select('log.*')
-            ->orderBy('log.timestamp', 'desc')
-            ->get();
-
-        // dd($dataLog);
-
-        // dd($dataLog);
-        // $dataLog = json_decode($dataLog, true);
-
-        // dd($dataLog[0]['unripe']);
-        return view('tabel', ['dataLog' => $dataLog]);
+            ->orderBy('log.timestamp', 'desc');
+        return DataTables::of($dataLog)->make(true);
     }
 
     public function dashboard()
