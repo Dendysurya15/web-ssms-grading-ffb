@@ -24,7 +24,7 @@
                                 <table class="table table-bordered table-hover text-center" id="rekapWaterLevel">
                                     <thead>
                                         <tr>
-                                            <th>NO</th>
+                                            <th>No</th>
                                             <th>Tanggal</th>
                                             <th>Unripe</th>
                                             <th style="width:15%;">Ripe</th>
@@ -51,7 +51,7 @@
 @include('layout.footer')
 
 <!-- jQuery -->
-<script src="{{ asset('/public/plugins/jquery/jquery.min.js') }}"></script>
+{{-- <script src="{{ asset('/public/plugins/jquery/jquery.min.js') }}"></script> --}}
 <!-- Bootstrap 4 -->
 <script src="{{ asset('/public/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- ChartJS -->
@@ -68,6 +68,7 @@
     $(function() {
         $('#rekapWaterLevel').DataTable({
             "searching": true,
+            "pageLength": 25,
             processing: true,
             serverSide: true,
             ajax: "{{ route('data') }}",

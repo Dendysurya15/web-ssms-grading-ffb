@@ -40,7 +40,13 @@ class CountController extends Controller
         $dataLog = DB::table('log')
             ->select('log.*')
             ->orderBy('log.timestamp', 'desc');
-        return DataTables::of($dataLog)->make(true);
+        $inc = 1;
+
+        return DataTables::of($dataLog)
+            ->editColumn('id', function ($model) use (&$inc) {
+                return $inc++;
+            })
+            ->make(true);
     }
 
     public function dashboard()
@@ -67,12 +73,12 @@ class CountController extends Controller
         $dataLog = DB::table('log')
             ->select('log.*', 'log.timestamp')
             ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-05-05");
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-05-02");
 
         $allLog = DB::table('log')
             ->select('log.*', 'log.timestamp')
             ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-05-05")
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-05-02")
             ->get();
 
         if ($dataLog->exists() && !is_null($allLog)) {
