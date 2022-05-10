@@ -24,13 +24,15 @@
                                 <table class="table table-bordered table-hover text-center" id="rekapWaterLevel">
                                     <thead>
                                         <tr>
-                                            <th>No</th>
+                                            {{-- <th>No</th> --}}
                                             <th>Tanggal</th>
                                             <th>Unripe</th>
                                             <th style="width:15%;">Ripe</th>
                                             <th>Overripe</th>
                                             <th>Empty Bunch</th>
                                             <th>Abnormal</th>
+                                            <th>Total TBS Harian</th>
+                                            <th>Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -69,17 +71,20 @@
         $('#rekapWaterLevel').DataTable({
             "searching": true,
             "pageLength": 25,
+            
             processing: true,
             serverSide: true,
             ajax: "{{ route('data') }}",
             columns: [
-            { data: 'id', name: 'id' },
+            // { data: 'id', name: 'id' },
             { data: 'timestamp', name: 'timestamp' },
-            { data: 'unripe', name: 'unripe' },
-            { data: 'ripe', name: 'ripe' },
-            { data: 'overripe', name: 'overripe' },
-            { data: 'empty_bunch', name: 'empty_bunch' },
-            { data: 'abnormal', name: 'abnormal' },
+            { data: 'harianUnripe', name: 'harianUnripe' },
+            { data: 'harianRipe', name: 'harianRipe' },
+            { data: 'harianOverripe', name: 'harianOverripe' },
+            { data: 'harianEmptyBunch', name: 'empty_bunch' },
+            { data: 'harianAbnormal', name: 'harianAbnormal' },
+            { data: 'total', name: 'total' },
+            { data: 'action', name: 'action' },
         ],
         });
     });

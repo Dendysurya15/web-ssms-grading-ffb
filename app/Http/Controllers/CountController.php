@@ -37,14 +37,60 @@ class CountController extends Controller
 
     public function tabel()
     {
-        $dataLog = DB::table('log')
-            ->select('log.*')
-            ->orderBy('log.timestamp', 'desc');
-        $inc = 1;
+        // Carbon::setLocale('id');
+        // $dataLog = DB::table('log')
+        //     ->select('log.*')
+        //     ->orderBy('log.timestamp', 'desc');
 
-        return DataTables::of($dataLog)
-            ->editColumn('id', function ($model) use (&$inc) {
-                return $inc++;
+        // setlocale(LC_TIME, 'id_ID');
+        // \Carbon\Carbon::setLocale('id');
+        // dd(\Carbon\Carbon::now()->subDays(3)->diffForHumans());
+
+
+
+        $arrLogPerhari = array();
+        $dataLog = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as hari"))
+            ->orderBy('log.timestamp', 'DESC')
+            ->get()
+            ->groupBy('hari');
+
+        $count = 1;
+
+        foreach ($dataLog as $inc =>  $value) {
+            $sumUnripe = 0;
+            $sumRipe = 0;
+            $sumOverripe = 0;
+            $sumEmptyBunch = 0;
+            $sumAbnormal = 0;
+            foreach ($value as $key => $data) {
+                $sumUnripe += $data->unripe;
+                $sumRipe += $data->ripe;
+                $sumOverripe += $data->overripe;
+                $sumEmptyBunch += $data->empty_bunch;
+                $sumAbnormal += $data->abnormal;
+            }
+            $arrLogPerhari[$inc]['id'] = $count;
+            $arrLogPerhari[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+            $arrLogPerhari[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('dddd, D MMMM Y');
+            $arrLogPerhari[$inc]['harianUnripe'] = $sumUnripe;
+            $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
+            $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
+            $arrLogPerhari[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+            $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
+
+            $count++;
+        }
+
+        // dd(collect($arrLogPerhari));
+
+        return DataTables::of($arrLogPerhari)
+            ->editColumn('harianUnripe', function ($model) {
+                return $model['harianUnripe'];
+                // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
+            })
+            ->addColumn('action', function ($model) {
+                return '<a href="' . route('edit', $model['id']) . '" class="btn btn-success" target="_blank"> <i class="nav-icon fa fa-file-csv"></i>    </a>' . ' ' . '<a href="' . route('edit', $model['id']) . '" class="btn btn-danger" target="_blank"> <i class="nav-icon fa fa-file-pdf"></i>   </a>';
             })
             ->make(true);
     }
