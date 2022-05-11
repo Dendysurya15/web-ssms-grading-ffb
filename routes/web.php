@@ -24,14 +24,13 @@ Route::get('/', [AuthController::class, 'index'])->name('login');
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [CountController::class, 'dashboard'])->name('dashboard');
     Route::get('/grafik', [CountController::class, 'grafik']);
-    // Route::get('/tabel', [CountController::class, 'tabel']);
+    // Route::get('/tabel', [CountControLler::class, 'tabel']);
     Route::get('/tabel', function () {
         return view('tabel');
     })->name('tabel');
     Route::get('/data', [CountController::class, 'tabel'])->name('data');
-    Route::get('/{id}/edit', function ($id) {
-        dd("Edit " . $id);
-    })->name('edit');
+    Route::get('/{hari}/excel', [CountController::class, 'export'])->name('excel');
+    Route::get('/{hari}/pdf', [CountController::class, 'pdf'])->name('pdf');
 });
 
 //auth

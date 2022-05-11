@@ -24,7 +24,7 @@
                                 <table class="table table-bordered table-hover text-center" id="rekapWaterLevel">
                                     <thead>
                                         <tr>
-                                            {{-- <th>No</th> --}}
+                                            <th>No</th>
                                             <th>Tanggal</th>
                                             <th>Unripe</th>
                                             <th style="width:15%;">Ripe</th>
@@ -76,7 +76,7 @@
             serverSide: true,
             ajax: "{{ route('data') }}",
             columns: [
-            // { data: 'id', name: 'id' },
+            { data: 'id', name: 'id' },
             { data: 'timestamp', name: 'timestamp' },
             { data: 'harianUnripe', name: 'harianUnripe' },
             { data: 'harianRipe', name: 'harianRipe' },

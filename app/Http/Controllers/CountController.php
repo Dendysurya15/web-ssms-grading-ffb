@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\LogExport;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Excel as ExcelExcel;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\Datatables\Datatables;
 
 class CountController extends Controller
@@ -33,6 +37,13 @@ class CountController extends Controller
     public function homepage()
     {
         return view('welcome');
+    }
+
+    private $excel;
+
+    public function __construct(Excel $excel)
+    {
+        $this->excel = $excel;
     }
 
     public function tabel()
@@ -78,11 +89,10 @@ class CountController extends Controller
             $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
             $arrLogPerhari[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
             $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
+            $arrLogPerhari[$inc]['hari'] = $inc;
 
             $count++;
         }
-
-        // dd(collect($arrLogPerhari));
 
         return DataTables::of($arrLogPerhari)
             ->editColumn('harianUnripe', function ($model) {
@@ -90,7 +100,8 @@ class CountController extends Controller
                 // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
             })
             ->addColumn('action', function ($model) {
-                return '<a href="' . route('edit', $model['id']) . '" class="btn btn-success" target="_blank"> <i class="nav-icon fa fa-file-csv"></i>    </a>' . ' ' . '<a href="' . route('edit', $model['id']) . '" class="btn btn-danger" target="_blank"> <i class="nav-icon fa fa-file-pdf"></i>   </a>';
+                return '<a href="' . route('excel', $model['hari']) . '" class="btn btn-success" >  <i class="nav-icon fa fa-file-csv fa-xs"></i>    </a>' .
+                    ' ' . '<a href="' . route('pdf', $model['hari']) . '" class="btn btn-danger" > <i class="nav-icon fa fa-file-pdf" fa-xs></i>   </a>';
             })
             ->make(true);
     }
@@ -483,6 +494,116 @@ class CountController extends Controller
                 'nama_kategori_tbs' => $nama_kategori_tbs,
             ]);
         }
+    }
+
+    public function export($hari)
+    {
+        // dd($hari);
+
+        $filename = 'rekap-tbs-pks-skm-' . $hari . '-' . Carbon::now()->year . '.xlsx';
+
+        // dd($filename);
+
+        $dataLog = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as hari"))
+            ->orderBy('log.timestamp', 'DESC')
+            ->get()
+            ->groupBy('hari');
+
+        // dd($dataLog[$hari][0]->id);
+        $key = 1;
+        foreach ($dataLog[$hari] as  $value) {
+            $value->iterasi = $key;
+            $key++;
+        }
+
+        // dd($dataLog[$hari]);
+
+        $count = 1;
+
+        foreach ($dataLog as $inc =>  $value) {
+            $sumUnripe = 0;
+            $sumRipe = 0;
+            $sumOverripe = 0;
+            $sumEmptyBunch = 0;
+            $sumAbnormal = 0;
+            foreach ($value as $key => $data) {
+                $sumUnripe += $data->unripe;
+                $sumRipe += $data->ripe;
+                $sumOverripe += $data->overripe;
+                $sumEmptyBunch += $data->empty_bunch;
+                $sumAbnormal += $data->abnormal;
+            }
+            $summary[$inc]['id'] = $count;
+            $summary[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+            $summary[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('dddd, D MMMM Y');
+            $summary[$inc]['harianUnripe'] = $sumUnripe;
+            $summary[$inc]['harianRipe'] = $sumRipe;
+            $summary[$inc]['harianOverripe'] = $sumOverripe;
+            $summary[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+            $summary[$inc]['harianAbnormal'] = $sumAbnormal;
+
+            $count++;
+        }
+
+        // dd($dataLog[$hari]);
+
+        return Excel::download(
+            new LogExport($summary[$hari], $dataLog[$hari]),
+            $filename
+        );
+    }
+
+    public function pdf($hari)
+    {
+        $dataLog = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as hari"))
+            ->orderBy('log.timestamp', 'DESC')
+            ->get()
+            ->groupBy('hari');
+
+
+        // dd($dataLog[$hari][0]->id);
+        $key = 1;
+        foreach ($dataLog[$hari] as  $value) {
+            $value->iterasi = $key;
+            $key++;
+        }
+
+        // dd($dataLog[$hari]);
+
+        $count = 1;
+
+        foreach ($dataLog as $inc =>  $value) {
+            $sumUnripe = 0;
+            $sumRipe = 0;
+            $sumOverripe = 0;
+            $sumEmptyBunch = 0;
+            $sumAbnormal = 0;
+            foreach ($value as $key => $data) {
+                $sumUnripe += $data->unripe;
+                $sumRipe += $data->ripe;
+                $sumOverripe += $data->overripe;
+                $sumEmptyBunch += $data->empty_bunch;
+                $sumAbnormal += $data->abnormal;
+            }
+            $summary[$inc]['id'] = $count;
+            $summary[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+            $summary[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('dddd, D MMMM Y');
+            $summary[$inc]['harianUnripe'] = $sumUnripe;
+            $summary[$inc]['harianRipe'] = $sumRipe;
+            $summary[$inc]['harianOverripe'] = $sumOverripe;
+            $summary[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+            $summary[$inc]['harianAbnormal'] = $sumAbnormal;
+
+            $count++;
+        }
+
+        $filename = 'rekap-tbs-pks-skm-' . $hari . '-' . Carbon::now()->year . '.pdf';
+
+        $pdf = Pdf::loadView('export.logPdf', ['summary' => $summary[$hari], 'data' => $dataLog[$hari]]);
+        $pdf->setPaper('A4', 'Potrait');
+        return $pdf->stream($filename);
     }
 
     /**
