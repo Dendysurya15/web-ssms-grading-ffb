@@ -32,7 +32,7 @@
                                             <th>Empty Bunch</th>
                                             <th>Abnormal</th>
                                             <th>Total TBS Harian</th>
-                                            <th>Aksi</th>
+                                            <th>Unduh</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -71,7 +71,11 @@
         $('#rekapWaterLevel').DataTable({
             "searching": true,
             "pageLength": 25,
-            
+            "columnDefs": [
+    { "width": "10%", "targets": 8 },
+    { "width": "15%", "targets": 1 },
+    { "width": "10%", "targets": 3 }
+  ],
             processing: true,
             serverSide: true,
             ajax: "{{ route('data') }}",
@@ -86,6 +90,7 @@
             { data: 'total', name: 'total' },
             { data: 'action', name: 'action' },
         ],
+        
         });
     });
 </script>

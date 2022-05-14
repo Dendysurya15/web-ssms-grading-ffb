@@ -100,8 +100,8 @@ class CountController extends Controller
                 // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
             })
             ->addColumn('action', function ($model) {
-                return '<a href="' . route('excel', $model['hari']) . '" class="btn btn-success" >  <i class="nav-icon fa fa-file-csv fa-xs"></i>    </a>' .
-                    ' ' . '<a href="' . route('pdf', $model['hari']) . '" class="btn btn-danger" > <i class="nav-icon fa fa-file-pdf" fa-xs></i>   </a>';
+                return '<a href="' . route('excel', $model['hari']) . '" class="" >  <i class="nav-icon fa fa-file-excel fa-lg" style="color:#1E6E42"></i>    </a>' .
+                    '  ' . '<a href="' . route('pdf', $model['hari']) . '" class="" > <i class="nav-icon fa fa-file-pdf fa-lg" style="color:#C52B2E" ></i>   </a>';
             })
             ->make(true);
     }
@@ -126,25 +126,25 @@ class CountController extends Controller
         $prctgeAll = array();
 
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
-        //get all data per hari
-        $dataLog = DB::table('log')
-            ->select('log.*', 'log.timestamp')
-            ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-05-02");
+        $standar_mutu = array('0%', '>90%', '<5%', '0%', '<5%');
+
+
+        $logHariini      = '';
+        $logHariini = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
+            ->orderBy('log.timestamp', 'desc')
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-23")
+            ->get()
+            ->groupBy('jam_ke');
 
         $allLog = DB::table('log')
             ->select('log.*', 'log.timestamp')
-            ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-05-02")
+            ->orderBy('log.timestamp',)
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-23")
             ->get();
 
-        if ($dataLog->exists() && !is_null($allLog)) {
 
-            $countLog = $dataLog->count();
-
-            $take = 10;
-            $limit = $countLog - $take;
-            $dataLog = $dataLog->skip($limit)->take($take)->get();
+        if ($logHariini->isNotEmpty() && !is_null($allLog)) {
 
             $allLogJson = json_decode($allLog, true);
 
@@ -158,34 +158,60 @@ class CountController extends Controller
             $totalAll = $totalUnripe + $totalRipe + $totalOverripe + $totalEmptyBunch + $totalAbnormal;
             $arrAllLog = array($totalUnripe, $totalRipe, $totalOverripe, $totalEmptyBunch, $totalAbnormal);
 
-            // dd(count($arrAllLog));
+            // dd($arrAllLog);
             foreach ($arrAllLog as $index => $data) {
                 $hasil = ($data / $totalAll) * 100;
                 $prctgeAll[$index]['kategori'] = $nama_kategori_tbs[$index];
+                $prctgeAll[$index]['stnd_mutu'] = $standar_mutu[$index];
                 $prctgeAll[$index]['total'] = $data;
                 $prctgeAll[$index]['persentase'] = round($hasil, 2);
             }
 
-            // dd($prctgeAll[0]['kategori']);
+            // dd($arrAllog);
+            // dd($prctgeAll);
 
-            $logHariini      = '';
+            // dd($logHariini);
 
-            if (!$dataLog->isEmpty()) {
-                $dataLogHariIni = json_decode(json_encode($dataLog), true);
-                foreach ($dataLogHariIni as $value) {
-
-                    //Perhari
-                    $jam        = date('H:i:s', strtotime($value['timestamp']));
-                    $logHariini .=
-                        "[{v:'" . $jam . "'}, {v:" . $value['unripe'] . ", f:'" . $value['unripe'] . "'},
-                        {v:" . $value['ripe'] . ", f:'" . $value['ripe'] . " buah'},
-                        {v:" . $value['overripe'] . ", f:'" . $value['overripe'] . " buah'},   
-                        {v:" . $value['empty_bunch'] . ", f:'" . $value['empty_bunch'] . " buah '},     
-                        {v:" . $value['abnormal'] . ", f:'" . $value['abnormal'] . " buah '}                             
-                    ],";
+            if ($logHariini->isNotEmpty()) {
+                foreach ($logHariini as $inc =>  $value) {
+                    $sumUnripe = 0;
+                    $sumRipe = 0;
+                    $sumOverripe = 0;
+                    $sumEmptyBunch = 0;
+                    $sumAbnormal = 0;
+                    foreach ($value as $key => $data) {
+                        $sumUnripe += $data->unripe;
+                        $sumRipe += $data->ripe;
+                        $sumOverripe += $data->overripe;
+                        $sumEmptyBunch += $data->empty_bunch;
+                        $sumAbnormal += $data->abnormal;
+                    }
+                    $arrLogPerhari[$inc]['timestamp'] = $data->timestamp;
+                    $arrLogPerhari[$inc]['harianUnripe'] = $sumUnripe;
+                    $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
+                    $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
+                    $arrLogPerhari[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+                    $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
                 }
 
-                // dd($logHariini);
+                // dd($arrLogPerhari);
+                $arrLogHariini = '';
+                $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
+                foreach ($arrLogPerhari as $value) {
+
+                    // dd($value['timestamp']);
+                    // dd(\Carbon\Carbon::parse($value['timestamp'])->format('d/i:s'));
+                    // Carbon::createFromFormat('H:i:s', $value['timestamp'])->format('H:i');
+                    //Perhari
+                    $jam        = date('H:i', strtotime($value['timestamp']));
+                    $arrLogHariini .=
+                        "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . " buah'},
+                        {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " buah '},
+                        {v:" . $value['harianOverripe'] . ", f:'" . $value['harianOverripe'] . " buah '},   
+                        {v:" . $value['harianEmptyBunch'] . ", f:'" . $value['harianEmptyBunch'] . " buah '},     
+                        {v:" . $value['harianAbnormal'] . ", f:'" . $value['harianAbnormal'] . " buah '}                             
+                    ],";
+                }
 
                 $arrLogHariini = [
                     'plot1'     => 'Unripe',
@@ -193,21 +219,18 @@ class CountController extends Controller
                     'plot3'     => 'Overripe',
                     'plot4'     => 'Empty Bunch',
                     'plot5'     => 'Abnormal',
-                    'data'      => $logHariini
+                    'data'      => $arrLogHariini
                 ];
             }
         }
 
-        // dd($logHariini);
+        // dd($arrLogHariini);
         return view('dashboard', [
             'arrLogHariini' => $arrLogHariini,
             'prctgeAll' => $prctgeAll,
             'dateToday' => $dateToday,
-            'totalUnripe' => $totalUnripe,
-            'totalRipe' => $totalRipe,
-            'totalOverripe' => $totalOverripe,
-            'totalEmptyBunch' => $totalEmptyBunch,
-            'totalAbnormal' => $totalAbnormal
+            'totalAll' => $totalAll,
+            'jamNow' => Carbon::now()->format('H:i:s'),
         ]);
     }
 
@@ -300,7 +323,7 @@ class CountController extends Controller
     public function grafik()
     {
         $dateToday = Carbon::now()->format('d-m-Y');
-        // dd($dateToday)
+        // dd($dateToday);
 
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
 
@@ -461,7 +484,7 @@ class CountController extends Controller
                 }
             }
 
-            // dd($arrLogSeminggu);
+            dd($arrLogSeminggu);
             //ubah skema array per minggu menjadi ploting pada grafik
             foreach ($arrLogSeminggu as $value) {
 
@@ -485,15 +508,14 @@ class CountController extends Controller
                 'plot5'     => 'Abnormal',
                 'data'      => $LogPerhari
             ];
-
-            // dd($LogMingguanView);
-            return view('grafik', [
-                'LogPerHariView' => $LogPerHariView,
-                'LogMingguanView' => $LogMingguanView,
-                'dateToday' => $dateToday,
-                'nama_kategori_tbs' => $nama_kategori_tbs,
-            ]);
         }
+        // dd($LogMingguanView);
+        return view('grafik', [
+            'LogPerHariView' => $LogPerHariView,
+            'LogMingguanView' => $LogMingguanView,
+            'dateToday' => $dateToday,
+            'nama_kategori_tbs' => $nama_kategori_tbs,
+        ]);
     }
 
     public function export($hari)
@@ -570,8 +592,6 @@ class CountController extends Controller
             $key++;
         }
 
-        // dd($dataLog[$hari]);
-
         $count = 1;
 
         foreach ($dataLog as $inc =>  $value) {
@@ -595,15 +615,18 @@ class CountController extends Controller
             $summary[$inc]['harianOverripe'] = $sumOverripe;
             $summary[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
             $summary[$inc]['harianAbnormal'] = $sumAbnormal;
+            $summary[$inc]['updated'] = Carbon::now()->isoFormat('HH:mm:ss');
 
             $count++;
         }
 
+        $arrSum = $summary[$hari];
+        $arrData = $dataLog[$hari];
+
         $filename = 'rekap-tbs-pks-skm-' . $hari . '-' . Carbon::now()->year . '.pdf';
 
-        $pdf = Pdf::loadView('export.logPdf', ['summary' => $summary[$hari], 'data' => $dataLog[$hari]]);
-        $pdf->setPaper('A4', 'Potrait');
-        return $pdf->stream($filename);
+        $pdf = Pdf::loadView('export.logPdf', ['summary' => $arrSum, 'data' => $arrData]);
+        return $pdf->download($filename);
     }
 
     /**

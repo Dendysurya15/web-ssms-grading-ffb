@@ -186,7 +186,7 @@
 
     var optionsLogHariIIni = {
         chartArea: {},
-      theme: 'material',
+        theme: 'material',
         colors:['#001E3C', '#AB221D','#FF9800','#BE8C64','#4CAF50'],
         legend: { position: 'top',
         textStyle: {fontSize: 15}},

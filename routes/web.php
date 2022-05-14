@@ -31,6 +31,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/data', [CountController::class, 'tabel'])->name('data');
     Route::get('/{hari}/excel', [CountController::class, 'export'])->name('excel');
     Route::get('/{hari}/pdf', [CountController::class, 'pdf'])->name('pdf');
+    Route::get('testing', function () {
+        return view('export.logPdf');
+    });
 });
 
 //auth
