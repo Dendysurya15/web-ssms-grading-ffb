@@ -41,6 +41,7 @@
 
                 </div>
                 <div class="col-12 col-lg-4">
+
                     <div style="">
                         <div id="piechart">
                         </div>
@@ -249,7 +250,14 @@
         ]);
 
         var options = {
-          title: 'Persebaran TBS yang masuk ke PKS hari ini <?php echo $dateToday; ?>',
+            title: 'Persebaran TBS yang masuk ke PKS SKM hari ini <?php echo  $dateToday; ?>',
+            titleTextStyle: {
+                color: "#013C5E",               // color 'red' or '#cc00cc'
+                fontName: "",    // 'Times New Roman'
+                fontSize: 15,               // 12, 18
+                bold: true,                 // true or false
+                italic: false                // true of false
+            },
           legend: 'bottom',
           colors:['#001E3C', '#AB221D','#FF9800','#BE8C64','#4CAF50'],
           height:400
