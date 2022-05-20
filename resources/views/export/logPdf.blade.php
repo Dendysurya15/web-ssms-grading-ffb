@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
         integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
 </head>
@@ -49,7 +48,6 @@
 
     </div>
     <br>
-    <div id="piechart" style="width: 900px; height: 500px;"></div>
     {{-- <div class="content">
         <table class="table table-bordered">
             <thead>
@@ -81,45 +79,9 @@
     <div class="fixed-bottom" style="font-size: 12px">
         <div class="float-right font-italic text-muted">
             Updated : {{ $summary['timestamp']}} {{$summary['updated']}}
-            updated
         </div>
     </div>
 </body>
 
-
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous">
-</script>
-<script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-
-    var plot_unripe = '<?php echo  $summary['harianUnripe']; ?>';
-    var plot_ripe = '<?php echo   $summary['harianRipe']; ?>';
-    var plot_overripe = '<?php echo   $summary['harianOverripe']; ?>';
-    var plot_empty_bunch = '<?php echo  $summary['harianEmptyBunch']; ?>';
-    var plot_abnormal = '<?php echo  $summary['harianAbnormal']; ?>';
-
-    function drawChart() {
-
-      var data = google.visualization.arrayToDataTable([
-        ['Unripe', plot_unripe],
-        ['Ripe',     plot_ripe],
-        ['Overripe',  plot_overripe],
-        ['Empty Bunch',  plot_empty_bunch],
-        ['Abnormal', plot_abnormal],
-      ]);
-
-      var options = {
-        title: 'My Daily Activities'
-      };
-
-      var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-      chart.draw(data, options);
-    }
-</script>
 
 </html>

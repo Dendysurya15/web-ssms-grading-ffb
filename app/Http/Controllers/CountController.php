@@ -101,7 +101,7 @@ class CountController extends Controller
             })
             ->addColumn('action', function ($model) {
                 return '<a href="' . route('excel', $model['hari']) . '" class="" >  <i class="nav-icon fa fa-file-excel fa-lg" style="color:#1E6E42"></i>    </a>' .
-                    '  ' . '<a href="' . route('pdf', $model['hari']) . '" class="" > <i class="nav-icon fa fa-file-pdf fa-lg" style="color:#C52B2E" ></i>   </a>';
+                    '  ' . '<a href="' . route('pdf', $model['hari']) . '" class="" target="_blank" > <i class="nav-icon fa fa-file-pdf fa-lg" style="color:#C52B2E" ></i>   </a>';
             })
             ->make(true);
     }
@@ -624,9 +624,8 @@ class CountController extends Controller
         $arrData = $dataLog[$hari];
 
         $filename = 'rekap-tbs-pks-skm-' . $hari . '-' . Carbon::now()->year . '.pdf';
-
         $pdf = Pdf::loadView('export.logPdf', ['summary' => $arrSum, 'data' => $arrData]);
-        return $pdf->download($filename);
+        return $pdf->stream($filename, array("Attachment" => false))->header('Content-Type', 'application/pdf');
     }
 
     /**
