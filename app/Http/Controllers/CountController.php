@@ -68,6 +68,8 @@ class CountController extends Controller
 
         $count = 1;
 
+        // dd($dataLog);
+
         foreach ($dataLog as $inc =>  $value) {
             $sumUnripe = 0;
             $sumRipe = 0;
@@ -90,18 +92,39 @@ class CountController extends Controller
             $arrLogPerhari[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
             $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
             $arrLogPerhari[$inc]['hari'] = $inc;
+            $arrLogPerhari[$inc]['persenUnripe'] = round((($sumUnripe / $arrLogPerhari[$inc]['total']) * 100), 2);
+            $arrLogPerhari[$inc]['persenRipe'] = round((($sumRipe / $arrLogPerhari[$inc]['total']) * 100), 2);
+            $arrLogPerhari[$inc]['persenOverripe'] = round((($sumOverripe / $arrLogPerhari[$inc]['total']) * 100), 2);
+            $arrLogPerhari[$inc]['persenEmptyBunch'] = round((($sumEmptyBunch / $arrLogPerhari[$inc]['total']) * 100), 2);
+            $arrLogPerhari[$inc]['persenAbnormal'] = round((($sumAbnormal / $arrLogPerhari[$inc]['total']) * 100), 2);
 
             $count++;
         }
 
         return DataTables::of($arrLogPerhari)
             ->editColumn('harianUnripe', function ($model) {
-                return $model['harianUnripe'];
+                return $model['harianUnripe'] . ' (' . $model['persenUnripe'] . '%)';
+                // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
+            })
+            ->editColumn('harianRipe', function ($model) {
+                return $model['harianRipe'] . ' (' . $model['persenRipe'] . '%)';
+                // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
+            })
+            ->editColumn('harianOverripe', function ($model) {
+                return $model['harianOverripe'] . ' (' . $model['persenOverripe'] . '%)';
+                // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
+            })
+            ->editColumn('harianEmptyBunch', function ($model) {
+                return $model['harianEmptyBunch'] . ' (' . $model['persenEmptyBunch'] . '%)';
+                // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
+            })
+            ->editColumn('harianAbnormal', function ($model) {
+                return $model['harianAbnormal'] . ' (' . $model['persenAbnormal'] . '%)';
                 // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
             })
             ->addColumn('action', function ($model) {
                 return '<a href="' . route('excel', $model['hari']) . '" class="" >  <i class="nav-icon fa fa-file-excel fa-lg" style="color:#1E6E42"></i>    </a>' .
-                    '  ' . '<a href="' . route('pdf', $model['hari']) . '" class="" target="_blank" > <i class="nav-icon fa fa-file-pdf fa-lg" style="color:#C52B2E" ></i>   </a>';
+                    '  ' . '<a href="' . route('pdf', $model['hari']) . '" class="" > <i class="nav-icon fa fa-file-pdf fa-lg" style="color:#C52B2E" ></i>   </a>';
             })
             ->make(true);
     }
@@ -327,7 +350,7 @@ class CountController extends Controller
 
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
 
-        $convert = new DateTime(Carbon::now());
+        $convert = new DateTime("2022-04-30");
 
         // dd($convert);
         $to = $convert->format('Y-m-d H:i:s');
@@ -337,8 +360,6 @@ class CountController extends Controller
 
         $from = date($dateFrom);
         $to = $convert->format('Y-m-d H:i:s');
-
-        // dd($to);
 
         $logHariini = DB::table('log')
             ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
@@ -392,7 +413,7 @@ class CountController extends Controller
             foreach ($arrLogPerhari as $value) {
 
                 //Perhari
-                $jam        = date('H:i:s', strtotime($value['timestamp']));
+                $jam        = date('H:i', strtotime($value['timestamp']));
                 $arrlogPerHariView .=
                     "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . "'},
                     {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . "'},
@@ -424,9 +445,11 @@ class CountController extends Controller
         $logMingguan = DB::table('log')
             ->select('log.*')
             ->orderBy('log.timestamp', 'desc')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', Carbon::now()->format('Y-m-d'))
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-30")
             ->first();
 
+
+        // dd($logMingguan);
         $to = !is_null($logMingguan) ?  $logMingguan->timestamp : Carbon::now()->format('Y-m-d');
 
         // dd($to);
@@ -484,7 +507,7 @@ class CountController extends Controller
                 }
             }
 
-            dd($arrLogSeminggu);
+            // dd($arrLogSeminggu);
             //ubah skema array per minggu menjadi ploting pada grafik
             foreach ($arrLogSeminggu as $value) {
 

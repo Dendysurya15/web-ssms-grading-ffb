@@ -26,12 +26,12 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Tanggal</th>
+                                            <th>Total TBS Harian</th>
                                             <th>Unripe</th>
                                             <th style="width:15%;">Ripe</th>
                                             <th>Overripe</th>
                                             <th>Empty Bunch</th>
                                             <th>Abnormal</th>
-                                            <th>Total TBS Harian</th>
                                             <th>Unduh</th>
                                         </tr>
                                     </thead>
@@ -82,12 +82,12 @@
             columns: [
             { data: 'id', name: 'id' },
             { data: 'timestamp', name: 'timestamp' },
+            { data: 'total', name: 'total' },
             { data: 'harianUnripe', name: 'harianUnripe' },
             { data: 'harianRipe', name: 'harianRipe' },
             { data: 'harianOverripe', name: 'harianOverripe' },
             { data: 'harianEmptyBunch', name: 'empty_bunch' },
             { data: 'harianAbnormal', name: 'harianAbnormal' },
-            { data: 'total', name: 'total' },
             { data: 'action', name: 'action' },
         ],
         

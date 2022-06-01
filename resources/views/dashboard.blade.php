@@ -66,9 +66,8 @@
                 </div>
             </div>
             <hr>
-            <p style="color:#013C5E;font-size: 17px"> Update hasil grading TBS sampai dengan tanggal <span
-                    class="font-weight-bold"> {{$dateToday}} </span>dan
-                jam <span class="font-weight-bold"> {{$jamNow}} wib</span> dengan
+            <p style="color:#013C5E;font-size: 17px"> Update hasil grading TBS tanggal <span class="font-weight-bold">
+                    {{$dateToday}} </span> pada pukul <span class="font-weight-bold"> {{$jamNow}} wib</span> dengan
                 total TBS
                 <span class="font-weight-bold"> {{$totalAll}}</span> buah
             </p>
@@ -76,7 +75,7 @@
                 @foreach ($prctgeAll as $key => $item)
                 @if ($item['persentase'] <= $item['stnd_mutu']) <div class="col">
                     <div class="card">
-                        <div class="card-header" style="background-color:#C92E26;color:white">
+                        <div class="card-header" style="background-color:#013C5E;color:white">
                             <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
                             <span style="font-size: 14px" class="font-italic">Standar Mutu :
                                 <span class="font-weight-normal"> {{$item['stnd_mutu']}} </span> Tbs</span> <br>
@@ -94,7 +93,7 @@
             @else
             <div class="col">
                 <div class="card">
-                    <div class="card-header" style="background-color:#013C5E;color:white">
+                    <div class="card-header" style="background-color:#C92E26;color:white">
                         <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
                         <span style="font-size: 14px" class="font-italic">Standar Mutu :
                             <span class="font-weight-normal"> {{$item['stnd_mutu']}} </span> Tbs</span> <br>
