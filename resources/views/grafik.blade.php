@@ -190,6 +190,19 @@
         colors:['#001E3C', '#AB221D','#FF9800','#BE8C64','#4CAF50'],
         legend: { position: 'top',
         textStyle: {fontSize: 15}},
+        hAxis: {
+                //   title: 'Jam',
+                  textStyle: {
+                     color: 'black',
+                     fontSize: 12,
+                    //  bold: true
+                  },
+                  titleTextStyle: {
+                     color: '#1a237e',
+                     fontSize: 24,
+                     bold: true
+                  }
+               }, 
         lineWidth: 2,
         height:400,
     };

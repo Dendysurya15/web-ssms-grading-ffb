@@ -47,6 +47,13 @@
                         </div>
                     </div>
 
+                    @if ($prctgeAll != '')
+                    <div id="piechart" {{-- style="width: 100%; height: 300px;" --}}>
+                    </div>
+                    @else
+                    Tidak ada data yg dikirim
+                    @endif
+
                 </div>
                 <div class=" col-12 col-lg-4" style="background-color:white;border-radius:5px">
                     <p style="color:#013C5E;font-weight: 550;position: absolute; width: 100%"
@@ -72,6 +79,7 @@
                 <span class="font-weight-bold"> {{$totalAll}}</span> buah
             </p>
             <div class="row">
+
                 @foreach ($prctgeAll as $key => $item)
                 @if ($item['persentase'] <= $item['stnd_mutu']) <div class="col">
                     <div class="card">
@@ -133,7 +141,7 @@
                         <div class="row">
 
                             <div class="col">
-                                @if ($arrLogHariini['data'])
+                                @if ($arrLogHariini['data'] != '')
                                 <div id="logHariini" {{-- style="width: 100%; height: 300px;" --}}>
                                 </div>
                                 @else
@@ -204,7 +212,7 @@
     var plot_abnormal = '<?php echo $arrLogHariini['plot5']; ?>';
     
     var dataLogHariini = new google.visualization.DataTable();
-    dataLogHariini.addColumn('string', '');
+    dataLogHariini.addColumn('string', 'Name');
     dataLogHariini.addColumn('number', plot_unripe);
     dataLogHariini.addColumn('number', plot_ripe);
     dataLogHariini.addColumn('number', plot_overripe);
@@ -227,8 +235,8 @@
         height:400,
     };
 
-    var arrLogHariini = new google.visualization.LineChart(document.getElementById('logHariini'));
-    arrLogHariini.draw(dataLogHariini,optionsLogHariIIni);
+    var test = new google.visualization.LineChart(document.getElementById('logHariini'));
+    test.draw(dataLogHariini,optionsLogHariIIni);
 
   }
 
