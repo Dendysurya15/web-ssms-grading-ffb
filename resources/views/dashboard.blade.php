@@ -141,12 +141,12 @@
                         <div class="row">
 
                             <div class="col">
-                                @if ($arrLogHariini['data'] != '')
+                                {{-- @if ($arrLogHariini['data'] != '') --}}
                                 <div id="logHariini" {{-- style="width: 100%; height: 300px;" --}}>
                                 </div>
-                                @else
-                                Tidak ada data yg dikirim
-                                @endif
+                                {{-- @else --}}
+                                {{-- Tidak ada data yg dikirim --}}
+                                {{-- @endif --}}
                             </div>
 
                         </div>
@@ -230,7 +230,7 @@
         textStyle: {fontSize: 15}},
         lineWidth: 2,
         hAxis: {
-            direction:-1, slantedText:true, slantedTextAngle:35,
+           
     },
         height:400,
     };
@@ -257,7 +257,7 @@
         ]);
 
         var options = {
-            title: 'Persebaran TBS yang masuk ke PKS SKM hari ini <?php echo  $dateToday; ?>',
+            title: 'Persebaran TBS yang masuk ke PKS SKM dalam 24 jam terakhir <?php echo  $dateToday; ?>',
             titleTextStyle: {
                 color: "#013C5E",               // color 'red' or '#cc00cc'
                 fontName: "",    // 'Times New Roman'

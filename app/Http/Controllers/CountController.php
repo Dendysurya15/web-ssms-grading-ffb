@@ -141,6 +141,19 @@ class CountController extends Controller
             'plot5'     => 'Abnormal',
             'data'      => ''
         ];
+        $arrLogPerhari = array();
+        $dataArr = array();
+        $arrJam = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00'];
+        for ($i = 0; $i < 24; $i++) {
+            $dataArr[$i]['timestamp'] = $arrJam[$i];
+            $dataArr[$i]['harianUnripe'] = 0;
+            $dataArr[$i]['harianRipe'] = 0;
+            $dataArr[$i]['harianOverripe'] = 0;
+            $dataArr[$i]['harianEmptyBunch'] = 0;
+            $dataArr[$i]['harianAbnormal'] = 0;
+        }
+
+        // dd($dataArr);
         $LogPerhari = '';
         $totalAll = 0;
         $totalUnripe = 0;
@@ -211,6 +224,8 @@ class CountController extends Controller
             ->get()
             ->groupBy('jam_ke');
 
+
+        // dd($logHariini);
         // $logHariini      = '';
         // $logHariini = DB::table('log')
         //     ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
@@ -221,16 +236,18 @@ class CountController extends Controller
 
         // dd($logHariini);
 
+
         $allLog = DB::table('log')
             ->select('log.*', 'log.timestamp')
-            ->orderBy('log.timestamp',)
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-23")
+            ->orderBy('log.timestamp')
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', Carbon::now()->format('Y-m-d'))
             ->get();
 
 
-        // dd($allLog);
-        if ($logHariini->isNotEmpty() && !is_null($allLog)) {
 
+        // dd(count($arrJam));
+
+        if ($allLog->first() != null) {
             $allLogJson = json_decode($allLog, true);
 
             foreach ($allLogJson as $index => $data) {
@@ -250,72 +267,153 @@ class CountController extends Controller
                 $prctgeAll[$index]['total'] = $data;
                 $prctgeAll[$index]['persentase'] = round($hasil, 2);
             }
-
-            // dd($arrAllog);
-            // dd($prctgeAll);
-
-            // dd($logHariini);
-
-            $increment = 1;
-
-            if ($logHariini->isNotEmpty()) {
-                foreach ($logHariini as $inc =>  $value) {
-                    $sumUnripe = 0;
-                    $sumRipe = 0;
-                    $sumOverripe = 0;
-                    $sumEmptyBunch = 0;
-                    $sumAbnormal = 0;
-                    foreach ($value as $key => $data) {
-                        $sumUnripe += $data->unripe;
-                        $sumRipe += $data->ripe;
-                        $sumOverripe += $data->overripe;
-                        $sumEmptyBunch += $data->empty_bunch;
-                        $sumAbnormal += $data->abnormal;
-                        if ($increment == 24) {
-                            $jam = '06:59';
-                        } else {
-                            $jam        = date('H', strtotime($data->timestamp)) . ':00';
-                        }
-                    }
-                    $arrLogPerhari[$inc]['timestamp'] = $jam;
-                    $arrLogPerhari[$inc]['harianUnripe'] = $sumUnripe;
-                    $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
-                    $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
-                    $arrLogPerhari[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
-                    $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
-
-                    $increment++;
-                }
-
-                // dd($arrLogPerhari);
-
-                $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
-                foreach ($arrLogPerhari as $value) {
-
-                    // dd($value['timestamp']);
-                    // dd(\Carbon\Carbon::parse($value['timestamp'])->format('d/i:s'));
-                    // Carbon::createFromFormat('H:i:s', $value['timestamp'])->format('H:i');
-                    //Perhari
-                    $jam        = $value['timestamp'];
-                    $LogPerhari .=
-                        "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . " buah'},
-                        {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " buah '},
-                        {v:" . $value['harianOverripe'] . ", f:'" . $value['harianOverripe'] . " buah '},   
-                        {v:" . $value['harianEmptyBunch'] . ", f:'" . $value['harianEmptyBunch'] . " buah '},     
-                        {v:" . $value['harianAbnormal'] . ", f:'" . $value['harianAbnormal'] . " buah '}                             
-                    ],";
-                }
-
-                $arrLogHariini = [
-                    'plot1'     => 'Unripe',
-                    'plot2'     => 'Ripe',
-                    'plot3'     => 'Overripe',
-                    'plot4'     => 'Empty Bunch',
-                    'plot5'     => 'Abnormal',
-                    'data'      => $LogPerhari
-                ];
-            }
         }
+
+        // dd($logHariini);
+        // dd($logHariini->first() != null);
+        // if ($logHariini->first() != null) {
+        //     dd('test');
+        // }
+        // dd('coba');
+
+        // dd($dataArr);
+        // $dataArr = array();
+        $increment = 0;
+        // dd(count($logHariini));
+        if ($logHariini->first() != null) {
+            foreach ($logHariini as $inc =>  $value) {
+                $sumUnripe = 0;
+                $sumRipe = 0;
+                $sumOverripe = 0;
+                $sumEmptyBunch = 0;
+                $sumAbnormal = 0;
+                foreach ($value as $key => $data) {
+                    $sumUnripe += $data->unripe;
+                    $sumRipe += $data->ripe;
+                    $sumOverripe += $data->overripe;
+                    $sumEmptyBunch += $data->empty_bunch;
+                    $sumAbnormal += $data->abnormal;
+                    if ($increment == 24) {
+                        $jam = '06:59';
+                    } else {
+                        $jam = date('H', strtotime($data->timestamp)) . ':00';
+                    }
+                }
+
+                $dataArr[$increment]['timestamp'] = $jam;
+                $dataArr[$increment]['timestamp_full'] = $data->timestamp;
+                $dataArr[$increment]['harianUnripe'] = $sumUnripe;
+                $dataArr[$increment]['harianRipe'] = $sumRipe;
+                $dataArr[$increment]['harianOverripe'] = $sumOverripe;
+                $dataArr[$increment]['harianEmptyBunch'] = $sumEmptyBunch;
+                $dataArr[$increment]['harianAbnormal'] = $sumAbnormal;
+
+                $increment++;
+            }
+        };
+
+        for ($i = 0; $i < 24; $i++) {
+
+            $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
+            $arrLogPerhari[$i]['harianUnripe'] = $dataArr[$i]['harianUnripe'];
+            $arrLogPerhari[$i]['harianRipe'] = $dataArr[$i]['harianRipe'];
+            $arrLogPerhari[$i]['harianOverripe'] = $dataArr[$i]['harianOverripe'];
+            $arrLogPerhari[$i]['harianEmptyBunch'] = $dataArr[$i]['harianEmptyBunch'];
+            $arrLogPerhari[$i]['harianAbnormal'] = $dataArr[$i]['harianAbnormal'];
+        }
+        // sort($arrLogPerhari);
+        // dd($arrLogPerhari);
+        // 
+        // $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
+        foreach ($arrLogPerhari as $value) {
+
+            //Perhari
+            $jam        = $value['timestamp'];
+            $LogPerhari .=
+                "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . " buah'},
+                {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " buah '},
+                {v:" . $value['harianOverripe'] . ", f:'" . $value['harianOverripe'] . " buah '},   
+                {v:" . $value['harianEmptyBunch'] . ", f:'" . $value['harianEmptyBunch'] . " buah '},     
+                {v:" . $value['harianAbnormal'] . ", f:'" . $value['harianAbnormal'] . " buah '}                             
+            ],";
+        }
+
+        $arrLogHariini = [
+            'plot1'     => 'Unripe',
+            'plot2'     => 'Ripe',
+            'plot3'     => 'Overripe',
+            'plot4'     => 'Empty Bunch',
+            'plot5'     => 'Abnormal',
+            'data'      => $LogPerhari
+        ];
+
+        // sort($LogPerhari);
+
+        // dd($LogPerhari);
+        // dd($arrLogHariini);
+
+        // if ($logHariini->isNotEmpty()) {
+
+        //     $increment = 1;
+
+        //     if ($logHariini->isNotEmpty()) {
+        //         foreach ($logHariini as $inc =>  $value) {
+        //             $sumUnripe = 0;
+        //             $sumRipe = 0;
+        //             $sumOverripe = 0;
+        //             $sumEmptyBunch = 0;
+        //             $sumAbnormal = 0;
+        //             foreach ($value as $key => $data) {
+        //                 $sumUnripe += $data->unripe;
+        //                 $sumRipe += $data->ripe;
+        //                 $sumOverripe += $data->overripe;
+        //                 $sumEmptyBunch += $data->empty_bunch;
+        //                 $sumAbnormal += $data->abnormal;
+        //                 if ($increment == 24) {
+        //                     $jam = '06:59';
+        //                 } else {
+        //                     $jam        = date('H', strtotime($data->timestamp)) . ':00';
+        //                 }
+        //             }
+        //             $arrLogPerhari[$inc]['timestamp'] = $jam;
+        //             $arrLogPerhari[$inc]['harianUnripe'] = $sumUnripe;
+        //             $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
+        //             $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
+        //             $arrLogPerhari[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+        //             $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
+
+        //             $increment++;
+        //         }
+
+        //         // dd($arrLogPerhari);
+
+        //         $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
+        //         foreach ($arrLogPerhari as $value) {
+
+        //             // dd($value['timestamp']);
+        //             // dd(\Carbon\Carbon::parse($value['timestamp'])->format('d/i:s'));
+        //             // Carbon::createFromFormat('H:i:s', $value['timestamp'])->format('H:i');
+        //             //Perhari
+        //             $jam        = $value['timestamp'];
+        //             $LogPerhari .=
+        //                 "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . " buah'},
+        //                 {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " buah '},
+        //                 {v:" . $value['harianOverripe'] . ", f:'" . $value['harianOverripe'] . " buah '},   
+        //                 {v:" . $value['harianEmptyBunch'] . ", f:'" . $value['harianEmptyBunch'] . " buah '},     
+        //                 {v:" . $value['harianAbnormal'] . ", f:'" . $value['harianAbnormal'] . " buah '}                             
+        //             ],";
+        //         }
+
+        //         $arrLogHariini = [
+        //             'plot1'     => 'Unripe',
+        //             'plot2'     => 'Ripe',
+        //             'plot3'     => 'Overripe',
+        //             'plot4'     => 'Empty Bunch',
+        //             'plot5'     => 'Abnormal',
+        //             'data'      => $LogPerhari
+        //         ];
+        //     }
+        // }
 
         // dd($arrLogHariini);
         // dd($prctgeAll);
