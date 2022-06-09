@@ -516,7 +516,32 @@ class CountController extends Controller
     {
         $dateToday = Carbon::now()->format('d-m-Y');
 
+        $LogPerHariView = [
+            'plot1'     => 'Unripe',
+            'plot2'     => 'Ripe',
+            'plot3'     => 'Overripe',
+            'plot4'     => 'Empty Bunch',
+            'plot5'     => 'Abnormal',
+            'data'      => ''
+        ];
+        $arrLogPerhari = array();
+        $dataArr = array();
+        $arrJam = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00'];
+        for ($i = 0; $i < 24; $i++) {
+            $dataArr[$i]['timestamp'] = $arrJam[$i];
+            $dataArr[$i]['harianUnripe'] = 0;
+            $dataArr[$i]['harianRipe'] = 0;
+            $dataArr[$i]['harianOverripe'] = 0;
+            $dataArr[$i]['harianEmptyBunch'] = 0;
+            $dataArr[$i]['harianAbnormal'] = 0;
+        }
+
+        // dd($dataArr);
+        $LogPerhari = '';
+
+        // dd($prctgeAll);
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
+        $standar_mutu = array('0%', '>90%', '<5%', '0%', '<5%');
 
         $convert = new DateTime(Carbon::now()->toDateString());
         // 
@@ -529,54 +554,26 @@ class CountController extends Controller
         $dateFrom = Carbon::parse($to)->subDays();
 
         // $dateFrom->add(new DateInterval('PT0H'));
-
         // dd($dateFrom);
         $dateFrom = $dateFrom->format('Y-m-d H:i:s');
 
         $from = date($dateFrom);
+        // $prctgeAll = '';
 
         $to = $convert->format('Y-m-d H:i:s');
         // dd($to);
-
+        $logHariini      = '';
         $logHariini = DB::table('log')
             ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
             ->whereBetween('log.timestamp', [$from, $to])
             ->orderBy('log.timestamp')
             ->get()
             ->groupBy('jam_ke');
-        // dd($logHariini['26-07'][0]);
 
-        // dd($logHariini);
-
-        $logView = array();
-
-
-        // $logHariini = $logHariini->sortByDesc(function ($item) {
-        //     return $item;
-        // })->values();
-
-        // dd(Arr::last($logHariini));
-        $arrLogPerhari = array();
-
-        $arrlogPerHariView = '';
-        $LogPerHariView = [
-            'plot1'     => 'Unripe',
-            'plot2'     => 'Ripe',
-            'plot3'     => 'Overripe',
-            'plot4'     => 'Empty Bunch',
-            'plot5'     => 'Abnormal',
-            'data'      => ''
-        ];
-
-        // dd(!$logHariini['29-23']->isEmpty());
-
-        // dd($logHariini);
-        // dd($a)
-        $increment = 1;
-        if (!$logHariini->isEmpty()) {
-
+        $increment = 0;
+        // dd(count($logHariini));
+        if ($logHariini->first() != null) {
             foreach ($logHariini as $inc =>  $value) {
-
                 $sumUnripe = 0;
                 $sumRipe = 0;
                 $sumOverripe = 0;
@@ -588,63 +585,59 @@ class CountController extends Controller
                     $sumOverripe += $data->overripe;
                     $sumEmptyBunch += $data->empty_bunch;
                     $sumAbnormal += $data->abnormal;
-
                     if ($increment == 24) {
                         $jam = '06:59';
                     } else {
-                        $jam        = date('H', strtotime($data->timestamp)) . ':00';
+                        $jam = date('H', strtotime($data->timestamp)) . ':00';
                     }
                 }
 
-                // dd($jam);
-                // break;
-                $arrLogPerhari[$inc]['timestamp'] = $jam;
-                $arrLogPerhari[$inc]['harianUnripe'] = $sumUnripe;
-                $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
-                $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
-                $arrLogPerhari[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
-                $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
+                $dataArr[$increment]['timestamp'] = $jam;
+                $dataArr[$increment]['timestamp_full'] = $data->timestamp;
+                $dataArr[$increment]['harianUnripe'] = $sumUnripe;
+                $dataArr[$increment]['harianRipe'] = $sumRipe;
+                $dataArr[$increment]['harianOverripe'] = $sumOverripe;
+                $dataArr[$increment]['harianEmptyBunch'] = $sumEmptyBunch;
+                $dataArr[$increment]['harianAbnormal'] = $sumAbnormal;
 
-
-                // $logView[$jam]['jam'] = $jam;
-                // $logView[$jam]['unripe'] = $sumUnripe;
-                // $logView[$jam]['ripe'] = $sumRipe;
-                // $logView[$jam]['overripe'] = $sumOverripe;
-                // $logView[$jam]['empty_bunch'] = $sumEmptyBunch;
-                // $logView[$jam]['abnormal'] = $sumAbnormal;
                 $increment++;
             }
+        };
 
+        for ($i = 0; $i < 24; $i++) {
 
-            // dd($arrLogPerhari);
-            $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
-            foreach ($arrLogPerhari as $value) {
-
-                //Perhari
-                // if (array_key_exists('29-23', $value)) {
-                //     $jam = date('d-D H:i', strtotime($value['timestamp']));
-                // } else {
-                // $jam        = date('H:i', strtotime($value['timestamp']));
-                $jam = $value['timestamp'];
-                // }
-                $arrlogPerHariView .=
-                    "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . "'},
-                    {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . "'},
-                    {v:" . $value['harianOverripe'] . ", f:'" . $value['harianOverripe'] . "'},   
-                    {v:" . $value['harianEmptyBunch'] . ", f:'" . $value['harianEmptyBunch'] . "'},     
-                    {v:" . $value['harianAbnormal'] . ", f:'" . $value['harianAbnormal'] . "'}                             
-                ],";
-            }
-
-            $LogPerHariView = [
-                'plot1'     => 'Unripe',
-                'plot2'     => 'Ripe',
-                'plot3'     => 'Overripe',
-                'plot4'     => 'Empty Bunch',
-                'plot5'     => 'Abnormal',
-                'data'      => $arrlogPerHariView
-            ];
+            $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
+            $arrLogPerhari[$i]['harianUnripe'] = $dataArr[$i]['harianUnripe'];
+            $arrLogPerhari[$i]['harianRipe'] = $dataArr[$i]['harianRipe'];
+            $arrLogPerhari[$i]['harianOverripe'] = $dataArr[$i]['harianOverripe'];
+            $arrLogPerhari[$i]['harianEmptyBunch'] = $dataArr[$i]['harianEmptyBunch'];
+            $arrLogPerhari[$i]['harianAbnormal'] = $dataArr[$i]['harianAbnormal'];
         }
+        // sort($arrLogPerhari);
+        // dd($arrLogPerhari);
+        // 
+        // $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
+        foreach ($arrLogPerhari as $value) {
+
+            //Perhari
+            $jam        = $value['timestamp'];
+            $LogPerhari .=
+                "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . " buah'},
+                    {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " buah '},
+                    {v:" . $value['harianOverripe'] . ", f:'" . $value['harianOverripe'] . " buah '},   
+                    {v:" . $value['harianEmptyBunch'] . ", f:'" . $value['harianEmptyBunch'] . " buah '},     
+                    {v:" . $value['harianAbnormal'] . ", f:'" . $value['harianAbnormal'] . " buah '}                             
+                ],";
+        }
+
+        $LogPerHariView = [
+            'plot1'     => 'Unripe',
+            'plot2'     => 'Ripe',
+            'plot3'     => 'Overripe',
+            'plot4'     => 'Empty Bunch',
+            'plot5'     => 'Abnormal',
+            'data'      => $LogPerhari
+        ];
 
         $LogMingguanView = [
             'plot1'     => 'Unripe',

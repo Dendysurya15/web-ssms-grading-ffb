@@ -34,12 +34,12 @@
                         </div>
                         <div class="card-body">
 
-                            @if ($LogPerHariView['data'] != '')
+                            {{-- @if ($LogPerHariView['data'] != '') --}}
                             <div class="chart" id="logHariini">
                             </div>
-                            @else
+                            {{-- @else
                             Tidak ada data dalam 24 jam terakhir
-                            @endif
+                            @endif --}}
 
                         </div><!-- /.card-body -->
                     </div><!-- Curah Hujan -->
