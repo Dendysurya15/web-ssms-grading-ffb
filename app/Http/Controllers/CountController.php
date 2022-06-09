@@ -144,14 +144,14 @@ class CountController extends Controller
         $arrLogPerhari = array();
         $dataArr = array();
         $arrJam = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00'];
-        for ($i = 0; $i < 24; $i++) {
-            $dataArr[$i]['timestamp'] = $arrJam[$i];
-            $dataArr[$i]['harianUnripe'] = 0;
-            $dataArr[$i]['harianRipe'] = 0;
-            $dataArr[$i]['harianOverripe'] = 0;
-            $dataArr[$i]['harianEmptyBunch'] = 0;
-            $dataArr[$i]['harianAbnormal'] = 0;
-        }
+        // for ($i = 0; $i < 24; $i++) {
+        //     $dataArr[$i]['timestamp'] = $arrJam[$i];
+        //     $dataArr[$i]['harianUnripe'] = 0;
+        //     $dataArr[$i]['harianRipe'] = 0;
+        //     $dataArr[$i]['harianOverripe'] = 0;
+        //     $dataArr[$i]['harianEmptyBunch'] = 0;
+        //     $dataArr[$i]['harianAbnormal'] = 0;
+        // }
 
         // dd($dataArr);
         $LogPerhari = '';
@@ -203,18 +203,20 @@ class CountController extends Controller
         $convert->add(new DateInterval('PT7H'));
 
         // dd($convert);
-        $to = $convert->format('Y-m-d H:i:s');
+        $from = $convert->format('Y-m-d H:i:s');
         // dd($to);
-        $dateFrom = Carbon::parse($to)->subDays();
+        $dateTo = Carbon::parse($from)->addDays();
 
         // $dateFrom->add(new DateInterval('PT0H'));
-        // dd($dateFrom);
-        $dateFrom = $dateFrom->format('Y-m-d H:i:s');
+        // dd($dateTo);
+        $dateTo = $dateTo->format('Y-m-d H:i:s');
 
-        $from = date($dateFrom);
+        $to = date($dateTo);
         // $prctgeAll = '';
 
-        $to = $convert->format('Y-m-d H:i:s');
+        // dd($to);
+
+        // $to = $convert->format('Y-m-d H:i:s');
         // dd($to);
         $logHariini      = '';
         $logHariini = DB::table('log')
@@ -242,10 +244,6 @@ class CountController extends Controller
             ->orderBy('log.timestamp')
             ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', Carbon::now()->format('Y-m-d'))
             ->get();
-
-
-
-        // dd(count($arrJam));
 
         if ($allLog->first() != null) {
             $allLogJson = json_decode($allLog, true);
@@ -279,6 +277,7 @@ class CountController extends Controller
         // dd($dataArr);
         // $dataArr = array();
         $increment = 0;
+        // dd($logHariini);
         // dd(count($logHariini));
         if ($logHariini->first() != null) {
             foreach ($logHariini as $inc =>  $value) {
@@ -293,11 +292,8 @@ class CountController extends Controller
                     $sumOverripe += $data->overripe;
                     $sumEmptyBunch += $data->empty_bunch;
                     $sumAbnormal += $data->abnormal;
-                    if ($increment == 24) {
-                        $jam = '06:59';
-                    } else {
-                        $jam = date('H', strtotime($data->timestamp)) . ':00';
-                    }
+
+                    $jam = date('H', strtotime($data->timestamp)) . ':00';
                 }
 
                 $dataArr[$increment]['timestamp'] = $jam;
@@ -312,14 +308,26 @@ class CountController extends Controller
             }
         };
 
+        // dd($dataArr);
+        // dd($arrJam[1] == $dataArr[0]['timestamp']);
         for ($i = 0; $i < 24; $i++) {
-
             $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
-            $arrLogPerhari[$i]['harianUnripe'] = $dataArr[$i]['harianUnripe'];
-            $arrLogPerhari[$i]['harianRipe'] = $dataArr[$i]['harianRipe'];
-            $arrLogPerhari[$i]['harianOverripe'] = $dataArr[$i]['harianOverripe'];
-            $arrLogPerhari[$i]['harianEmptyBunch'] = $dataArr[$i]['harianEmptyBunch'];
-            $arrLogPerhari[$i]['harianAbnormal'] = $dataArr[$i]['harianAbnormal'];
+            $arrLogPerhari[$i]['harianUnripe'] = 0;
+            $arrLogPerhari[$i]['harianRipe'] = 0;
+            $arrLogPerhari[$i]['harianOverripe'] = 0;
+            $arrLogPerhari[$i]['harianEmptyBunch'] = 0;
+            $arrLogPerhari[$i]['harianAbnormal'] = 0;
+            for ($j = 0; $j < count($dataArr); $j++) {
+                if ($arrJam[$i] == $dataArr[$j]['timestamp']) {
+                    $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
+                    $arrLogPerhari[$i]['harianUnripe'] = $dataArr[$j]['harianUnripe'];
+                    $arrLogPerhari[$i]['harianRipe'] = $dataArr[$j]['harianRipe'];
+                    $arrLogPerhari[$i]['harianOverripe'] = $dataArr[$j]['harianOverripe'];
+                    $arrLogPerhari[$i]['harianEmptyBunch'] = $dataArr[$j]['harianEmptyBunch'];
+                    $arrLogPerhari[$i]['harianAbnormal'] = $dataArr[$j]['harianAbnormal'];
+                }
+            }
+            // }
         }
         // sort($arrLogPerhari);
         // dd($arrLogPerhari);
@@ -527,14 +535,14 @@ class CountController extends Controller
         $arrLogPerhari = array();
         $dataArr = array();
         $arrJam = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00'];
-        for ($i = 0; $i < 24; $i++) {
-            $dataArr[$i]['timestamp'] = $arrJam[$i];
-            $dataArr[$i]['harianUnripe'] = 0;
-            $dataArr[$i]['harianRipe'] = 0;
-            $dataArr[$i]['harianOverripe'] = 0;
-            $dataArr[$i]['harianEmptyBunch'] = 0;
-            $dataArr[$i]['harianAbnormal'] = 0;
-        }
+        // for ($i = 0; $i < 24; $i++) {
+        //     $dataArr[$i]['timestamp'] = $arrJam[$i];
+        //     $dataArr[$i]['harianUnripe'] = 0;
+        //     $dataArr[$i]['harianRipe'] = 0;
+        //     $dataArr[$i]['harianOverripe'] = 0;
+        //     $dataArr[$i]['harianEmptyBunch'] = 0;
+        //     $dataArr[$i]['harianAbnormal'] = 0;
+        // }
 
         // dd($dataArr);
         $LogPerhari = '';
@@ -549,18 +557,23 @@ class CountController extends Controller
         $convert->add(new DateInterval('PT7H'));
 
         // dd($convert);
-        $to = $convert->format('Y-m-d H:i:s');
+        // $to = $convert->format('Y-m-d H:i:s');
         // dd($to);
-        $dateFrom = Carbon::parse($to)->subDays();
+        // $dateFrom = Carbon::parse($to)->subDays();
+
+        $from = $convert->format('Y-m-d H:i:s');
+        // dd($to);
+        $dateTo = Carbon::parse($from)->addDays();
 
         // $dateFrom->add(new DateInterval('PT0H'));
         // dd($dateFrom);
-        $dateFrom = $dateFrom->format('Y-m-d H:i:s');
-
-        $from = date($dateFrom);
+        $dateTo = $dateTo->format('Y-m-d H:i:s');
+        // $dateFrom = $dateFrom->format('Y-m-d H:i:s');
+        $to = date($dateTo);
+        // $from = date($dateFrom);
         // $prctgeAll = '';
 
-        $to = $convert->format('Y-m-d H:i:s');
+        // $to = $convert->format('Y-m-d H:i:s');
         // dd($to);
         $logHariini      = '';
         $logHariini = DB::table('log')
@@ -585,11 +598,8 @@ class CountController extends Controller
                     $sumOverripe += $data->overripe;
                     $sumEmptyBunch += $data->empty_bunch;
                     $sumAbnormal += $data->abnormal;
-                    if ($increment == 24) {
-                        $jam = '06:59';
-                    } else {
-                        $jam = date('H', strtotime($data->timestamp)) . ':00';
-                    }
+
+                    $jam = date('H', strtotime($data->timestamp)) . ':00';
                 }
 
                 $dataArr[$increment]['timestamp'] = $jam;
@@ -604,14 +614,24 @@ class CountController extends Controller
             }
         };
 
-        for ($i = 0; $i < 24; $i++) {
 
+        for ($i = 0; $i < 24; $i++) {
             $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
-            $arrLogPerhari[$i]['harianUnripe'] = $dataArr[$i]['harianUnripe'];
-            $arrLogPerhari[$i]['harianRipe'] = $dataArr[$i]['harianRipe'];
-            $arrLogPerhari[$i]['harianOverripe'] = $dataArr[$i]['harianOverripe'];
-            $arrLogPerhari[$i]['harianEmptyBunch'] = $dataArr[$i]['harianEmptyBunch'];
-            $arrLogPerhari[$i]['harianAbnormal'] = $dataArr[$i]['harianAbnormal'];
+            $arrLogPerhari[$i]['harianUnripe'] = 0;
+            $arrLogPerhari[$i]['harianRipe'] = 0;
+            $arrLogPerhari[$i]['harianOverripe'] = 0;
+            $arrLogPerhari[$i]['harianEmptyBunch'] = 0;
+            $arrLogPerhari[$i]['harianAbnormal'] = 0;
+            for ($j = 0; $j < count($dataArr); $j++) {
+                if ($arrJam[$i] == $dataArr[$j]['timestamp']) {
+                    $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
+                    $arrLogPerhari[$i]['harianUnripe'] = $dataArr[$j]['harianUnripe'];
+                    $arrLogPerhari[$i]['harianRipe'] = $dataArr[$j]['harianRipe'];
+                    $arrLogPerhari[$i]['harianOverripe'] = $dataArr[$j]['harianOverripe'];
+                    $arrLogPerhari[$i]['harianEmptyBunch'] = $dataArr[$j]['harianEmptyBunch'];
+                    $arrLogPerhari[$i]['harianAbnormal'] = $dataArr[$j]['harianAbnormal'];
+                }
+            }
         }
         // sort($arrLogPerhari);
         // dd($arrLogPerhari);
@@ -813,7 +833,6 @@ class CountController extends Controller
             ->orderBy('log.timestamp', 'DESC')
             ->get()
             ->groupBy('hari');
-
 
         // dd($dataLog[$hari][0]->id);
         $key = 1;

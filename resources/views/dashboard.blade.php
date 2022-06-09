@@ -128,7 +128,7 @@
                     <div class="card-header" style="background-color: #013C5E;color:white">
                         <div class=" card-title">
                             <i class="fas fa-chart-line pr-2"></i>Grafik Realtime Grading di
-                            Conveyor PKS SKM hari ini
+                            Conveyor PKS SKM dalam 24 jam terakhir
                             {{$dateToday}} {{$jamNow}}
                         </div>
                         <div class="float-right">
