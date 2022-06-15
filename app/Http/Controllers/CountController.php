@@ -155,49 +155,49 @@ class CountController extends Controller
 
         // dd($dataArr);
         $LogPerhari = '';
-        $totalAll = 0;
         $totalUnripe = 0;
         $totalRipe = 0;
         $totalOverripe = 0;
         $totalEmptyBunch = 0;
         $totalAbnormal = 0;
+        $persentaseMasingKategori = array(0, 0, 0, 0, 0);
+        $totalMasingKategori = array(0, 0, 0, 0, 0);
         $prctgeAll = array(
             array(
                 "kategori" => 'Unripe',
                 "stnd_mutu" => '0%',
                 "total" => 0,
-                "persentase" => 0,
             ),
             array(
                 "kategori" => 'Ripe',
                 "stnd_mutu" => '90%',
                 "total" => 0,
-                "persentase" => 0,
+
             ),
             array(
                 "kategori" => 'Overripe',
                 "stnd_mutu" => '<5%',
                 "total" => 0,
-                "persentase" => 0,
+
             ),
             array(
                 "kategori" => 'Empty Bunch',
                 "stnd_mutu" => '0%',
                 "total" => 0,
-                "persentase" => 0,
+
             ),
             array(
                 "kategori" => 'Abnormal',
                 "stnd_mutu" => '<5%',
                 "total" => 0,
-                "persentase" => 0,
+
             ),
         );
         // dd($prctgeAll);
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
         $standar_mutu = array('0%', '>90%', '<5%', '0%', '<5%');
 
-        $convert = new DateTime(Carbon::now()->toDateString());
+        $convert = new DateTime("2022-04-30");
         // 
         // dd($convert);
         $convert->add(new DateInterval('PT7H'));
@@ -239,33 +239,35 @@ class CountController extends Controller
         // dd($logHariini);
 
 
-        $allLog = DB::table('log')
-            ->select('log.*', 'log.timestamp')
-            ->orderBy('log.timestamp')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', Carbon::now()->format('Y-m-d'))
-            ->get();
+        // $allLog = DB::table('log')
+        //     ->select('log.*', 'log.timestamp')
+        //     ->orderBy('log.timestamp')
+        //     ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-30")
+        //     ->get();
 
-        if ($allLog->first() != null) {
-            $allLogJson = json_decode($allLog, true);
 
-            foreach ($allLogJson as $index => $data) {
-                $totalUnripe += $data['unripe'];
-                $totalRipe += $data['ripe'];
-                $totalOverripe += $data['overripe'];
-                $totalEmptyBunch += $data['empty_bunch'];
-                $totalAbnormal += $data['abnormal'];
-            }
-            $totalAll = $totalUnripe + $totalRipe + $totalOverripe + $totalEmptyBunch + $totalAbnormal;
-            $arrAllLog = array($totalUnripe, $totalRipe, $totalOverripe, $totalEmptyBunch, $totalAbnormal);
+        // // dd($allLog);
+        // if ($allLog->first() != null) {
+        //     $allLogJson = json_decode($allLog, true);
 
-            foreach ($arrAllLog as $index => $data) {
-                $hasil = ($data / $totalAll) * 100;
-                $prctgeAll[$index]['kategori'] = $nama_kategori_tbs[$index];
-                $prctgeAll[$index]['stnd_mutu'] = $standar_mutu[$index];
-                $prctgeAll[$index]['total'] = number_format($data, 0, ".", ".");
-                $prctgeAll[$index]['persentase'] = round($hasil, 2);
-            }
-        }
+        //     foreach ($allLogJson as $index => $data) {
+        //         $totalUnripe += $data['unripe'];
+        //         $totalRipe += $data['ripe'];
+        //         $totalOverripe += $data['overripe'];
+        //         $totalEmptyBunch += $data['empty_bunch'];
+        //         $totalAbnormal += $data['abnormal'];
+        //     }
+        //     $totalAll = $totalUnripe + $totalRipe + $totalOverripe + $totalEmptyBunch + $totalAbnormal;
+        //     $arrAllLog = array($totalUnripe, $totalRipe, $totalOverripe, $totalEmptyBunch, $totalAbnormal);
+
+        //     foreach ($arrAllLog as $index => $data) {
+        //         $hasil = ($data / $totalAll) * 100;
+        //         $prctgeAll[$index]['kategori'] = $nama_kategori_tbs[$index];
+        //         $prctgeAll[$index]['stnd_mutu'] = $standar_mutu[$index];
+        //         $prctgeAll[$index]['total'] = number_format($data, 0, ".", ".");
+        //         $prctgeAll[$index]['persentase'] = round($hasil, 2);
+        //     }
+        // }
 
         // dd($logHariini);
         // dd($logHariini->first() != null);
@@ -279,6 +281,12 @@ class CountController extends Controller
         $increment = 0;
         // dd($logHariini);
         // dd(count($logHariini));
+        $totalAll = 0;
+        $totalUnripe = 0;
+        $totalRipe = 0;
+        $totalOverripe = 0;
+        $totalEmptyBunch = 0;
+        $totalAbnormal = 0;
         if ($logHariini->first() != null) {
             foreach ($logHariini as $inc =>  $value) {
                 $sumUnripe = 0;
@@ -296,6 +304,7 @@ class CountController extends Controller
                     $jam = date('H', strtotime($data->timestamp)) . ':00';
                 }
 
+                // dd($sumUnripe);
                 $dataArr[$increment]['timestamp'] = $jam;
                 $dataArr[$increment]['timestamp_full'] = $data->timestamp;
                 $dataArr[$increment]['harianUnripe'] = $sumUnripe;
@@ -304,12 +313,28 @@ class CountController extends Controller
                 $dataArr[$increment]['harianEmptyBunch'] = $sumEmptyBunch;
                 $dataArr[$increment]['harianAbnormal'] = $sumAbnormal;
 
+                $totalUnripe += $sumUnripe;
+                $totalRipe += $sumRipe;
+                $totalOverripe += $sumOverripe;
+                $totalEmptyBunch += $sumEmptyBunch;
+                $totalAbnormal += $sumAbnormal;
+                $totalAll += $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
                 $increment++;
             }
+            $totalMasingKategori = [$totalUnripe, $totalRipe, $totalOverripe, $totalEmptyBunch, $totalAbnormal];
+            $persentaseMasingKategori = [($totalUnripe / $totalAll) * 100, ($totalRipe / $totalAll) * 100, ($totalOverripe / $totalAll) * 100, ($totalEmptyBunch / $totalAll) * 100, ($totalAbnormal / $totalAll) * 100];
         };
 
-        // dd($dataArr);
-        // dd($arrJam[1] == $dataArr[0]['timestamp']);
+
+
+        for ($i = 0; $i < 5; $i++) {
+            $prctgeAll[$i]['kategori'] = $nama_kategori_tbs[$i];
+            $prctgeAll[$i]['stnd_mutu'] = $standar_mutu[$i];
+            $prctgeAll[$i]['total'] =  $totalMasingKategori[$i];
+            $prctgeAll[$i]['persentase'] = round($persentaseMasingKategori[$i], 2);
+            $prctgeAll[$i]['totalFormat'] =  number_format($totalMasingKategori[$i], 0, ".", ".");
+        }
+
         for ($i = 0; $i < 24; $i++) {
             $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
             $arrLogPerhari[$i]['harianUnripe'] = 0;
@@ -327,6 +352,7 @@ class CountController extends Controller
                     $arrLogPerhari[$i]['harianAbnormal'] = number_format($dataArr[$j]['harianAbnormal'], 0, ".", ".");
                 }
             }
+            // $totalAll = 
         }
         // sort($arrLogPerhari);
         // dd($arrLogPerhari);

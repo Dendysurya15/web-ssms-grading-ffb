@@ -90,7 +90,7 @@
                         </div>
                         <div class="card-body">
                             <div>
-                                <span style="font-size: 50px"> {{$item['total']}}</span> Buah
+                                <span style="font-size: 50px"> {{$item['totalFormat']}}</span> Buah
                             </div>
                             <div style="font-size: 30px">
                                 ({{$item['persentase']}}%)
@@ -108,7 +108,7 @@
                     </div>
                     <div class="card-body">
                         <div>
-                            <span style="font-size: 50px"> {{$item['total']}}</span> Buah
+                            <span style="font-size: 50px"> {{$item['totalFormat']}}</span> Buah
                         </div>
                         <div style="font-size: 30px">
                             ({{$item['persentase']}}%)
