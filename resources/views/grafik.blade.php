@@ -1,4 +1,9 @@
 @include('layout.header')
+<style>
+    .google-visualization-tooltip-item {
+        white-space: nowrap;
+    }
+</style>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -94,12 +99,12 @@
 
                                 <div class="col">
 
-                                    @if ($LogMingguanView['data'] != '')
+                                    {{-- @if ($LogMingguanView['data'] != '') --}}
                                     <div id="logMingguan">
                                     </div>
-                                    @else
-                                    Tidak ada data satu minggu ini
-                                    @endif
+                                    {{-- @else --}}
+                                    {{-- Tidak ada data satu minggu ini --}}
+                                    {{-- @endif --}}
                                 </div>
 
                             </div>
@@ -135,27 +140,33 @@
   });
   google.charts.setOnLoadCallback(drawChart);
 
-  function drawChart() {  
-     //perminggu
-     var plot_perhari_unripe = '<?php echo $LogMingguanView['plot1']; ?>';
+  function drawChart() {
+    //perminggu
+    var plot_perhari_unripe = '<?php echo $LogMingguanView['plot1']; ?>';
     var plot_perhari_ripe = '<?php echo $LogMingguanView['plot2']; ?>';
     var plot_perhari_overripe = '<?php echo $LogMingguanView['plot3']; ?>';
     var plot_perhari_emptybunch = '<?php echo $LogMingguanView['plot4']; ?>';
     var plot_perhari_abnormal = '<?php echo $LogMingguanView['plot5']; ?>';
 
-    var dataPerhari = new google.visualization.DataTable();
-    dataPerhari.addColumn('string', 'Name');
-    dataPerhari.addColumn('number', plot_perhari_unripe);
-    dataPerhari.addColumn('number', plot_perhari_ripe);
-    dataPerhari.addColumn('number', plot_perhari_overripe);
-    dataPerhari.addColumn('number', plot_perhari_emptybunch);
-    dataPerhari.addColumn('number', plot_perhari_abnormal);
-    dataPerhari.addRows([
-      <?php echo $LogMingguanView['data']; ?>
-    ]);
+        var dataPerhari = new google.visualization.DataTable();
+        dataPerhari.addColumn('string', 'Name');
+        dataPerhari.addColumn('number', plot_perhari_unripe);
+        dataPerhari.addColumn({type: 'string', role: 'tooltip'});
+        dataPerhari.addColumn('number', plot_perhari_ripe);
+        dataPerhari.addColumn({type: 'string', role: 'tooltip'});
+        dataPerhari.addColumn('number', plot_perhari_overripe);
+        dataPerhari.addColumn({type: 'string', role: 'tooltip'});
+        dataPerhari.addColumn('number', plot_perhari_emptybunch);
+        dataPerhari.addColumn({type: 'string', role: 'tooltip'});
+        dataPerhari.addColumn('number', plot_perhari_abnormal);
+        dataPerhari.addColumn({type: 'string', role: 'tooltip'});
+        // A column for custom tooltip content
+        dataPerhari.addRows([
+            <?php echo $LogMingguanView['data']; ?>
+        ]);
 
-    var optionsLogPerhari = {
-        chartArea: {},
+        var options = {
+            chartArea: {},
         theme: 'material',
         colors:['#001E3C', '#AB221D','#FF9800','#BE8C64','#4CAF50'],
         legend: { position: 'top',
@@ -178,12 +189,11 @@
         isStacked:true,
           
         // height:400,
-    };       
-   
-    var logHarianView = new google.visualization.ColumnChart(document.getElementById('logMingguan'));
-    logHarianView.draw(dataPerhari,optionsLogPerhari); 
-    
-    var plot_unripe = '<?php echo  $LogPerHariView['plot1']; ?>';
+    };  
+        var chart = new google.visualization.ColumnChart(document.getElementById('logMingguan'));
+        chart.draw(dataPerhari, options);
+
+        var plot_unripe = '<?php echo  $LogPerHariView['plot1']; ?>';
     var plot_ripe = '<?php echo   $LogPerHariView['plot2']; ?>';
     var plot_overripe = '<?php echo   $LogPerHariView['plot3']; ?>';
     var plot_empty_bunch = '<?php echo  $LogPerHariView['plot4']; ?>';
@@ -225,8 +235,7 @@
 
     var arrLogHariini = new google.visualization.LineChart(document.getElementById('logHariini'));
     arrLogHariini.draw(dataLogHariini,optionsLogHariIIni );
-
-}
+      }
   $(window).resize(function() {
     drawStuff();
   });

@@ -197,7 +197,7 @@ class CountController extends Controller
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
         $standar_mutu = array('0%', '>90%', '<5%', '0%', '<5%');
 
-        $convert = new DateTime("2022-04-30");
+        $convert = new DateTime("2022-04-21");
         // 
         // dd($convert);
         $convert->add(new DateInterval('PT7H'));
@@ -325,6 +325,7 @@ class CountController extends Controller
             $persentaseMasingKategori = [($totalUnripe / $totalAll) * 100, ($totalRipe / $totalAll) * 100, ($totalOverripe / $totalAll) * 100, ($totalEmptyBunch / $totalAll) * 100, ($totalAbnormal / $totalAll) * 100];
         };
 
+        // dd($dataArr);
 
 
         for ($i = 0; $i < 5; $i++) {
@@ -334,6 +335,8 @@ class CountController extends Controller
             $prctgeAll[$i]['persentase'] = round($persentaseMasingKategori[$i], 2);
             $prctgeAll[$i]['totalFormat'] =  number_format($totalMasingKategori[$i], 0, ".", ".");
         }
+
+        // dd($prctgeAll);
 
         for ($i = 0; $i < 24; $i++) {
             $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
@@ -345,11 +348,11 @@ class CountController extends Controller
             for ($j = 0; $j < count($dataArr); $j++) {
                 if ($arrJam[$i] == $dataArr[$j]['timestamp']) {
                     $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
-                    $arrLogPerhari[$i]['harianUnripe'] = number_format($dataArr[$j]['harianUnripe'], 0, ".", ".");
-                    $arrLogPerhari[$i]['harianRipe'] = number_format($dataArr[$j]['harianRipe'], 0, ".", ".");
-                    $arrLogPerhari[$i]['harianOverripe'] = number_format($dataArr[$j]['harianOverripe'], 0, ".", ".");
-                    $arrLogPerhari[$i]['harianEmptyBunch'] =  number_format($dataArr[$j]['harianEmptyBunch'], 0, ".", ".");
-                    $arrLogPerhari[$i]['harianAbnormal'] = number_format($dataArr[$j]['harianAbnormal'], 0, ".", ".");
+                    $arrLogPerhari[$i]['harianUnripe'] = $dataArr[$j]['harianUnripe'];
+                    $arrLogPerhari[$i]['harianRipe'] = $dataArr[$j]['harianRipe'];
+                    $arrLogPerhari[$i]['harianOverripe'] = $dataArr[$j]['harianOverripe'];
+                    $arrLogPerhari[$i]['harianEmptyBunch'] =  $dataArr[$j]['harianEmptyBunch'];
+                    $arrLogPerhari[$i]['harianAbnormal'] = $dataArr[$j]['harianAbnormal'];
                 }
             }
             // $totalAll = 
@@ -696,7 +699,7 @@ class CountController extends Controller
         $logMingguan = DB::table('log')
             ->select('log.*')
             ->orderBy('log.timestamp', 'desc')
-            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-27")
+            ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=',  Carbon::now()->format('Y-m-d'))
             ->first();
 
 
@@ -779,11 +782,11 @@ class CountController extends Controller
 
                 $jam        = $value['hari'];
                 $LogPerhari .=
-                    "[{v:'" . $jam . "\\n " . number_format(round($value['total'], 2), 0, ".", ".") . " buah'}, {v:" . $value['unripe'] . ", f:'" . $value['unripe'] . " (" . $value['prctgUn'] . "%)'},
-                    {v:" .  $value['ripe'] . ", f:'" . $value['ripe'] . " (" . $value['prctgRi'] . "%)'},
-                    {v:" . $value['overripe'] . ", f:'" . $value['overripe'] . " (" . $value['prctgOv'] . "%)'},   
-                    {v:" . $value['empty_bunch'] . ", f:'" . $value['empty_bunch'] . " (" . $value['prctgEb'] . "%)'},     
-                    {v:" . $value['abnormal'] . ", f:'" . $value['abnormal'] . " (" . $value['prctgAb'] . "%)'}                             
+                    "[{v:'" . $jam . "\\n " . number_format(round($value['total'], 2), 0, ".", ".") . " buah'}, {v:" . $value['unripe'] . ", f:'" . $value['unripe'] . " (" . $value['prctgUn'] . "%)'},'" . $jam . "\\n Unripe :" . number_format(round($value['unripe'], 2), 0, ".", ".") . " buah (" . $value['prctgUn'] . "%)',
+                    {v:" .  $value['ripe'] . ", f:'" . $value['ripe'] . " (" . $value['prctgRi'] . "%)'},'" . $jam . " \\n Ripe:  " . number_format(round($value['ripe'], 2), 0, ".", ".")  . " buah (" . $value['prctgRi'] . "%)',
+                    {v:" . $value['overripe'] . ", f:'" . $value['overripe'] . " (" . $value['prctgOv'] . "%)'},   '" . $jam . "\\n Overripe:  " . number_format(round($value['overripe'], 2), 0, ".", ".") . " buah (" . $value['prctgOv'] . "%)',
+                    {v:" . $value['empty_bunch'] . ", f:'" . $value['empty_bunch'] . " (" . $value['prctgEb'] . "%)'},     '" . $jam . "\\n Empty Bunch:  " . number_format(round($value['empty_bunch'], 2), 0, ".", ".") . " buah(" . $value['prctgEb'] . "%)',
+                    {v:" . $value['abnormal'] . ", f:'" . $value['abnormal'] . " (" . $value['prctgAb'] . "%)'},  '" . $jam . "\\n Abnormal:  " . number_format(round($value['abnormal'], 2), 0, ".", ".") . " buah (" . $value['prctgAb'] . "%)',
                 ],";
             }
 
