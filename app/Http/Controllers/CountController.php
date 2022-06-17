@@ -130,9 +130,14 @@ class CountController extends Controller
             ->make(true);
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        $dateToday = Carbon::now()->format('d-m-Y');
+        $dateToday = Carbon::now()->format('Y-m-d');
+        $tglData = $request->has('tgl') ? $request->input('tgl') : $defaultHari = $dateToday;
+        // $tglData = new DateTime($tglDataInput);
+        // $tglData =  $tglData->format('Y-m-d');
+        // dd($tglData);
+
         $arrLogHariini = [
             'plot1'     => 'Unripe',
             'plot2'     => 'Ripe',
@@ -193,13 +198,20 @@ class CountController extends Controller
 
             ),
         );
+
+        // $test = array("");
+        // $getDateToday = new DateTime(Carbon::now()->toDateString());
+        // $week = [];
+        // for ($i = 0; $i <= 7; $i++) {
+        //     $week[] = Carbon::parse($getDateToday)->subDays($i)->format('D d-m-Y'); //push the current day and plus the mount of $i 
+        // }
+
         // dd($prctgeAll);
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
         $standar_mutu = array('0%', '>90%', '<5%', '0%', '<5%');
 
-        $convert = new DateTime("2022-04-21");
-        // 
-        // dd($convert);
+        $convert = new DateTime($tglData);
+
         $convert->add(new DateInterval('PT7H'));
 
         // dd($convert);
@@ -212,12 +224,7 @@ class CountController extends Controller
         $dateTo = $dateTo->format('Y-m-d H:i:s');
 
         $to = date($dateTo);
-        // $prctgeAll = '';
 
-        // dd($to);
-
-        // $to = $convert->format('Y-m-d H:i:s');
-        // dd($to);
         $logHariini      = '';
         $logHariini = DB::table('log')
             ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
@@ -453,10 +460,13 @@ class CountController extends Controller
 
         // dd($arrLogHariini);
         // dd($prctgeAll);
+        $getDate = Carbon::parse($tglData)->locale('id');
+        $getDate->settings(['formatFunction' => 'translatedFormat']);
+        // dd($getDate);
         return view('dashboard', [
             'arrLogHariini' => $arrLogHariini,
             'prctgeAll' => $prctgeAll,
-            'dateToday' => $dateToday,
+            'dateToday' => $getDate->format('l, j F Y'),
             'totalAll' => number_format($totalAll, 0, ".", "."),
             'jamNow' => Carbon::now()->format('H:i:s'),
         ]);

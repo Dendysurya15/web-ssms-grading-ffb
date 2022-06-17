@@ -1,9 +1,43 @@
 @include('layout.header')
-{{-- <style>
-    .content {
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+<style>
+    /* .content { */
+    /* font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; */
+    /* font-size: 15px; */
+    /* } */
+
+    @media (max-width: 576px) {
+        .totalFormat {
+            /* background-color: lightblue; */
+            font-size: 18px;
+        }
+
+        .stnd_mutu {
+            font-size: 10px;
+        }
     }
-</style> --}}
+
+    .piechartClass {
+        background: white;
+        border-radius: 5px;
+        /* border: 1px solid red; */
+    }
+
+    @media only screen and (min-width: 992px) {
+        ... .stnd_mutu {
+            font-size: 14px;
+        }
+
+        .totalFormat {
+            font-size: 50px;
+        }
+
+        .persentase {
+            font-size: 30px
+        }
+
+    }
+</style>
+
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
@@ -11,9 +45,24 @@
 
     <!-- Main content -->
     <section class="content">
+        <div class="col-12 col-lg-3">
+            Pilih Tanggal
+            <form class="" action="{{ route('dashboard') }}" method="get">
+                <input class="form-control" type="date" name="tgl" onchange="this.form.submit()">
+            </form>
+        </div>
         <div class="container-fluid pt-2 pl-3 pr-3">
             <div class="row">
-                <div class="col-12 col-lg-4 p-5 " style="background-color: white;border-radius: 5px">
+                {{-- <div class="col-12">
+                    test
+                </div>
+                <div class="col-12">
+                    test
+                </div>
+                <div class="col-12">
+                    test
+                </div> --}}
+                <div class="col-12 col-lg-4 p-5  mb-2" style="background-color: white;border-radius: 5px">
                     <h2 style="color:#013C5E;font-weight: 550">Dashboard Grading TBS
                     </h2>
                     <p style="color:#013C5E;">Portal website ini digunakan untuk memonitoring data dari proses grading
@@ -40,24 +89,24 @@
                     </div> --}}
 
                 </div>
-                <div class="col-12 col-lg-4">
-
+                <div class="col-12 col-lg-4 mb-2 piechartClass" id="boxPiechart">
                     <div style="">
                         <div id="piechart">
                         </div>
                     </div>
-
                     @if ($prctgeAll != '')
                     <div id="piechart" {{-- style="width: 100%; height: 300px;" --}}>
                     </div>
                     @else
                     Tidak ada data yg dikirim
                     @endif
-
                 </div>
-                <div class=" col-12 col-lg-4" style="background-color:white;border-radius:5px">
-                    <p style="color:#013C5E;font-weight: 550;position: absolute; width: 100%"
-                        class="pt-3 pl-3 pr-3 text-center">Foto
+
+                <div class=" col-12 col-lg-4 mb-2" style="background-color:white;border-radius:5px">
+                    <p class="pt-3 pl-3 pr-3 text-center" style=" color: #013C5E;
+                    font-weight: 550;
+                    position: absolute;
+                    width: 100%">Foto
                         Udara PKS
                         Sungai
                         Kuning Mill
@@ -78,48 +127,53 @@
                 total TBS
                 <span class="font-weight-bold"> {{$totalAll}}</span> buah
             </p>
-            <div class="row">
+            {{-- <div id style="border:1px solid red"> --}}
+                <div class="row">
 
-                @foreach ($prctgeAll as $key => $item)
-                @if ($item['persentase'] <= $item['stnd_mutu']) <div class="col">
+                    @foreach ($prctgeAll as $key => $item)
+                    @if ($item['persentase'] <= $item['stnd_mutu']) <div class="col-6 col-xl ">
+                        <div class="card">
+                            <div class="card-header" style="background-color:#013C5E;color:white">
+                                <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
+                                <span class="font-italic stnd_mutu">Standar Mutu :
+                                    <span class="font-weight-normal"> {{$item['stnd_mutu']}} </span> Tbs</span> <br>
+                            </div>
+                            <div class="card-body">
+                                <div>
+                                    <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
+                                </div>
+                                <div class="persentase">
+                                    ({{$item['persentase']}}%)
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                @else
+                <div class="col-6 col-xl">
                     <div class="card">
-                        <div class="card-header" style="background-color:#013C5E;color:white">
+                        <div class="card-header" style="background-color:#C92E26;color:white">
                             <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
-                            <span style="font-size: 14px" class="font-italic">Standar Mutu :
+                            <span class="font-italic stnd_mutu">Standar Mutu :
                                 <span class="font-weight-normal"> {{$item['stnd_mutu']}} </span> Tbs</span> <br>
                         </div>
                         <div class="card-body">
                             <div>
-                                <span style="font-size: 50px"> {{$item['totalFormat']}}</span> Buah
+                                <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
                             </div>
-                            <div style="font-size: 30px">
+                            <div class="persentase">
                                 ({{$item['persentase']}}%)
                             </div>
                         </div>
                     </div>
-            </div>
-            @else
-            <div class="col">
-                <div class="card">
-                    <div class="card-header" style="background-color:#C92E26;color:white">
-                        <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
-                        <span style="font-size: 14px" class="font-italic">Standar Mutu :
-                            <span class="font-weight-normal"> {{$item['stnd_mutu']}} </span> Tbs</span> <br>
-                    </div>
-                    <div class="card-body">
-                        <div>
-                            <span style="font-size: 50px"> {{$item['totalFormat']}}</span> Buah
-                        </div>
-                        <div style="font-size: 30px">
-                            ({{$item['persentase']}}%)
-                        </div>
-                    </div>
                 </div>
-            </div>
-            @endif
+                @endif
 
-            @endforeach
-        </div>
+                @endforeach
+            </div>
+            <hr>
+            {{--
+        </div> --}}
+
         <div class=" row">
 
             <div class="col-md-12">
@@ -197,6 +251,13 @@
 
 
 <script type="text/javascript">
+    width = $(window).width();
+    if(width > 700){
+        // document.querySelector("#boxPiechart").remove('piechart');
+        const div =  document.querySelector('#boxPiechart');
+        div.classList.remove('piechartClass');
+    };
+
     google.charts.load('current', {
     'packages': ['corechart']
   });
