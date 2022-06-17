@@ -11,7 +11,13 @@
 
     <!-- Main content -->
     <section class="content">
-        <div class="container-fluid">
+        <div class="col-12 col-lg-3">
+            Pilih Tanggal Harian
+            <form class="" action="{{ route('grafik') }}" method="get">
+                <input class="form-control" type="date" name="tgl" onchange="this.form.submit()">
+            </form>
+        </div>
+        <div class="container-fluid pt-2">
             <div class="row">
                 <div class="col">
                     <!-- Curah Hujan -->

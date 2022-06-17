@@ -558,9 +558,10 @@ class CountController extends Controller
      * Returns list of projects
      */
 
-    public function grafik()
+    public function grafik(Request $request)
     {
-        $dateToday = Carbon::now()->format('d-m-Y');
+        $dateToday = Carbon::now()->format('Y-m-d');
+        $tglData = $request->has('tgl') ? $request->input('tgl') : $defaultHari = $dateToday;
 
         $LogPerHariView = [
             'plot1'     => 'Unripe',
@@ -589,7 +590,7 @@ class CountController extends Controller
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
         $standar_mutu = array('0%', '>90%', '<5%', '0%', '<5%');
 
-        $convert = new DateTime(Carbon::now()->toDateString());
+        $convert = new DateTime($tglData);
         // 
         // dd($convert);
         $convert->add(new DateInterval('PT7H'));
@@ -812,10 +813,12 @@ class CountController extends Controller
         }
         // dd($LogMingguanView);
         // dd($LogPerHariView);
+        $getDate = Carbon::parse($tglData)->locale('id');
+        $getDate->settings(['formatFunction' => 'translatedFormat']);
         return view('grafik', [
             'LogPerHariView' => $LogPerHariView,
             'LogMingguanView' => $LogMingguanView,
-            'dateToday' => $dateToday,
+            'dateToday' => $getDate->format('l, j F Y'),
             'nama_kategori_tbs' => $nama_kategori_tbs,
         ]);
     }
