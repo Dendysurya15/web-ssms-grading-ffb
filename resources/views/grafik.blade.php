@@ -24,7 +24,8 @@
                     <div class="card card-red">
                         <div class="card-header" style="background-color: #02A452;color:white">
                             <div class=" card-title">
-                                <i class="fas fa-water pr-2"></i>Grading TBS dalam 24 jam terakhir
+                                <i class="fas fa-water pr-2"></i>Grading realtime jumlah janjang masuk PKS Sungai Kuning
+                                hari
                                 {{$dateToday}}
                             </div>
                             <div class="float-right">
@@ -93,6 +94,7 @@
                         <div class="card-header" style="background-color: #02A452;color:white">
                             <div class=" card-title">
                                 <i class="fas fa-water pr-2"></i>Grafik Total Hitung per kategori TBS dalam seminggu
+                                ({{$arrLogMingguan[0]['hari']}} - {{$arrLogMingguan[7]['hari']}} )
                             </div>
                             <div class="float-right">
                                 <div class="list-inline">
@@ -115,11 +117,128 @@
 
                             </div>
                         </div><!-- /.card-body -->
+
+                        <div class="d-flex justify-content-center">
+                            <div class="col-12 col-lg-10">
+                                <p class="text-center font-italic">Rekap Tabel Chart
+                                    ({{$arrLogMingguan[0]['hari']}} - {{$arrLogMingguan[7]['hari']}} ) </p>
+                                <table id="myTable" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col"> </th>
+                                            @foreach ($arrLogMingguan as $item)
+                                            <th scope="col">{{$item['hari']}}</th>
+                                            @endforeach
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td>Unripe</td>
+                                            @foreach ($arrLogMingguan as $item)
+                                            <td>
+                                                @if ($item['unripe'] != 0)
+                                                @php
+                                                echo number_format(round($item['unripe'], 2), 0, ".", ".")
+                                                @endphp
+                                                ({{$item['prctgUn']}}%)
+                                                @else
+                                                0
+                                                @endif
+
+                                            </td>
+                                            @endforeach
+
+                                        </tr>
+                                        <tr>
+                                            <td>Ripe</td>
+                                            @foreach ($arrLogMingguan as $item)
+                                            <td>
+
+                                                @if ($item['ripe'] != 0)
+                                                @php
+                                                echo number_format(round($item['ripe'], 2), 0, ".", ".")
+                                                @endphp
+                                                ({{$item['prctgRi']}}%)
+
+                                                @else
+                                                0
+                                                @endif
+                                            </td>
+
+                                            @endforeach
+                                        </tr>
+                                        <tr>
+                                            <td>Overripe</td>
+                                            @foreach ($arrLogMingguan as $item)
+                                            <td>
+                                                @if ($item['overripe'] != 0)
+                                                @php
+                                                echo number_format(round($item['overripe'], 2), 0, ".", ".")
+                                                @endphp
+                                                ({{$item['prctgOv']}}%)
+                                                @else
+                                                0
+                                                @endif
+                                            </td>
+                                            @endforeach
+                                        </tr>
+                                        <tr>
+                                            <td>Empty Bunch</td>
+                                            @foreach ($arrLogMingguan as $item)
+                                            <td>
+                                                @if ($item['empty_bunch'] != 0)
+                                                @php
+                                                echo number_format(round($item['empty_bunch'], 2), 0, ".", ".")
+                                                @endphp
+                                                ({{$item['prctgEb']}}%)
+                                                @else
+                                                0
+                                                @endif
+                                            </td>
+                                            @endforeach
+                                        </tr>
+                                        <tr>
+                                            <td>Abnormal</td>
+                                            @foreach ($arrLogMingguan as $item)
+                                            <td>
+                                                @if ($item['abnormal'] != 0)
+                                                @php
+                                                echo number_format(round($item['abnormal'], 2), 0, ".", ".")
+                                                @endphp
+                                                ({{$item['prctgAb']}}%)
+                                                @else
+                                                0
+                                                @endif
+                                            </td>
+                                            @endforeach
+                                        </tr>
+                                        <tr class="font-weight-bold">
+                                            <td>Total</td>
+                                            @foreach ($arrLogMingguan as $item)
+                                            <td>
+                                                @php
+                                                echo number_format(round($item['total'], 2), 0, ".", ".")
+                                                @endphp
+                                            </td>
+                                            @endforeach
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <br>
+                                <br>
+                            </div>
+
+                        </div>
                     </div><!-- Curah Hujan -->
 
 
                 </div>
+
             </div>
+
+
             <!-- /.row -->
         </div><!-- /.container-fluid -->
     </section>
@@ -145,6 +264,16 @@
     'packages': ['corechart']
   });
   google.charts.setOnLoadCallback(drawChart);
+
+
+  $(document).ready( function () {
+    $('#myTable').DataTable({
+        'paging':false,
+        "searching": false,
+        "ordering": false,
+        "bInfo": false,
+    });
+} );
 
   function drawChart() {
     //perminggu

@@ -28,7 +28,7 @@
         }
 
         .totalFormat {
-            font-size: 50px;
+            font-size: 40px;
         }
 
         .persentase {
@@ -71,7 +71,7 @@
                         dengan perantara
                         kamera
                         CCTV yang terpasang di conveyor PKS Sungai
-                        Kuning Mill.
+                        Kuning.
                     </p>
 
                     {{-- <div style="color: #013C5E">
@@ -121,22 +121,70 @@
                     </div>
                 </div>
             </div>
-            <hr>
-            <p style="color:#013C5E;font-size: 17px"> Update hasil grading TBS tanggal <span class="font-weight-bold">
-                    {{$dateToday}} </span> pada pukul <span class="font-weight-bold"> {{$jamNow}} wib</span> dengan
-                total TBS
-                <span class="font-weight-bold"> {{$totalAll}}</span> buah
-            </p>
-            {{-- <div id style="border:1px solid red"> --}}
-                <div class="row">
 
-                    @foreach ($prctgeAll as $key => $item)
-                    @if ($item['persentase'] <= $item['stnd_mutu']) <div class="col-6 col-xl ">
+            <div>
+                <hr>
+                <p style="color:#013C5E;font-size: 17px"> Update hasil grading TBS berdasarkan AI pada hari <span
+                        class="font-weight-bold">
+                        {{$dateToday}} </span>
+                    @if (!request()->has('tgl'))
+                    hingga pukul <span class="font-weight-bold"> {{$jamNow}} wib</span>
+                    @endif
+                    dengan
+                    total TBS
+                    <span class="font-weight-bold"> {{$totalAll}}</span> buah
+                </p>
+                @if($prctgeAll[0]['totalAll'] != 0)
+
+                {{-- <div id style="border:1px solid red"> --}}
+                    <div class="row">
+                        @foreach ($prctgeAll as $key => $item)
+                        @if ($item['kategori'] == 'Unripe' && $item['persentase'] <= $item['stnd_mutu']) <div
+                            class="col-6 col-xl ">
+                            <div class="card">
+                                <div class="card-header" style="background-color:#013C5E;color:white">
+                                    <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span>
+                                    <br>
+                                    <span class="font-italic stnd_mutu">Standar Mutu :
+                                        <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
+                                </div>
+                                <div class="card-body">
+                                    <div>
+                                        <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
+                                    </div>
+                                    <div class="persentase">
+                                        ({{$item['persentase']}}%)
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+
+                    @elseif ($item['kategori'] == 'Ripe' && $item['persentase'] >= $item['stnd_mutu'])
+                    <div class="col-6 col-xl ">
                         <div class="card">
                             <div class="card-header" style="background-color:#013C5E;color:white">
                                 <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
                                 <span class="font-italic stnd_mutu">Standar Mutu :
-                                    <span class="font-weight-normal"> {{$item['stnd_mutu']}} </span> Tbs</span> <br>
+                                    <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
+                            </div>
+                            <div class="card-body">
+                                <div>
+                                    <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
+                                </div>
+                                <div class="persentase">
+                                    ({{$item['persentase']}}%)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @elseif ($item['kategori'] == 'Overripe' && $item['persentase'] <=$item['stnd_mutu']) <div
+                        class="col-6 col-xl ">
+                        <div class="card">
+                            <div class="card-header" style="background-color:#013C5E;color:white">
+                                <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
+                                <span class="font-italic stnd_mutu">Standar Mutu :
+                                    <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
                             </div>
                             <div class="card-body">
                                 <div>
@@ -148,13 +196,13 @@
                             </div>
                         </div>
                 </div>
-                @else
-                <div class="col-6 col-xl">
+                @elseif ($item['kategori'] == 'Empty Bunch' && $item['persentase'] <= $item['stnd_mutu']) <div
+                    class="col-6 col-xl ">
                     <div class="card">
-                        <div class="card-header" style="background-color:#C92E26;color:white">
+                        <div class="card-header" style="background-color:#013C5E;color:white">
                             <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
                             <span class="font-italic stnd_mutu">Standar Mutu :
-                                <span class="font-weight-normal"> {{$item['stnd_mutu']}} </span> Tbs</span> <br>
+                                <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
                         </div>
                         <div class="card-body">
                             <div>
@@ -165,67 +213,114 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                @endif
-
-                @endforeach
             </div>
-            <hr>
-            {{--
-        </div> --}}
-
-        <div class=" row">
-
-            <div class="col-md-12">
-                <!-- Curah Hujan -->
+            @elseif ($item['kategori'] == 'Abnormal' && $item['persentase'] <= $item['stnd_mutu']) <div
+                class="col-6 col-xl ">
                 <div class="card">
-                    <div class="card-header" style="background-color: #013C5E;color:white">
-                        <div class=" card-title">
-                            <i class="fas fa-chart-line pr-2"></i>Grafik Realtime Grading di
-                            Conveyor PKS SKM dalam 24 jam terakhir
-                            {{$dateToday}} {{$jamNow}}
-                        </div>
-                        <div class="float-right">
-                            <div class="list-inline">
-                            </div>
-                        </div>
-
+                    <div class="card-header" style="background-color:#013C5E;color:white">
+                        <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
+                        <span class="font-italic stnd_mutu">Standar Mutu :
+                            <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
                     </div>
                     <div class="card-body">
-                        <div class="row">
-
-                            <div class="col">
-                                {{-- @if ($arrLogHariini['data'] != '') --}}
-                                <div id="logHariini" {{-- style="width: 100%; height: 300px;" --}}>
-                                </div>
-                                {{-- @else --}}
-                                {{-- Tidak ada data yg dikirim --}}
-                                {{-- @endif --}}
-                            </div>
-
+                        <div>
+                            <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
                         </div>
-                    </div><!-- /.card-body -->
-                </div><!-- Curah Hujan -->
-
-
-            </div>
-            {{-- <div class="col-md-6">
-                <div class="card">
-                    <div class="row"> --}}
-
-                        {{-- <div class="col"> --}}
-
-                            {{-- @if ($prctgeAll[0] != '') --}}
-
-                            {{-- @else --}}
-                            {{-- Tidak ada data yg dikirim --}}
-                            {{-- @endif --}}
-                            {{-- </div>
-
+                        <div class="persentase">
+                            ({{$item['persentase']}}%)
+                        </div>
                     </div>
                 </div>
-            </div> --}}
         </div>
+        @else
+        <div class="col-6 col-xl">
+            <div class="card">
+                <div class="card-header" style="background-color:#C92E26;color:white">
+                    <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
+                    <span class="font-italic stnd_mutu">Standar Mutu :
+                        <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
+                    </div>
+                    <div class="persentase">
+                        ({{$item['persentase']}}%)
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        @endforeach
+        @else
+        <div class="pb-3">
+            <div class="col-xl" style="background-color:white;border-radius:5px;">
+                <div class="p-5 text-center">
+                    <div style="width: 100%;height:200px;" id="icon-container"></div>
+                    Tidak ada data yang masuk
+                </div>
+            </div>
+        </div>
+        @endif
+</div>
+</div>
+{{--
+</div> --}}
+@if ($prctgeAll[0]['totalAll'] != 0)
+<hr>
+<div class="row">
+
+    <div class="col-md-12">
+        <!-- Curah Hujan -->
+        <div class="card">
+            <div class="card-header" style="background-color: #013C5E;color:white">
+                <div class=" card-title">
+                    <i class="fas fa-chart-line pr-2"></i>Grafik Realtime Jumlah Janjang masuk
+                    PKS SKM pada hari
+                    {{$dateToday}} pukul {{$jamNow}}
+                </div>
+                <div class="float-right">
+                    <div class="list-inline">
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col">
+                        {{-- @if ($arrLogHariini['data'] != '') --}}
+                        <div id="logHariini" {{-- style="width: 100%; height: 300px;" --}}>
+                        </div>
+                        {{-- @else --}}
+                        {{-- Tidak ada data yg dikirim --}}
+                        {{-- @endif --}}
+                    </div>
+
+                </div>
+            </div><!-- /.card-body -->
+        </div><!-- Curah Hujan -->
+
+
+    </div>
+    {{-- <div class="col-md-6">
+        <div class="card">
+            <div class="row"> --}}
+
+                {{-- <div class="col"> --}}
+
+                    {{-- @if ($prctgeAll[0] != '') --}}
+
+                    {{-- @else --}}
+                    {{-- Tidak ada data yg dikirim --}}
+                    {{-- @endif --}}
+                    {{-- </div>
+
+            </div>
+        </div>
+    </div> --}}
+</div>
+@endif
 
 </div>
 <!-- /.row -->
@@ -236,6 +331,10 @@
 </div>
 @include('layout.footer')
 
+{{-- <script src="{{ asset('lottie/93121-no-data-preview.json') }}" type="text/javascript"></script> --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.4/lottie.min.js"
+    integrity="sha512-ilxj730331yM7NbrJAICVJcRmPFErDqQhXJcn+PLbkXdE031JJbcK87Wt4VbAK+YY6/67L+N8p7KdzGoaRjsTg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!-- jQuery -->
 <script src="{{ asset('/public/plugins/jquery/jquery.min.js') }}"></script>
 <!-- Bootstrap 4 -->
@@ -250,7 +349,18 @@
 <script src="{{ asset('/public/js/loader.js') }}"></script>
 
 
-<script type="text/javascript">
+
+<script>
+    var animation = bodymovin.loadAnimation({
+    // animationData: { /* ... */ },
+    container: document.getElementById('icon-container'), // required
+    path: 'https://assets8.lottiefiles.com/private_files/lf30_rrpywigs.json', // required
+    renderer: 'svg', // required
+    loop: true, // optional
+    autoplay: true, // optional
+    name: "Demo Animation", // optional
+  });
+
     width = $(window).width();
     if(width > 700){
         // document.querySelector("#boxPiechart").remove('piechart');
@@ -286,7 +396,7 @@
     var optionsLogHariIIni = {
         chartArea: {},
         theme: 'material',
-        colors:['#001E3C', '#AB221D','#FF9800','#BE8C64','#4CAF50'],
+        colors:[ '#AB221D','#4CAF50','#FF9800','#BE8C64','#001E3C'],
         legend: { position: 'top',
         textStyle: {fontSize: 15}},
         lineWidth: 2,
@@ -318,7 +428,7 @@
         ]);
 
         var options = {
-            title: 'Persebaran TBS yang masuk ke PKS SKM dalam 24 jam terakhir <?php echo  $dateToday; ?>',
+            title: 'Persebaran TBS yang masuk ke PKS Sungai Kuning pada <?php echo  $dateToday; ?>',
             titleTextStyle: {
                 color: "#013C5E",               // color 'red' or '#cc00cc'
                 fontName: "",    // 'Times New Roman'
@@ -327,7 +437,7 @@
                 italic: false                // true of false
             },
           legend: 'bottom',
-          colors:['#001E3C', '#AB221D','#FF9800','#BE8C64','#4CAF50'],
+          colors:[ '#AB221D','#4CAF50','#FF9800','#BE8C64','#001E3C'],
           height:400
         };
 

@@ -23,7 +23,7 @@ Route::get('/', [AuthController::class, 'index'])->name('login');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [CountController::class, 'dashboard'])->name('dashboard');
-    Route::get('/grafik', [CountController::class, 'grafik']);
+    Route::get('/grafik', [CountController::class, 'grafik'])->name('grafik');
     // Route::get('/tabel', [CountControLler::class, 'tabel']);
     Route::get('/tabel', function () {
         return view('tabel');

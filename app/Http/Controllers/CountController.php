@@ -170,35 +170,36 @@ class CountController extends Controller
         $prctgeAll = array(
             array(
                 "kategori" => 'Unripe',
-                "stnd_mutu" => '0%',
+                "stnd_mutu" => 0.5,
                 "total" => 0,
             ),
             array(
                 "kategori" => 'Ripe',
-                "stnd_mutu" => '90%',
+                "stnd_mutu" => 90,
                 "total" => 0,
 
             ),
             array(
                 "kategori" => 'Overripe',
-                "stnd_mutu" => '<5%',
+                "stnd_mutu" => 5.5,
                 "total" => 0,
 
             ),
             array(
                 "kategori" => 'Empty Bunch',
-                "stnd_mutu" => '0%',
+                "stnd_mutu" => 0.5,
                 "total" => 0,
 
             ),
             array(
                 "kategori" => 'Abnormal',
-                "stnd_mutu" => '<5%',
+                "stnd_mutu" => 5.5,
                 "total" => 0,
 
             ),
         );
 
+        // dd($prctgeAll);
         // $test = array("");
         // $getDateToday = new DateTime(Carbon::now()->toDateString());
         // $week = [];
@@ -208,7 +209,8 @@ class CountController extends Controller
 
         // dd($prctgeAll);
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
-        $standar_mutu = array('0%', '>90%', '<5%', '0%', '<5%');
+        $standar_mutu_view = array('0%', '>90%', '<5%', '0%', '<5%');
+        $standar_mutu_real = array(0.5, 90.0, 5.5, 0.5, 5.5);
 
         $convert = new DateTime($tglData);
 
@@ -294,6 +296,7 @@ class CountController extends Controller
         $totalOverripe = 0;
         $totalEmptyBunch = 0;
         $totalAbnormal = 0;
+        $totalAllSampel = 0;
         if ($logHariini->first() != null) {
             foreach ($logHariini as $inc =>  $value) {
                 $sumUnripe = 0;
@@ -329,22 +332,29 @@ class CountController extends Controller
                 $increment++;
             }
             $totalMasingKategori = [$totalUnripe, $totalRipe, $totalOverripe, $totalEmptyBunch, $totalAbnormal];
+            $totalAllSampel = $totalUnripe + $totalRipe + $totalOverripe + $totalEmptyBunch + $totalAbnormal;
             $persentaseMasingKategori = [($totalUnripe / $totalAll) * 100, ($totalRipe / $totalAll) * 100, ($totalOverripe / $totalAll) * 100, ($totalEmptyBunch / $totalAll) * 100, ($totalAbnormal / $totalAll) * 100];
         };
 
         // dd($dataArr);
 
-
+        // dd($totalAllSampel);
         for ($i = 0; $i < 5; $i++) {
             $prctgeAll[$i]['kategori'] = $nama_kategori_tbs[$i];
-            $prctgeAll[$i]['stnd_mutu'] = $standar_mutu[$i];
+            $prctgeAll[$i]['stnd_mutu'] = $standar_mutu_real[$i];
+            $prctgeAll[$i]['stnd_view'] = $standar_mutu_view[$i];
             $prctgeAll[$i]['total'] =  $totalMasingKategori[$i];
+            $prctgeAll[$i]['totalAll'] =  $totalAllSampel;
             $prctgeAll[$i]['persentase'] = round($persentaseMasingKategori[$i], 2);
             $prctgeAll[$i]['totalFormat'] =  number_format($totalMasingKategori[$i], 0, ".", ".");
         }
 
         // dd($prctgeAll);
+        // dd($prctgeAll[1]['persentase'] > $prctgeAll[1]['stnd_mutu']);
+        // dd($prctgeAll[1]['persentase'] >= $prctgeAll[1]['stnd_mutu']);
 
+        // dd($prctgeAll[1]['kategori'] == 'Ripe');
+        // dd($prctgeAll);
         for ($i = 0; $i < 24; $i++) {
             $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
             $arrLogPerhari[$i]['harianUnripe'] = 0;
@@ -463,6 +473,8 @@ class CountController extends Controller
         $getDate = Carbon::parse($tglData)->locale('id');
         $getDate->settings(['formatFunction' => 'translatedFormat']);
         // dd($getDate);
+
+        // dd($prctgeAll[1]);
         return view('dashboard', [
             'arrLogHariini' => $arrLogHariini,
             'prctgeAll' => $prctgeAll,
@@ -653,6 +665,8 @@ class CountController extends Controller
             }
         };
 
+        // dd($dataArr);
+
 
         for ($i = 0; $i < 24; $i++) {
             $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
@@ -715,18 +729,24 @@ class CountController extends Controller
 
 
         // dd($logMingguan);
-        $to = !is_null($logMingguan) ?  $logMingguan->timestamp : Carbon::now()->format('Y-m-d');
-
+        $to = !is_null($logMingguan) ?  $logMingguan->timestamp : "27-04-2022";
         // dd($to);
-        $convert = new DateTime($to);
+        $convert = new DateTime($to . ' 23:59:59');
+        // dd($convert);
         // dd($convert);
         $to = $convert->format('Y-m-d H:i:s');
+        // dd($to);
 
         $dateParse = Carbon::parse($to)->subDays(7);
-        $dateParse = $dateParse->format('Y-m-d H:i:s');
+        $dateParse = $dateParse->format('Y-m-d');
+        // dd($dateParse);
+        $pastWeek = new DateTime($dateParse . ' 00:00:00');
+        // $pastWeek = date($dateParse . ' 00:00:00');
+        // dd($to);
+        $pastWeek = $pastWeek->format('Y-m-d H:i:s');
+        // dd($pastWeek);
 
-        $pastWeek = date($dateParse);
-
+        // dd($to);
         $logMingguan = DB::table('log')
             ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as day_month"))
             ->whereBetween('log.timestamp', [$pastWeek, $to])
@@ -736,10 +756,37 @@ class CountController extends Controller
 
         // dd($logMingguan);
 
+
+        for ($i = 0; $i < 8; $i++) {
+
+            $hari = Carbon::parse($pastWeek)->addDays($i);
+
+            $hari = Carbon::parse($hari)->locale('id');
+            $hari->settings(['formatFunction' => 'translatedFormat']);
+            $tgl = $hari->format('j F');
+            $hari = $hari->format('l, j F');
+
+            $arrLogPerminggu[$i]['hari'] = $tgl;
+            $arrLogPerminggu[$i]['tanggal'] = $hari;
+            $arrLogPerminggu[$i]['unripe'] = 0;
+            $arrLogPerminggu[$i]['ripe'] = 0;
+            $arrLogPerminggu[$i]['overripe'] = 0;
+            $arrLogPerminggu[$i]['empty_bunch'] = 0;
+            $arrLogPerminggu[$i]['abnormal'] = 0;
+            $arrLogPerminggu[$i]['total'] = 0;
+            $arrLogPerminggu[$i]['prctgUn'] = 0;
+            $arrLogPerminggu[$i]['prctgRi'] = 0;
+            $arrLogPerminggu[$i]['prctgOv'] = 0;
+            $arrLogPerminggu[$i]['prctgEb'] = 0;
+            $arrLogPerminggu[$i]['prctgAb'] = 0;
+        }
+
         if (!$logMingguan->isEmpty()) {
             foreach ($logMingguan as $sub_array) {
                 foreach ($sub_array as $data) {
-                    $data->nameDay = Carbon::parse($data->timestamp)->format('D d M');
+                    $hari = Carbon::parse($data->timestamp)->locale('id');
+                    $hari->settings(['formatFunction' => 'translatedFormat']);
+                    $data->nameDay = $hari->format('j F');
                 }
             }
             // dd($logMingguan);
@@ -786,8 +833,73 @@ class CountController extends Controller
             }
 
             // dd($arrLogSeminggu);
+            for ($i = 0; $i < 8; $i++) {
+
+                $hari = Carbon::parse($pastWeek)->addDays($i);
+
+                $hari = Carbon::parse($hari)->locale('id');
+                $hari->settings(['formatFunction' => 'translatedFormat']);
+                $tgl = $hari->format('j F');
+                $hari = $hari->format('l, j F');
+
+
+                // $arrLogPerminggu[$i]['hari'] = $tgl->format('D d M');
+                $arrLogPerminggu[$i]['hari'] = $tgl;
+                $arrLogPerminggu[$i]['tanggal'] = $hari;
+                $arrLogPerminggu[$i]['unripe'] = 0;
+                $arrLogPerminggu[$i]['ripe'] = 0;
+                $arrLogPerminggu[$i]['overripe'] = 0;
+                $arrLogPerminggu[$i]['empty_bunch'] = 0;
+                $arrLogPerminggu[$i]['abnormal'] = 0;
+                $arrLogPerminggu[$i]['total'] = 0;
+                $arrLogPerminggu[$i]['prctgUn'] = 0;
+                $arrLogPerminggu[$i]['prctgRi'] = 0;
+                $arrLogPerminggu[$i]['prctgOv'] = 0;
+                $arrLogPerminggu[$i]['prctgEb'] = 0;
+                $arrLogPerminggu[$i]['prctgAb'] = 0;
+                $sumAll = 0;
+                $totalUnripeHarian = 0;
+                $totalRipeHarian = 0;
+                $totalOverripeHarian = 0;
+                $totalEmptyBunchHarian = 0;
+                $totalAbnormalHarian = 0;
+                // dd($arrLogSeminggu);
+
+                foreach ($arrLogSeminggu as $key => $data) {
+
+                    if ($tgl == $data['hari']) {
+                        $totalUnripeHarian += $data['unripe'];
+                        $totalRipeHarian += $data['ripe'];
+                        $totalOverripeHarian += $data['overripe'];
+                        $totalEmptyBunchHarian += $data['empty_bunch'];
+                        $totalAbnormalHarian += $data['abnormal'];
+
+                        $sumAll = $totalUnripeHarian + $totalRipeHarian + $totalOverripeHarian + $totalEmptyBunchHarian + $totalAbnormalHarian;
+
+                        $arrLogPerminggu[$i]['timestamp'] = $data['timestamp'];
+                        $arrLogPerminggu[$i]['unripe'] = $totalUnripeHarian;
+                        $arrLogPerminggu[$i]['ripe'] = $totalRipeHarian;
+                        $arrLogPerminggu[$i]['overripe'] = $totalOverripeHarian;
+                        $arrLogPerminggu[$i]['empty_bunch'] = $totalEmptyBunchHarian;
+                        $arrLogPerminggu[$i]['abnormal'] = $totalAbnormalHarian;
+                        $arrLogPerminggu[$i]['total'] = $sumAll;
+                        $prctgUn = $totalUnripeHarian / $sumAll * 100;
+                        $prctgRi = $totalRipeHarian / $sumAll * 100;
+                        $prctgOv = $totalOverripeHarian / $sumAll * 100;
+                        $prctgEb = $totalEmptyBunchHarian / $sumAll * 100;
+                        $prctgAb = $totalAbnormalHarian / $sumAll * 100;
+                        $arrLogPerminggu[$i]['prctgUn'] = round($prctgUn, 2);
+                        $arrLogPerminggu[$i]['prctgRi'] = round($prctgRi, 2);
+                        $arrLogPerminggu[$i]['prctgOv'] = round($prctgOv, 2);
+                        $arrLogPerminggu[$i]['prctgEb'] = round($prctgEb, 2);
+                        $arrLogPerminggu[$i]['prctgAb'] = round($prctgAb, 2);
+                    }
+                }
+            }
+
+            // dd($arrLogPerminggu);
             //ubah skema array per minggu menjadi ploting pada grafik
-            foreach ($arrLogSeminggu as $value) {
+            foreach ($arrLogPerminggu as $value) {
 
                 //Perhari
 
@@ -811,13 +923,14 @@ class CountController extends Controller
                 'data'      => $LogPerhari
             ];
         }
-        // dd($LogMingguanView);
-        // dd($LogPerHariView);
+
+        // dd($arrLogPerminggu);
         $getDate = Carbon::parse($tglData)->locale('id');
         $getDate->settings(['formatFunction' => 'translatedFormat']);
         return view('grafik', [
             'LogPerHariView' => $LogPerHariView,
             'LogMingguanView' => $LogMingguanView,
+            'arrLogMingguan' => $arrLogPerminggu,
             'dateToday' => $getDate->format('l, j F Y'),
             'nama_kategori_tbs' => $nama_kategori_tbs,
         ]);
