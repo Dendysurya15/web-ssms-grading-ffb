@@ -29,6 +29,7 @@ Route::group(['middleware' => 'auth'], function () {
         return view('tabel');
     })->name('tabel');
     Route::get('/data', [CountController::class, 'tabel'])->name('data');
+    Route::get('/foto', [CountController::class, 'foto'])->name('foto');
     Route::get('/{hari}/excel', [CountController::class, 'export'])->name('excel');
     Route::get('/{hari}/pdf', [CountController::class, 'pdf'])->name('pdf');
     Route::get('testing', function () {

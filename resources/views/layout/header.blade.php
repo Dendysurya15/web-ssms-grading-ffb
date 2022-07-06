@@ -122,6 +122,14 @@
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ asset('/foto') }}" class="nav-link">
+                                <i class="nav-icon fa fa-image"></i>
+                                <p>
+                                    Foto FFB
+                                </p>
+                            </a>
+                        </li>
                         <li class="nav-item fixed-bottom mb-3" heig style="position: absolute;">
                             <a href="{{ asset('/logout') }}" class="nav-link ">
                                 <i class="nav-icon fa fa-sign-out-alt"></i>

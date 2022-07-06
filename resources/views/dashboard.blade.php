@@ -62,7 +62,7 @@
                 <div class="col-12">
                     test
                 </div> --}}
-                <div class="col-12 col-lg-4 p-5  mb-2" style="background-color: white;border-radius: 5px">
+                <div class="col-12 col-lg-4 p-5 mb-2" style="background-color: white;border-radius: 5px;height: 590px">
                     <h2 style="color:#013C5E;font-weight: 550">Dashboard Grading TBS
                     </h2>
                     <p style="color:#013C5E;">Portal website ini digunakan untuk memonitoring data dari proses grading
@@ -73,54 +73,58 @@
                         CCTV yang terpasang di conveyor PKS Sungai
                         Kuning.
                     </p>
-
-                    {{-- <div style="color: #013C5E">
-                        Standar Mutu Grading :
-                        <ul>
-                            <li>Unripe 0%</li>
-                            <li>Ripe >= 90%</li>
-                            <li>Overripe <=5% </li>
-                            <li>Empty Bunch 0%</li>
-                            <li>Abnormal <= 5%</li>
-                        </ul>
-                        <p style="font-style: italic;font-size: 14px" class="text-secondary">
-                            Sumber : Standar Prosedur Analisa Mutu TBS (SOP-PKS.GN-010)
-                        </p>
-                    </div> --}}
-
-                </div>
-                <div class="col-12 col-lg-4 mb-2 piechartClass" id="boxPiechart">
-                    <div style="">
-                        <div id="piechart">
-                        </div>
-                    </div>
-                    @if ($prctgeAll != '')
-                    <div id="piechart" {{-- style="width: 100%; height: 300px;" --}}>
-                    </div>
-                    @else
-                    Tidak ada data yg dikirim
-                    @endif
-                </div>
-
-                <div class=" col-12 col-lg-4 mb-2" style="background-color:white;border-radius:5px">
-                    <p class="pt-3 pl-3 pr-3 text-center" style=" color: #013C5E;
-                    font-weight: 550;
-                    position: absolute;
-                    width: 100%">Foto
+                    <a href="https://www.google.com/maps/place/PKS+Sungai+Kuning%2FBatu+Kotam+(+CBI+)/@-2.3079174,111.4959546,764m/data=!3m2!1e3!4b1!4m5!3m4!1s0x2e089fddc54db897:0x9d08de2c7c2d1f61!8m2!3d-2.3079228!4d111.4981433"
+                        target=”_blank”>
+                        <img src="{{ asset('img/foto_udara_pks_skm.jpeg') }}"
+                            style="object-fit: cover;width: 100%;border-radius:5px;height:200px">
+                        {{-- akdsfj --}}
+                    </a>
+                    <p class="pt-3 font-italic text-center" style=" color: #013C5E;">Foto
                         Udara PKS
                         Sungai
                         Kuning Mill
                     </p>
-                    <div class="p-5" style="height: 100%;border-radius: 5px;background-color: white">
-                        <a href="https://www.google.com/maps/place/PKS+Sungai+Kuning%2FBatu+Kotam+(+CBI+)/@-2.3079174,111.4959546,764m/data=!3m2!1e3!4b1!4m5!3m4!1s0x2e089fddc54db897:0x9d08de2c7c2d1f61!8m2!3d-2.3079228!4d111.4981433"
-                            target=”_blank”>
-                            <img src="{{ asset('img/foto_udara_pks_skm.jpeg') }}"
-                                style="height: 100%;object-fit: cover;width: 100%;border-radius:5px">
-                            {{-- akdsfj --}}
+                </div>
+                <div class="col-12 col-lg-4 mb-2 piechartClass" style="height: 590px;" id="boxPiechart">
+                    <div style="">
+                        <div id="piechart" style="height: 590px">
+                        </div>
+                    </div>
+                    {{-- <div id="no-graph"></div> --}}
+                </div>
+
+                <div class="pt-3 font-italic col-12 col-lg-4"
+                    style="color:#013C5E;background-color:white;border-radius:5px;height: 590px">
+                    <p class="text-center  font-weight-bold " style="margin-bottom:0px;"> Foto terbaru FFB di conveyor
+                        PKS Sungai Kuning
+                    </p>
+                    <br>
+
+                    <div style="display: flex;
+                    align-items: center;
+                    justify-content: center;">
+                        <a href="{{ asset('/foto') }}">
+                            <img src="{{ asset('img/good.JPG') }}" style="border-radius: 8px;
+                            max-width: 100%;
+                            max-height: 100%;">
                         </a>
                     </div>
+                    <p class="text-center font-italic">Sampel foto FFB kualitas baik</p>
+
+                    <div style="display: flex;
+                    align-items: center;
+                    justify-content: center;">
+                        <a href="{{ asset('/foto') }}">
+                            <img src="{{ asset('img/bad.JPG') }}" style="border-radius: 8px;
+                            max-width: 100%;
+                            max-height: 100%;">
+                        </a>
+                    </div>
+                    <p class="text-center font-italic">Sampel foto FFB kualitas rendah</p>
+
                 </div>
             </div>
+
 
             <div>
                 <hr>
@@ -256,7 +260,7 @@
         <div class="pb-3">
             <div class="col-xl" style="background-color:white;border-radius:5px;">
                 <div class="p-5 text-center">
-                    <div style="width: 100%;height:200px;" id="icon-container"></div>
+                    <div style="width: 100%;height:200px;" id="no_data_grading"></div>
                     Tidak ada data yang masuk
                 </div>
             </div>
@@ -351,10 +355,40 @@
 
 
 <script>
+    bodymovin.loadAnimation({
+    // animationData: { /* ... */ },
+    container: document.getElementById('no-graph'), // required
+    path: 'https://assets2.lottiefiles.com/packages/lf20_7be1jtxw.json', // required
+    renderer: 'svg', // required
+    loop: true, // optional
+    autoplay: true, // optional
+    name: "Demo Animation", // optional
+  });
+
     var animation = bodymovin.loadAnimation({
     // animationData: { /* ... */ },
-    container: document.getElementById('icon-container'), // required
-    path: 'https://assets8.lottiefiles.com/private_files/lf30_rrpywigs.json', // required
+    container: document.getElementById('sampel_good'), // required
+    path: 'https://assets8.lottiefiles.com/packages/lf20_exi9acin.json', // required
+    renderer: 'svg', // required
+    loop: true, // optional
+    autoplay: true, // optional
+    name: "Demo Animation", // optional
+  });
+
+  bodymovin.loadAnimation({
+    // animationData: { /* ... */ },
+    container: document.getElementById('sampel_bad'), // required
+    path: 'https://assets8.lottiefiles.com/packages/lf20_exi9acin.json', // required
+    renderer: 'svg', // required
+    loop: true, // optional
+    autoplay: true, // optional
+    name: "Demo Animation", // optional
+  });
+
+  bodymovin.loadAnimation({
+    // animationData: { /* ... */ },
+    container: document.getElementById('no_data_grading'), // required
+    path: 'https://assets7.lottiefiles.com/packages/lf20_n2m0isqh.json', // required
     renderer: 'svg', // required
     loop: true, // optional
     autoplay: true, // optional
@@ -436,9 +470,9 @@
                 bold: true,                 // true or false
                 italic: false                // true of false
             },
-          legend: 'bottom',
+          legend: {position:'bottom',maxLines: 3},
           colors:[ '#AB221D','#4CAF50','#FF9800','#BE8C64','#001E3C'],
-          height:400
+          height:590
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
