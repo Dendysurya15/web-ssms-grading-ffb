@@ -936,6 +936,11 @@ class CountController extends Controller
         ]);
     }
 
+    public function foto()
+    {
+        return view('foto');
+    }
+
     public function export($hari)
     {
         // dd($hari);

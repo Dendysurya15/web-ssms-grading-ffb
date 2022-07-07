@@ -31,10 +31,49 @@
             font-size: 40px;
         }
 
-        .persentase {
-            font-size: 30px
+        .dashboard_div {
+            height: 590px;
         }
 
+        .ffb_div {
+            height: 590px;
+        }
+
+        .piechart_div {
+            height: 590px;
+        }
+
+        .img_pks_skm {
+            height: 200px;
+        }
+
+        .linechart_div {
+            height: 400px;
+        }
+    }
+
+
+
+    @media only screen and (min-width: 1366px) {
+        .dashboard_div {
+            height: 800px;
+        }
+
+        .ffb_div {
+            height: 800px;
+        }
+
+        .piechart_div {
+            height: 800px;
+        }
+
+        .img_pks_skm {
+            height: 500px;
+        }
+
+        .linechart_div {
+            height: 600px;
+        }
     }
 </style>
 
@@ -62,7 +101,7 @@
                 <div class="col-12">
                     test
                 </div> --}}
-                <div class="col-12 col-lg-4 p-5 mb-2" style="background-color: white;border-radius: 5px;height: 590px">
+                <div class="col-12 col-lg-4 p-5 mb-2 dashboard_div" style="background-color: white;border-radius: 5px;">
                     <h2 style="color:#013C5E;font-weight: 550">Dashboard Grading TBS
                     </h2>
                     <p style="color:#013C5E;">Portal website ini digunakan untuk memonitoring data dari proses grading
@@ -75,8 +114,8 @@
                     </p>
                     <a href="https://www.google.com/maps/place/PKS+Sungai+Kuning%2FBatu+Kotam+(+CBI+)/@-2.3079174,111.4959546,764m/data=!3m2!1e3!4b1!4m5!3m4!1s0x2e089fddc54db897:0x9d08de2c7c2d1f61!8m2!3d-2.3079228!4d111.4981433"
                         target=”_blank”>
-                        <img src="{{ asset('img/foto_udara_pks_skm.jpeg') }}"
-                            style="object-fit: cover;width: 100%;border-radius:5px;height:200px">
+                        <img src="{{ asset('img/foto_udara_pks_skm.jpeg') }}" class="img_pks_skm"
+                            style="object-fit: cover;width: 100%;border-radius:5px;">
                         {{-- akdsfj --}}
                     </a>
                     <p class="pt-3 font-italic text-center" style=" color: #013C5E;">Foto
@@ -85,16 +124,15 @@
                         Kuning Mill
                     </p>
                 </div>
-                <div class="col-12 col-lg-4 mb-2 piechartClass" style="height: 590px;" id="boxPiechart">
+                <div class="col-12 col-lg-4 mb-2 piechartClass" id="boxPiechart">
                     <div style="">
-                        <div id="piechart" style="height: 590px">
+                        <div id="piechart" class="piechart_div">
                         </div>
                     </div>
-                    {{-- <div id="no-graph"></div> --}}
                 </div>
 
-                <div class="pt-3 font-italic col-12 col-lg-4"
-                    style="color:#013C5E;background-color:white;border-radius:5px;height: 590px">
+                <div class="pt-3 font-italic col-12 col-lg-4 ffb_div"
+                    style="color:#013C5E;background-color:white;border-radius:5px;">
                     <p class="text-center  font-weight-bold " style="margin-bottom:0px;"> Foto terbaru FFB di conveyor
                         PKS Sungai Kuning
                     </p>
@@ -294,7 +332,7 @@
 
                     <div class="col">
                         {{-- @if ($arrLogHariini['data'] != '') --}}
-                        <div id="logHariini" {{-- style="width: 100%; height: 300px;" --}}>
+                        <div id="logHariini" class="linechart_div">
                         </div>
                         {{-- @else --}}
                         {{-- Tidak ada data yg dikirim --}}
@@ -401,6 +439,7 @@
         const div =  document.querySelector('#boxPiechart');
         div.classList.remove('piechartClass');
     };
+    
 
     google.charts.load('current', {
     'packages': ['corechart']
@@ -437,7 +476,7 @@
         hAxis: {
            
     },
-        height:400,
+        // height:400,
     };
 
     var test = new google.visualization.LineChart(document.getElementById('logHariini'));
@@ -470,9 +509,9 @@
                 bold: true,                 // true or false
                 italic: false                // true of false
             },
-          legend: {position:'bottom',maxLines: 3},
+          legend: {position:'bottom',maxLines: 1},
           colors:[ '#AB221D','#4CAF50','#FF9800','#BE8C64','#001E3C'],
-          height:590
+        //   height:590
         };
 
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
