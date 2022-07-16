@@ -227,6 +227,9 @@ class CountController extends Controller
 
         $to = date($dateTo);
 
+        // dd($from);
+        // dd($to);
+
         $logHariini      = '';
         $logHariini = DB::table('log')
             ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
@@ -235,7 +238,14 @@ class CountController extends Controller
             ->get()
             ->groupBy('jam_ke');
 
+        $file = DB::table('log_file')->get();
+        $file_image = array();
+        foreach ($file as $key => $value) {
+            $file_image[] = $value->file . '.JPG';
+        }
 
+        // dd($file_image);
+        // dd($logHariini);
         // dd($logHariini);
         // $logHariini      = '';
         // $logHariini = DB::table('log')
@@ -478,6 +488,7 @@ class CountController extends Controller
         return view('dashboard', [
             'arrLogHariini' => $arrLogHariini,
             'prctgeAll' => $prctgeAll,
+            'file' => $file_image,
             'dateToday' => $getDate->format('l, j F Y'),
             'totalAll' => number_format($totalAll, 0, ".", "."),
             'jamNow' => Carbon::now()->format('H:i:s'),
@@ -729,22 +740,23 @@ class CountController extends Controller
 
 
         // dd($logMingguan);
-        $to = !is_null($logMingguan) ?  $logMingguan->timestamp : "27-04-2022";
+        $to = !is_null($logMingguan) ?  $logMingguan->timestamp : Carbon::now()->format('Y-m-d');
         // dd($to);
-        $convert = new DateTime($to . ' 23:59:59');
-        // dd($convert);
-        // dd($convert);
+        $formatted = new DateTime($to);
+        $formatted = $formatted->format('Y-m-d');
+
+        $to = $formatted . ' 23:59:59';
+
+        $convert = new DateTime($to);
+
         $to = $convert->format('Y-m-d H:i:s');
-        // dd($to);
 
         $dateParse = Carbon::parse($to)->subDays(7);
         $dateParse = $dateParse->format('Y-m-d');
-        // dd($dateParse);
-        $pastWeek = new DateTime($dateParse . ' 00:00:00');
-        // $pastWeek = date($dateParse . ' 00:00:00');
-        // dd($to);
+
+        $dateParse = $dateParse . ' 00:00:00';
+        $pastWeek = new DateTime($dateParse);
         $pastWeek = $pastWeek->format('Y-m-d H:i:s');
-        // dd($pastWeek);
 
         // dd($to);
         $logMingguan = DB::table('log')
@@ -938,7 +950,13 @@ class CountController extends Controller
 
     public function foto()
     {
-        return view('foto');
+        $file = DB::table('log_file')->get();
+        $file_image = array();
+        foreach ($file as $key => $value) {
+            $file_image[] = $value->file . '.JPG';
+        }
+
+        return view('foto', ['file' => $file_image]);
     }
 
     public function export($hari)

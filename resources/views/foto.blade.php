@@ -22,7 +22,7 @@
                     <div class="p-3" style="display: flex;
                     align-items: center;
                     justify-content: center;margin-bottom: 30px">
-                        <img src="{{ asset('img/good.JPG') }}" style="border-radius: 5px;
+                        <img src="{{ asset('img/ffb/'.$file[0]) }}" style="border-radius: 5px;
                         max-width: 100%;
                         max-height: 100%;">
                         {{-- <div style="width: 100%;height:200px;" id="empty-image"></div> --}}
@@ -37,7 +37,7 @@
                     <div class="p-3" style="display: flex;
                     align-items: center;
                     justify-content: center;margin-bottom: 30px">
-                        <img src="{{ asset('img/bad.JPG') }}" style="border-radius: 5px;
+                        <img src="{{ asset('img/ffb/'.$file[1]) }}" style="border-radius: 5px;
                         max-width: 100%;
                         max-height: 100%;">
 
