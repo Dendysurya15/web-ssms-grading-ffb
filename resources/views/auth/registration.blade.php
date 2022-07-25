@@ -43,13 +43,21 @@
                                 <span class="text-danger">{{ $errors->first('username') }}</span>
                                 @endif
                             </div>
-                            <div class="form-group">
+                            <div class="form-group mb-3">
                                 <label for="exampleInputEmail1">Password</label>
                                 <input type="password" placeholder="Masukkan password" id="password"
                                     class="form-control" name="password" required autofocus="autofocus"
                                     style="text-are">
                                 @if ($errors->has('password'))
                                 <span class="text-danger">{{ $errors->first('password') }}</span>
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Nomor Telepon</label>
+                                <input type="number" placeholder="Masukkan Nomor Telepon" id="password"
+                                    class="form-control" name="no_hp" autofocus="autofocus" style="text-are">
+                                @if ($errors->has('no_hp'))
+                                <span class="text-danger">{{ $errors->first('no_hp') }}</span>
                                 @endif
                             </div>
                             <div class="mt-3 d-grid gap-2">

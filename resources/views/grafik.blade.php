@@ -127,9 +127,9 @@
                                         <tr>
                                             <th scope="col"> </th>
                                             @foreach ($arrLogMingguan as $item)
-                                            <th scope="col">{{$item['hari']}}</th>
+                                            <th scope="col" style="text-align: center">{{$item['hari']}}
+                                            </th>
                                             @endforeach
-
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -138,14 +138,19 @@
                                             <td>Unripe</td>
                                             @foreach ($arrLogMingguan as $item)
                                             <td>
-                                                @if ($item['unripe'] != 0)
-                                                @php
-                                                echo number_format(round($item['unripe'], 2), 0, ".", ".")
-                                                @endphp
-                                                ({{$item['prctgUn']}}%)
-                                                @else
-                                                0
-                                                @endif
+                                                <div class="text-center">
+                                                    @if ($item['unripe'] != 0)
+                                                    @php
+                                                    echo number_format(round($item['unripe'], 2), 0, ".", ".")
+                                                    @endphp
+                                                    <br>
+                                                    <div class="font-weight-bold">
+                                                        ({{$item['prctgUn']}}%)
+                                                    </div>
+                                                    @else
+                                                    0
+                                                    @endif
+                                                </div>
 
                                             </td>
                                             @endforeach
@@ -156,15 +161,19 @@
                                             @foreach ($arrLogMingguan as $item)
                                             <td>
 
-                                                @if ($item['ripe'] != 0)
-                                                @php
-                                                echo number_format(round($item['ripe'], 2), 0, ".", ".")
-                                                @endphp
-                                                ({{$item['prctgRi']}}%)
-
-                                                @else
-                                                0
-                                                @endif
+                                                <div class="text-center">
+                                                    @if ($item['ripe'] != 0)
+                                                    @php
+                                                    echo number_format(round($item['ripe'], 2), 0, ".", ".")
+                                                    @endphp
+                                                    <br>
+                                                    <div class="font-weight-bold">
+                                                        ({{$item['prctgRi']}}%)
+                                                    </div>
+                                                    @else
+                                                    0
+                                                    @endif
+                                                </div>
                                             </td>
 
                                             @endforeach
@@ -173,14 +182,19 @@
                                             <td>Overripe</td>
                                             @foreach ($arrLogMingguan as $item)
                                             <td>
-                                                @if ($item['overripe'] != 0)
-                                                @php
-                                                echo number_format(round($item['overripe'], 2), 0, ".", ".")
-                                                @endphp
-                                                ({{$item['prctgOv']}}%)
-                                                @else
-                                                0
-                                                @endif
+                                                <div class="text-center">
+                                                    @if ($item['overripe'] != 0)
+                                                    @php
+                                                    echo number_format(round($item['overripe'], 2), 0, ".", ".")
+                                                    @endphp
+                                                    <br>
+                                                    <div class="font-weight-bold">
+                                                        ({{$item['prctgOv']}}%)
+                                                    </div>
+                                                    @else
+                                                    0
+                                                    @endif
+                                                </div>
                                             </td>
                                             @endforeach
                                         </tr>
@@ -188,14 +202,19 @@
                                             <td>Empty Bunch</td>
                                             @foreach ($arrLogMingguan as $item)
                                             <td>
-                                                @if ($item['empty_bunch'] != 0)
-                                                @php
-                                                echo number_format(round($item['empty_bunch'], 2), 0, ".", ".")
-                                                @endphp
-                                                ({{$item['prctgEb']}}%)
-                                                @else
-                                                0
-                                                @endif
+                                                <div class="text-center">
+                                                    @if ($item['empty_bunch'] != 0)
+                                                    @php
+                                                    echo number_format(round($item['empty_bunch'], 2), 0, ".", ".")
+                                                    @endphp
+                                                    <br>
+                                                    <div class="font-weight-bold">
+                                                        ({{$item['prctgEb']}}%)
+                                                    </div>
+                                                    @else
+                                                    0
+                                                    @endif
+                                                </div>
                                             </td>
                                             @endforeach
                                         </tr>
@@ -203,26 +222,33 @@
                                             <td>Abnormal</td>
                                             @foreach ($arrLogMingguan as $item)
                                             <td>
-                                                @if ($item['abnormal'] != 0)
-                                                @php
-                                                echo number_format(round($item['abnormal'], 2), 0, ".", ".")
-                                                @endphp
-                                                ({{$item['prctgAb']}}%)
-                                                @else
-                                                0
-                                                @endif
+                                                <div class="text-center">
+                                                    @if ($item['abnormal'] != 0)
+                                                    @php
+                                                    echo number_format(round($item['abnormal'], 2), 0, ".", ".")
+                                                    @endphp
+                                                    <br>
+                                                    <div class="font-weight-bold">
+                                                        ({{$item['prctgAb']}}%)
+                                                    </div>
+                                                    @else
+                                                    0
+                                                    @endif
+                                                </div>
                                             </td>
                                             @endforeach
                                         </tr>
-                                        <tr class="font-weight-bold">
+                                        <tr class="font-weight-bold ">
                                             <td>Total</td>
-                                            @foreach ($arrLogMingguan as $item)
-                                            <td>
-                                                @php
-                                                echo number_format(round($item['total'], 2), 0, ".", ".")
-                                                @endphp
-                                            </td>
-                                            @endforeach
+                                            <div>
+                                                @foreach ($arrLogMingguan as $item)
+                                                <td class="text-center">
+                                                    @php
+                                                    echo number_format(round($item['total'], 2), 0, ".", ".")
+                                                    @endphp
+                                                </td>
+                                                @endforeach
+                                            </div>
                                         </tr>
                                     </tbody>
                                 </table>

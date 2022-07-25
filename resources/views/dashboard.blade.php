@@ -110,7 +110,7 @@
                         dengan perantara
                         kamera
                         CCTV yang terpasang di conveyor PKS Sungai
-                        Kuning.
+                        Kuning
                     </p>
                     <a href="https://www.google.com/maps/place/PKS+Sungai+Kuning%2FBatu+Kotam+(+CBI+)/@-2.3079174,111.4959546,764m/data=!3m2!1e3!4b1!4m5!3m4!1s0x2e089fddc54db897:0x9d08de2c7c2d1f61!8m2!3d-2.3079228!4d111.4981433"
                         target=”_blank”>
@@ -142,18 +142,19 @@
                     align-items: center;
                     justify-content: center;">
                         <a href="{{ asset('/foto') }}">
-                            <img src="{{ asset('img/good.JPG') }}" style="border-radius: 8px;
+                            <img src="{{ asset('img/ffb/'.$file[0]) }}" style="border-radius: 8px;
                             max-width: 100%;
                             max-height: 100%;">
                         </a>
                     </div>
                     <p class="text-center font-italic">Sampel foto FFB kualitas baik</p>
 
+
                     <div style="display: flex;
                     align-items: center;
                     justify-content: center;">
                         <a href="{{ asset('/foto') }}">
-                            <img src="{{ asset('img/bad.JPG') }}" style="border-radius: 8px;
+                            <img src="{{ asset('img/ffb/'.$file[1]) }}" style="border-radius: 8px;
                             max-width: 100%;
                             max-height: 100%;">
                         </a>
