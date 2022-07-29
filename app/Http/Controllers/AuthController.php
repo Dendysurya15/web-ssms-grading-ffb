@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use Symfony\Component\Console\Input\Input;
 
 class AuthController extends Controller
 {
@@ -84,5 +85,31 @@ class AuthController extends Controller
         Auth::logout();
 
         return Redirect('/');
+    }
+
+    public function profile()
+    {
+
+        $user = User::find(Auth::user()->id);
+        return view('profile', ['user' => $user]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'username' => 'required',
+            'password' => 'required|confirmed|min:6',
+            // 'no_hp' => 'required',
+        ]);
+
+        $request->merge([
+            'password' => Hash::make($request->password),
+        ]);
+
+        $user = User::find(Auth::user()->id);
+        $user->fill($request->all())->save();
+
+        return Redirect::back()->with(['message' => 'Berhasil meng-update data user']);
     }
 }

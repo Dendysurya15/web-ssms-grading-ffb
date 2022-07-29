@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>GRADING AI DASHBOARD</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('img/CBI-logo.png') }}">
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/ionicons.min.css') }}">
@@ -18,6 +19,7 @@
     <link rel="stylesheet" href="{{ asset('css/jquery.fancybox.min.css') }}">
     <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css')}}">
     <link rel="stylesheet" href="{{ asset('plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
+
 
 
     <!--download-->
@@ -61,6 +63,10 @@
             background-color: red;
             color: red;
         }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
     </style>
 
 </head>
@@ -68,19 +74,24 @@
 <body class="hold-transition sidebar-mini sidebar-collapse layout-fixed layout-navbar-fixed">
     <div class="wrapper">
         <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav" style="width: 100%">
                 <li class="nav-item">
                     <a class="nav-link" data-widget="pushmenu" href="#" role="hover"><i class="fas fa-bars"></i></a>
                 </li>
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a class="nav-link">Selamat datang {{ Auth::user()->name}} !</a>
-                    <!-- Right Side Of Navbar -->
+                <li class="nav-item  d-sm-inline-block">
+                    <a class="nav-link">Selamat datang !</a>
                 </li>
-            </ul>
-
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item d-none d-sm-inline-block">
-                    <a class="nav-link"></a>
+                <li class="nav-item dropdown ml-auto">
+                    <a href="" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false"> {{ Auth::user()->name}}</a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                        <a href="{{asset('profile')}}" class="dropdown-item"> <i class="nav-icon fa fa-user"></i> <span
+                                class="ml-2"> Edit
+                                Profile</span>
+                        </a>
+                        <a href="{{ asset('/logout') }}" class="dropdown-item"> <i
+                                class="nav-icon fa fa-sign-out-alt"></i><span class="ml-2"> Log Out</span></a>
+                    </div>
                 </li>
             </ul>
         </nav>
