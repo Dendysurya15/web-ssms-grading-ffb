@@ -9,6 +9,28 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-md-12">
+                    <!-- Curah Hujan -->
+                    <div class="card">
+                        <div class="card-header" style="background-color: #02A452;color:white">
+                            <div class=" card-title">
+                                <i class="fas fa-chart-line pr-2"></i>Grafik Ripeness Harian Grading Ai Sungai Kuning
+                            </div>
+                        </div>
+                        <div class="card-body mb-3">
+                            <div class="row">
+                                <div class="col">
+                                    <div id="logAll">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
                             <div class="row">
@@ -93,4 +115,38 @@
         
         });
     });
+
+    google.charts.load('current', {
+    'packages': ['corechart']
+  });
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {  
+    
+    
+    var plot_ripe = '<?php echo $logPerhariView['plot2']; ?>';
+    
+    var dataLogAll = new google.visualization.DataTable();
+    dataLogAll.addColumn('string', 'Name');
+    dataLogAll.addColumn('number', plot_ripe);
+    dataLogAll.addRows([
+      <?php echo $logPerhariView['data']; ?>
+    ]);
+
+    var optionsLogHariIIni = {
+        chartArea: {},
+        theme: 'material',
+        colors:[ '#4CAF50'],
+        legend: { position: 'top',
+        textStyle: {fontSize: 15}},
+        lineWidth: 2,
+        hAxis: {
+           
+    },
+        height:250,
+    };
+
+    var log = new google.visualization.LineChart(document.getElementById('logAll'));
+    log.draw(dataLogAll,optionsLogHariIIni);
+  }
 </script>

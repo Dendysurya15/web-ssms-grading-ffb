@@ -69,8 +69,8 @@
                                 value="{{$user->no_hp}}">
                             <small id="emailHelp" class="form-text text-muted">Format : 081209230000</small>
                             <small id="emailHelp" class="form-text text-muted">Catatan : Nomor HP yang dicantumkan akan
-                                menerima pesan rekap perbandingan grading harian setiap hari pukul <span
-                                    class="font-weight-bold"></span> 7 pagi</small>
+                                menerima pesan rekap perbandingan grading AI PKS Sungai Kuning harian setiap hari pukul
+                                <span class="font-weight-bold"></span> 7 pagi</small>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputPassword1">Password baru</label>
