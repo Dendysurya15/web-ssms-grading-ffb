@@ -83,7 +83,7 @@
                 </li>
                 <li class="nav-item dropdown ml-auto">
                     <a href="" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false"> {{ Auth::user()->name}}</a>
+                        aria-haspopup="true" aria-expanded="false"> {{Auth::user()->name}}</a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                         <a href="{{asset('profile')}}" class="dropdown-item"> <i class="nav-icon fa fa-user"></i> <span
                                 class="ml-2"> Edit

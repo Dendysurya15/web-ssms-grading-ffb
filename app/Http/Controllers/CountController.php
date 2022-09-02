@@ -8,7 +8,9 @@ use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel as ExcelExcel;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\Datatables\Datatables;
@@ -62,14 +64,12 @@ class CountController extends Controller
 
         $arrLogPerhari = array();
         $dataLog = DB::table('log')
-            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as hari"))
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m-%Y') as hari"))
             ->orderBy('log.timestamp', 'DESC')
             ->get()
             ->groupBy('hari');
 
         $count = 1;
-
-        // dd($dataLog);
 
         foreach ($dataLog as $inc =>  $value) {
             $sumUnripe = 0;
@@ -207,6 +207,8 @@ class CountController extends Controller
         //     $week[] = Carbon::parse($getDateToday)->subDays($i)->format('D d-m-Y'); //push the current day and plus the mount of $i 
         // }
 
+
+
         // dd($prctgeAll);
         $nama_kategori_tbs = array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
         $standar_mutu_view = array('0%', '>90%', '<5%', '0%', '<5%');
@@ -214,21 +216,76 @@ class CountController extends Controller
 
         $convert = new DateTime($tglData);
 
+        $dateHiShi = new DateTime($tglData);
+
+        $hourNow = new DateTime();
+
+        $dateHiShi = $dateHiShi->format('Y-m-d') . ' ' . $hourNow->format('H:i:s');
+
         $convert->add(new DateInterval('PT7H'));
 
-        // dd($convert);
         $from = $convert->format('Y-m-d H:i:s');
-        // dd($to);
+
         $dateTo = Carbon::parse($from)->addDays();
 
-        // $dateFrom->add(new DateInterval('PT0H'));
-        // dd($dateTo);
         $dateTo = $dateTo->format('Y-m-d H:i:s');
 
         $to = date($dateTo);
 
-        // dd($from);
-        // dd($to);
+        $arrPerBulan = array();
+        $shi = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m-%Y') as hari"))
+            ->whereMonth('log.timestamp', '=', Carbon::parse($dateHiShi)->month)
+            ->whereYear('log.timestamp', '=', Carbon::parse($dateHiShi)->year)
+            ->where('log.ripe', '<>', 0)
+            ->get()
+            ->groupBy('hari');
+
+        // dd($shi['01-08-2022']['0']->unripe);
+        $count = 1;
+        foreach ($shi as $inc =>  $value) {
+            $sumUnripe = 0;
+            $sumRipe = 0;
+            $sumOverripe = 0;
+            $sumEmptyBunch = 0;
+            $sumAbnormal = 0;
+            foreach ($value as $key => $data) {
+                // dd($data->unripe);
+                $sumUnripe += $data->unripe;
+                $sumRipe += $data->ripe;
+                $sumOverripe += $data->overripe;
+                $sumEmptyBunch += $data->empty_bunch;
+                $sumAbnormal += $data->abnormal;
+            }
+            // dd($sumOverripe);
+            $arrPerBulan[$inc]['id'] = $count;
+            $arrPerBulan[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+            $arrPerBulan[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('dddd, D MMMM Y');
+            $arrPerBulan[$inc]['harianUnripe'] = $sumUnripe;
+            $arrPerBulan[$inc]['harianRipe'] = $sumRipe;
+            $arrPerBulan[$inc]['harianOverripe'] = $sumOverripe;
+            $arrPerBulan[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+            $arrPerBulan[$inc]['harianAbnormal'] = $sumAbnormal;
+            $arrPerBulan[$inc]['hari'] = $inc;
+            $arrPerBulan[$inc]['persenUnripe'] = round((($sumUnripe / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenRipe'] = round((($sumRipe / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenOverripe'] = round((($sumOverripe / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenEmptyBunch'] = round((($sumEmptyBunch / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenAbnormal'] = round((($sumAbnormal / $arrPerBulan[$inc]['total']) * 100), 2);
+
+            $count++;
+        }
+
+        $sumRipePerhari = 0;
+        $hariPerShi = 1;
+        foreach ($arrPerBulan as $key => $value) {
+            $sumRipePerhari += $value['persenRipe'];
+            $hariPerShi++;
+        }
+        $shiBulan = round(($sumRipePerhari / $hariPerShi), 2);
+
+
+        // dd($shiBulan);
 
         $logHariini      = '';
         $logHariini = DB::table('log')
@@ -244,62 +301,9 @@ class CountController extends Controller
             $file_image[] = $value->file . '.JPG';
         }
 
-        // dd($file_image);
-        // dd($logHariini);
-        // dd($logHariini);
-        // $logHariini      = '';
-        // $logHariini = DB::table('log')
-        //     ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
-        //     ->orderBy('log.timestamp', 'desc')
-        //     ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-23")
-        //     ->get()
-        //     ->groupBy('jam_ke');
 
-        // dd($logHariini);
-
-
-        // $allLog = DB::table('log')
-        //     ->select('log.*', 'log.timestamp')
-        //     ->orderBy('log.timestamp')
-        //     ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=', "2022-04-30")
-        //     ->get();
-
-
-        // // dd($allLog);
-        // if ($allLog->first() != null) {
-        //     $allLogJson = json_decode($allLog, true);
-
-        //     foreach ($allLogJson as $index => $data) {
-        //         $totalUnripe += $data['unripe'];
-        //         $totalRipe += $data['ripe'];
-        //         $totalOverripe += $data['overripe'];
-        //         $totalEmptyBunch += $data['empty_bunch'];
-        //         $totalAbnormal += $data['abnormal'];
-        //     }
-        //     $totalAll = $totalUnripe + $totalRipe + $totalOverripe + $totalEmptyBunch + $totalAbnormal;
-        //     $arrAllLog = array($totalUnripe, $totalRipe, $totalOverripe, $totalEmptyBunch, $totalAbnormal);
-
-        //     foreach ($arrAllLog as $index => $data) {
-        //         $hasil = ($data / $totalAll) * 100;
-        //         $prctgeAll[$index]['kategori'] = $nama_kategori_tbs[$index];
-        //         $prctgeAll[$index]['stnd_mutu'] = $standar_mutu[$index];
-        //         $prctgeAll[$index]['total'] = number_format($data, 0, ".", ".");
-        //         $prctgeAll[$index]['persentase'] = round($hasil, 2);
-        //     }
-        // }
-
-        // dd($logHariini);
-        // dd($logHariini->first() != null);
-        // if ($logHariini->first() != null) {
-        //     dd('test');
-        // }
-        // dd('coba');
-
-        // dd($dataArr);
-        // $dataArr = array();
         $increment = 0;
-        // dd($logHariini);
-        // dd(count($logHariini));
+
         $totalAll = 0;
         $totalUnripe = 0;
         $totalRipe = 0;
@@ -346,9 +350,6 @@ class CountController extends Controller
             $persentaseMasingKategori = [($totalUnripe / $totalAll) * 100, ($totalRipe / $totalAll) * 100, ($totalOverripe / $totalAll) * 100, ($totalEmptyBunch / $totalAll) * 100, ($totalAbnormal / $totalAll) * 100];
         };
 
-        // dd($dataArr);
-
-        // dd($totalAllSampel);
         for ($i = 0; $i < 5; $i++) {
             $prctgeAll[$i]['kategori'] = $nama_kategori_tbs[$i];
             $prctgeAll[$i]['stnd_mutu'] = $standar_mutu_real[$i];
@@ -359,12 +360,6 @@ class CountController extends Controller
             $prctgeAll[$i]['totalFormat'] =  number_format($totalMasingKategori[$i], 0, ".", ".");
         }
 
-        // dd($prctgeAll);
-        // dd($prctgeAll[1]['persentase'] > $prctgeAll[1]['stnd_mutu']);
-        // dd($prctgeAll[1]['persentase'] >= $prctgeAll[1]['stnd_mutu']);
-
-        // dd($prctgeAll[1]['kategori'] == 'Ripe');
-        // dd($prctgeAll);
         for ($i = 0; $i < 24; $i++) {
             $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
             $arrLogPerhari[$i]['harianUnripe'] = 0;
@@ -382,12 +377,8 @@ class CountController extends Controller
                     $arrLogPerhari[$i]['harianAbnormal'] = $dataArr[$j]['harianAbnormal'];
                 }
             }
-            // $totalAll = 
         }
-        // sort($arrLogPerhari);
-        // dd($arrLogPerhari);
-        // 
-        // $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
+
         foreach ($arrLogPerhari as $value) {
 
             //Perhari
@@ -400,7 +391,6 @@ class CountController extends Controller
                 {v:" . $value['harianAbnormal'] . ", f:'" . $value['harianAbnormal'] . " buah '}                             
             ],";
         }
-        // dd($LogPerhari);
         $arrLogHariini = [
             'plot1'     => 'Unripe',
             'plot2'     => 'Ripe',
@@ -410,76 +400,6 @@ class CountController extends Controller
             'data'      => $LogPerhari
         ];
 
-        // sort($LogPerhari);
-
-        // dd($LogPerhari);
-        // dd($arrLogHariini);
-
-        // if ($logHariini->isNotEmpty()) {
-
-        //     $increment = 1;
-
-        //     if ($logHariini->isNotEmpty()) {
-        //         foreach ($logHariini as $inc =>  $value) {
-        //             $sumUnripe = 0;
-        //             $sumRipe = 0;
-        //             $sumOverripe = 0;
-        //             $sumEmptyBunch = 0;
-        //             $sumAbnormal = 0;
-        //             foreach ($value as $key => $data) {
-        //                 $sumUnripe += $data->unripe;
-        //                 $sumRipe += $data->ripe;
-        //                 $sumOverripe += $data->overripe;
-        //                 $sumEmptyBunch += $data->empty_bunch;
-        //                 $sumAbnormal += $data->abnormal;
-        //                 if ($increment == 24) {
-        //                     $jam = '06:59';
-        //                 } else {
-        //                     $jam        = date('H', strtotime($data->timestamp)) . ':00';
-        //                 }
-        //             }
-        //             $arrLogPerhari[$inc]['timestamp'] = $jam;
-        //             $arrLogPerhari[$inc]['harianUnripe'] = $sumUnripe;
-        //             $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
-        //             $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
-        //             $arrLogPerhari[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
-        //             $arrLogPerhari[$inc]['harianAbnormal'] = $sumAbnormal;
-
-        //             $increment++;
-        //         }
-
-        //         // dd($arrLogPerhari);
-
-        //         $arrLogPerhari = json_decode(json_encode($arrLogPerhari), true);
-        //         foreach ($arrLogPerhari as $value) {
-
-        //             // dd($value['timestamp']);
-        //             // dd(\Carbon\Carbon::parse($value['timestamp'])->format('d/i:s'));
-        //             // Carbon::createFromFormat('H:i:s', $value['timestamp'])->format('H:i');
-        //             //Perhari
-        //             $jam        = $value['timestamp'];
-        //             $LogPerhari .=
-        //                 "[{v:'" . $jam . "'}, {v:" . $value['harianUnripe'] . ", f:'" . $value['harianUnripe'] . " buah'},
-        //                 {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " buah '},
-        //                 {v:" . $value['harianOverripe'] . ", f:'" . $value['harianOverripe'] . " buah '},   
-        //                 {v:" . $value['harianEmptyBunch'] . ", f:'" . $value['harianEmptyBunch'] . " buah '},     
-        //                 {v:" . $value['harianAbnormal'] . ", f:'" . $value['harianAbnormal'] . " buah '}                             
-        //             ],";
-        //         }
-
-        //         $arrLogHariini = [
-        //             'plot1'     => 'Unripe',
-        //             'plot2'     => 'Ripe',
-        //             'plot3'     => 'Overripe',
-        //             'plot4'     => 'Empty Bunch',
-        //             'plot5'     => 'Abnormal',
-        //             'data'      => $LogPerhari
-        //         ];
-        //     }
-        // }
-
-        // dd($arrLogHariini);
-        // dd($prctgeAll);
         $getDate = Carbon::parse($tglData)->locale('id');
         $getDate->settings(['formatFunction' => 'translatedFormat']);
         // dd($getDate);
@@ -492,6 +412,7 @@ class CountController extends Controller
             'dateToday' => $getDate->format('l, j F Y'),
             'totalAll' => number_format($totalAll, 0, ".", "."),
             'jamNow' => Carbon::now()->format('H:i:s'),
+            'shiBulan' => $shiBulan,
         ]);
     }
 
@@ -1005,11 +926,8 @@ class CountController extends Controller
             $summary[$inc]['harianOverripe'] = $sumOverripe;
             $summary[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
             $summary[$inc]['harianAbnormal'] = $sumAbnormal;
-
             $count++;
         }
-
-        // dd($dataLog[$hari]);
 
         return Excel::download(
             new LogExport($summary[$hari], $dataLog[$hari]),
@@ -1020,17 +938,73 @@ class CountController extends Controller
     public function pdf($hari)
     {
         $dataLog = DB::table('log')
-            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as hari"))
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m-%Y') as hari"))
             ->orderBy('log.timestamp', 'DESC')
             ->get()
             ->groupBy('hari');
 
-        // dd($dataLog[$hari][0]->id);
-        $key = 1;
-        foreach ($dataLog[$hari] as  $value) {
-            $value->iterasi = $key;
-            $key++;
+        $dateHiShi = new DateTime($hari);
+
+        $hourNow = new DateTime();
+
+        $dateHiShi = $dateHiShi->format('Y-m-d');
+
+        $arrPerBulan = array();
+        $shi = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m-%Y') as hari"))
+            ->whereMonth('log.timestamp', '=', Carbon::parse($dateHiShi)->month)
+            ->whereYear('log.timestamp', '=', Carbon::parse($dateHiShi)->year)
+            ->where('log.ripe', '<>', 0)
+            ->get()
+            ->groupBy('hari');
+
+
+        // dd($shi['01-08-2022']['0']->unripe);
+        $count = 1;
+        foreach ($shi as $inc =>  $value) {
+            $sumUnripe = 0;
+            $sumRipe = 0;
+            $sumOverripe = 0;
+            $sumEmptyBunch = 0;
+            $sumAbnormal = 0;
+            foreach ($value as $key => $data) {
+
+                $sumUnripe += $data->unripe;
+                $sumRipe += $data->ripe;
+                $sumOverripe += $data->overripe;
+                $sumEmptyBunch += $data->empty_bunch;
+                $sumAbnormal += $data->abnormal;
+            }
+            $arrPerBulan[$inc]['id'] = $count;
+            $arrPerBulan[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+            $arrPerBulan[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('dddd, D MMMM Y');
+            $arrPerBulan[$inc]['harianUnripe'] = $sumUnripe;
+            $arrPerBulan[$inc]['harianRipe'] = $sumRipe;
+            $arrPerBulan[$inc]['harianOverripe'] = $sumOverripe;
+            $arrPerBulan[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+            $arrPerBulan[$inc]['harianAbnormal'] = $sumAbnormal;
+            $arrPerBulan[$inc]['hari'] = $inc;
+            $arrPerBulan[$inc]['persenUnripe'] = round((($sumUnripe / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenRipe'] = round((($sumRipe / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenOverripe'] = round((($sumOverripe / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenEmptyBunch'] = round((($sumEmptyBunch / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenAbnormal'] = round((($sumAbnormal / $arrPerBulan[$inc]['total']) * 100), 2);
+
+            $count++;
         }
+
+        // dd($arrPerBulan);
+        $hi = $arrPerBulan[$hari];
+
+        $sumRipePerhari = 0;
+        $hariPerShi = 1;
+        foreach ($arrPerBulan as $key => $value) {
+            $sumRipePerhari += $value['persenRipe'];
+            $hariPerShi++;
+        }
+        $shiBulan = round(($sumRipePerhari / $hariPerShi), 2);
+
+        // dd($shiBulan);
 
         $count = 1;
 
@@ -1056,16 +1030,130 @@ class CountController extends Controller
             $summary[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
             $summary[$inc]['harianAbnormal'] = $sumAbnormal;
             $summary[$inc]['updated'] = Carbon::now()->isoFormat('HH:mm:ss');
-
+            $summary[$inc]['monthYear'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('MMMM Y');
             $count++;
         }
 
         $arrSum = $summary[$hari];
         $arrData = $dataLog[$hari];
 
-        $filename = 'rekap-tbs-pks-skm-' . $hari . '-' . Carbon::now()->year . '.pdf';
-        $pdf = Pdf::loadView('export.logPdf', ['summary' => $arrSum, 'data' => $arrData]);
+        // dd($arrPerBulan[$hari]);
+        $filename = 'rekap-tbs-pks-skm-' . $hari . '.pdf';
+        $pdf = Pdf::loadView('export.logPdf', ['summary' => $arrSum, 'data' => $arrData, 'shiBulan' => $shiBulan, 'arrHari' => $arrPerBulan[$hari]]);
+
         return $pdf->stream($filename, array("Attachment" => false))->header('Content-Type', 'application/pdf');
+    }
+
+    public function pdfBot($hari)
+    {
+        $dataLog = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m-%Y') as hari"))
+            ->orderBy('log.timestamp', 'DESC')
+            ->get()
+            ->groupBy('hari');
+
+        $dateHiShi = new DateTime($hari);
+
+        $hourNow = new DateTime();
+
+        $dateHiShi = $dateHiShi->format('Y-m-d');
+
+        $arrPerBulan = array();
+        $shi = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m-%Y') as hari"))
+            ->whereMonth('log.timestamp', '=', Carbon::parse($dateHiShi)->month)
+            ->whereYear('log.timestamp', '=', Carbon::parse($dateHiShi)->year)
+            ->where('log.ripe', '<>', 0)
+            ->get()
+            ->groupBy('hari');
+
+
+        // dd($shi['01-08-2022']['0']->unripe);
+        $count = 1;
+        foreach ($shi as $inc =>  $value) {
+            $sumUnripe = 0;
+            $sumRipe = 0;
+            $sumOverripe = 0;
+            $sumEmptyBunch = 0;
+            $sumAbnormal = 0;
+            foreach ($value as $key => $data) {
+
+                $sumUnripe += $data->unripe;
+                $sumRipe += $data->ripe;
+                $sumOverripe += $data->overripe;
+                $sumEmptyBunch += $data->empty_bunch;
+                $sumAbnormal += $data->abnormal;
+            }
+            $arrPerBulan[$inc]['id'] = $count;
+            $arrPerBulan[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+            $arrPerBulan[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('dddd, D MMMM Y');
+            $arrPerBulan[$inc]['harianUnripe'] = $sumUnripe;
+            $arrPerBulan[$inc]['harianRipe'] = $sumRipe;
+            $arrPerBulan[$inc]['harianOverripe'] = $sumOverripe;
+            $arrPerBulan[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+            $arrPerBulan[$inc]['harianAbnormal'] = $sumAbnormal;
+            $arrPerBulan[$inc]['hari'] = $inc;
+            $arrPerBulan[$inc]['persenUnripe'] = round((($sumUnripe / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenRipe'] = round((($sumRipe / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenOverripe'] = round((($sumOverripe / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenEmptyBunch'] = round((($sumEmptyBunch / $arrPerBulan[$inc]['total']) * 100), 2);
+            $arrPerBulan[$inc]['persenAbnormal'] = round((($sumAbnormal / $arrPerBulan[$inc]['total']) * 100), 2);
+
+            $count++;
+        }
+
+        // dd($arrPerBulan);
+        $hi = $arrPerBulan[$hari];
+
+        $sumRipePerhari = 0;
+        $hariPerShi = 1;
+        foreach ($arrPerBulan as $key => $value) {
+            $sumRipePerhari += $value['persenRipe'];
+            $hariPerShi++;
+        }
+        $shiBulan = round(($sumRipePerhari / $hariPerShi), 2);
+
+        // dd($shiBulan);
+
+        $count = 1;
+
+        foreach ($dataLog as $inc =>  $value) {
+            $sumUnripe = 0;
+            $sumRipe = 0;
+            $sumOverripe = 0;
+            $sumEmptyBunch = 0;
+            $sumAbnormal = 0;
+            foreach ($value as $key => $data) {
+                $sumUnripe += $data->unripe;
+                $sumRipe += $data->ripe;
+                $sumOverripe += $data->overripe;
+                $sumEmptyBunch += $data->empty_bunch;
+                $sumAbnormal += $data->abnormal;
+            }
+            $summary[$inc]['id'] = $count;
+            $summary[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+            $summary[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('dddd, D MMMM Y');
+            $summary[$inc]['harianUnripe'] = $sumUnripe;
+            $summary[$inc]['harianRipe'] = $sumRipe;
+            $summary[$inc]['harianOverripe'] = $sumOverripe;
+            $summary[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
+            $summary[$inc]['harianAbnormal'] = $sumAbnormal;
+            $summary[$inc]['updated'] = Carbon::now()->isoFormat('HH:mm:ss');
+            $summary[$inc]['monthYear'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('MMMM Y');
+            $count++;
+        }
+
+        $arrSum = $summary[$hari];
+        $arrData = $dataLog[$hari];
+
+        // dd($arrPerBulan[$hari]);
+        $filename = 'rekap-tbs-pks-skm-' . $hari . '.pdf';
+        $pdf = Pdf::loadView('export.logPdf', ['summary' => $arrSum, 'data' => $arrData, 'shiBulan' => $shiBulan, 'arrHari' => $arrPerBulan[$hari]]);
+
+        $content = $pdf->download()->getOriginalContent();
+        Storage::put('public/pdf/' . $filename, $content);
+
+        return "sudah tersimpan diserver";
     }
 
     /**

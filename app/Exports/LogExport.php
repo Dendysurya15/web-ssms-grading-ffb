@@ -8,8 +8,10 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
+use Maatwebsite\Excel\Concerns\WithDrawings;
 
-class LogExport implements FromView, WithEvents
+class LogExport implements FromView, WithEvents, WithDrawings
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -35,6 +37,17 @@ class LogExport implements FromView, WithEvents
             'data' => $this->data,
         ]);
     }
+    public function drawings()
+    {
+        $drawing = new Drawing();
+        $drawing->setName('Logo');
+        $drawing->setDescription('This is my logo');
+        $drawing->setPath(public_path('/img/logo-SSS.png'));
+        $drawing->setHeight(90);
+        $drawing->setCoordinates('B3');
+
+        return $drawing;
+    }
     public function registerEvents(): array
     {
         // dd();
@@ -48,7 +61,7 @@ class LogExport implements FromView, WithEvents
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
-                            'color' => ['argb' => '#262B30'],
+                            'color' => ['argb' => '#20353F'],
                         ],
                     ],
                     'B' => ['alignment' => ['wrapText' => true]],

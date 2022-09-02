@@ -27,61 +27,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [CountController::class, 'dashboard'])->name('dashboard');
     Route::get('/grafik', [CountController::class, 'grafik'])->name('grafik');
     // Route::get('/tabel', [CountControLler::class, 'tabel']);
-    Route::get('/tabel', function () {
-        $arrLogPerhari = array();
-        $dataLog = DB::table('log')
-            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as hari"))
-            ->orderBy('log.timestamp', 'DESC')
-            ->get()
-            ->groupBy('hari');
-
-        $count = 1;
-
-        foreach ($dataLog as $inc =>  $value) {
-            $sumUnripe = 0;
-            $sumRipe = 0;
-            $sumOverripe = 0;
-            $sumEmptyBunch = 0;
-            $sumAbnormal = 0;
-            foreach ($value as $key => $data) {
-                $sumUnripe += $data->unripe;
-                $sumRipe += $data->ripe;
-                $sumOverripe += $data->overripe;
-                $sumEmptyBunch += $data->empty_bunch;
-                $sumAbnormal += $data->abnormal;
-            }
-            $arrLogPerhari[$inc]['id'] = $count;
-            $arrLogPerhari[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
-            $arrLogPerhari[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('D MMMM');
-            $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
-            $arrLogPerhari[$inc]['hari'] = $inc;
-            $arrLogPerhari[$inc]['persenRipe'] = round((($sumRipe / $arrLogPerhari[$inc]['total']) * 100), 2);
-
-            $count++;
-        }
-        // dd($arrLogPerhari);
-        $LogPerhari = '';
-        foreach ($arrLogPerhari as $value) {
-            $jam        = $value['timestamp'];
-            $LogPerhari .=
-                "[{v:'" . $jam . "\\n "  . "'}, {v:" .  $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " (" . $value['persenRipe'] . "%)'},
-                ],";
-
-            // "[{v:'" . $jam . "'}, {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " buah '},
-            // ],";
-        }
-
-        // dd($LogPerhari);
-        $logPerhariView = [
-            'plot2'     => 'Ripe',
-            'data'      => $LogPerhari
-        ];
-
-        return view('tabel', [
-            'logPerhariView' => $logPerhariView,
-        ]);
-    })->name('tabel');
-
     Route::get('/data', [CountController::class, 'tabel'])->name('data');
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
     Route::post('/update_profile', [AuthController::class, 'updateProfile'])->name('update_profile');
@@ -90,10 +35,65 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/{hari}/pdf', [CountController::class, 'pdf'])->name('pdf');
     Route::get('testing', function () {
         return view('export.logPdf');
-    });
+    })->name('testing');
 });
+Route::get('/tabel', function () {
+    $arrLogPerhari = array();
+    $dataLog = DB::table('log')
+        ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as hari"))
+        ->orderBy('log.timestamp', 'ASC')
+        ->get()
+        ->groupBy('hari');
+
+    $count = 1;
+
+    foreach ($dataLog as $inc =>  $value) {
+        $sumUnripe = 0;
+        $sumRipe = 0;
+        $sumOverripe = 0;
+        $sumEmptyBunch = 0;
+        $sumAbnormal = 0;
+        foreach ($value as $key => $data) {
+            $sumUnripe += $data->unripe;
+            $sumRipe += $data->ripe;
+            $sumOverripe += $data->overripe;
+            $sumEmptyBunch += $data->empty_bunch;
+            $sumAbnormal += $data->abnormal;
+        }
+        $arrLogPerhari[$inc]['id'] = $count;
+        $arrLogPerhari[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+        $arrLogPerhari[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('D MMMM');
+        $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
+        $arrLogPerhari[$inc]['hari'] = $inc;
+        $arrLogPerhari[$inc]['persenRipe'] = round((($sumRipe / $arrLogPerhari[$inc]['total']) * 100), 2);
+
+        $count++;
+    }
+    // dd($arrLogPerhari);
+    $LogPerhari = '';
+    foreach ($arrLogPerhari as $value) {
+        $jam        = $value['timestamp'];
+        $LogPerhari .=
+            "[{v:'" . $jam . "\\n "  . "'}, {v:" .  $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " (" . $value['persenRipe'] . "%)'},
+            ],";
+
+        // "[{v:'" . $jam . "'}, {v:" . $value['harianRipe'] . ", f:'" . $value['harianRipe'] . " buah '},
+        // ],";
+    }
+
+    // dd($LogPerhari);
+    $logPerhariView = [
+        'plot2'     => 'Ripe',
+        'data'      => $LogPerhari
+    ];
+
+    return view('tabel', [
+        'logPerhariView' => $logPerhariView,
+    ]);
+})->name('tabel');
 
 //auth
+Route::get('/{hari}/pdfBot', [CountController::class, 'pdfBot'])->name('pdfBot');
 Route::get('auth_form', [AuthController::class, 'auth_form']);
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('custom-login', [AuthController::class, 'customLogin'])->name('login.custom');

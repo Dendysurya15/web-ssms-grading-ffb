@@ -19,7 +19,7 @@
     .piechartClass {
         background: white;
         border-radius: 5px;
-        /* border: 1px solid red; */
+        /*  */
     }
 
     @media only screen and (min-width: 992px) {
@@ -32,15 +32,15 @@
         }
 
         .dashboard_div {
-            height: 590px;
+            height: 740px;
         }
 
         .ffb_div {
-            height: 590px;
+            height: 740px;
         }
 
         .piechart_div {
-            height: 590px;
+            height: 740px;
         }
 
         .img_pks_skm {
@@ -56,15 +56,15 @@
 
     @media only screen and (min-width: 1366px) {
         .dashboard_div {
-            height: 800px;
+            height: 940px;
         }
 
         .ffb_div {
-            height: 800px;
+            height: 940px;
         }
 
         .piechart_div {
-            height: 800px;
+            height: 940px;
         }
 
         .img_pks_skm {
@@ -112,9 +112,66 @@
                         CCTV yang terpasang di conveyor PKS Sungai
                         Kuning
                     </p>
+
+                    <div class="row text-center"
+                        style="line-height:25px;height:30px;background:#DAE9F5;border: 2px solid #013C5E;border-radius:10px 10px 0 0;">
+                        <p style="color:#013C5E" class="font-weight-bold">Update {{$dateToday}} : </p>
+                    </div>
+                    <div class="row text-center"
+                        style="color:#013C5E;background:#DAE9F5;font-size:39px;height:120px;line-height:140px;font-weight:bold;border-left:2px solid #013C5E;border-right:2px solid #013C5E;border-bottom:2px solid #013C5E;border-radius:0 0 10px 10px;">
+                        <div class="col">
+                            <div
+                                style="font-size: 20px;position:absolute;left:0;right: 0;
+                                margin-left: auto; margin-right: auto;border-right:2px solid #013C5E;height:120px;line-height:150px;">
+                            </div>
+                            <span style="font-size: 20px;position:absolute;margin-top:-30px;left:0;right: 0;
+                                margin-left: auto; margin-right: auto;">SHI
+                                RIPENESS</span>
+                            {{$shiBulan}} %
+                        </div>
+                        <div class="col" style="">
+                            {{-- <div
+                                style="margin-left:-10px;width:100%;height:150px;line-height:160px;border:1px solid green;position: absolute;">
+                            </div> --}}
+                            <span style="font-size: 20px;position:absolute;margin-top:-30px;left: 0; 
+                            right: 0; 
+                            margin-left: auto; 
+                            margin-right: auto;">HI
+                                RIPENESS</span>
+                            {{$prctgeAll[1]['persentase']}} %
+                        </div>
+                    </div>
+                    {{-- <div class="row mb-5" style="height:70px;line-height: 70px;
+                    text-align: center">
+                        <div class="col">
+                            <div
+                                style="background:#F4F6F9;border-radius:5px;font-style: italic;font-weight: bold;color:#013C5E">
+
+                                <div>{{$totalRipeMonth}} % / <span style="font-size: 12px"> {{$thisMonth}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div
+                                style="background:#F4F6F9;border-radius:5px;font-style: italic;font-weight: bold;color:#013C5E">
+                                HI Ripeness
+                                <div>{{$totalRipeDay}} % / <span style="font-size: 12px"> {{$thisMonth}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div> --}}
+                    {{-- <div class="row mt-3" style="height:70px;line-height: 70px;
+                    text-align: center">
+                        <div class="col">HI Ripeness</div>
+                        <div class="col-7">
+                            <div class="card" style="font-style: italic;font-weight: bold;color:#013C5E">
+                                <div>{{$totalPerDay}} % / <span style="font-size: 12px"> hari</span> </div>
+                            </div>
+                        </div>
+                    </div> --}}
                     <a href="https://www.google.com/maps/place/PKS+Sungai+Kuning%2FBatu+Kotam+(+CBI+)/@-2.3079174,111.4959546,764m/data=!3m2!1e3!4b1!4m5!3m4!1s0x2e089fddc54db897:0x9d08de2c7c2d1f61!8m2!3d-2.3079228!4d111.4981433"
                         target=”_blank”>
-                        <img src="{{ asset('img/foto_udara_pks_skm.jpeg') }}" class="img_pks_skm"
+                        <img src="{{ asset('img/foto_udara_pks_skm.jpeg') }}" class="img_pks_skm mt-4"
                             style="object-fit: cover;width: 100%;border-radius:5px;">
                         {{-- akdsfj --}}
                     </a>
@@ -123,6 +180,8 @@
                         Sungai
                         Kuning Mill
                     </p>
+
+
                 </div>
                 <div class="col-12 col-lg-4 mb-2 piechartClass" id="boxPiechart">
                     <div style="">
@@ -506,7 +565,7 @@
             titleTextStyle: {
                 color: "#013C5E",               // color 'red' or '#cc00cc'
                 fontName: "",    // 'Times New Roman'
-                fontSize: 15,               // 12, 18
+                fontSize: 16,               // 12, 18
                 bold: true,                 // true or false
                 italic: false                // true of false
             },
