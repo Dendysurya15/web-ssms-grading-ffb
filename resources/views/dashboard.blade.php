@@ -87,7 +87,7 @@
         <div class="col-12 col-lg-3">
             Pilih Tanggal
             <form class="" action="{{ route('dashboard') }}" method="get">
-                <input class="form-control" type="date" name="tgl" onchange="this.form.submit()">
+                <input class="form-control" type="date" name="tgl" id="inputDate" onchange="this.form.submit()">
             </form>
         </div>
         <div class="container-fluid pt-2 pl-3 pr-3">
@@ -453,6 +453,22 @@
 
 
 <script>
+    const params = new URLSearchParams(window.location.search)
+    var paramArr = [];
+    for (const param of  params) {
+        paramArr = param
+    }   
+
+    if(paramArr.length > 0){
+        date = paramArr[1]
+    }else{
+        date = new Date().toISOString().slice(0, 10)
+    }
+
+    $(document).ready(function(){
+        document.getElementById("inputDate").value = date;
+    });
+    
     bodymovin.loadAnimation({
     // animationData: { /* ... */ },
     container: document.getElementById('no-graph'), // required

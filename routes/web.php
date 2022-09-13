@@ -28,6 +28,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/grafik', [CountController::class, 'grafik'])->name('grafik');
     // Route::get('/tabel', [CountControLler::class, 'tabel']);
     Route::get('/data', [CountController::class, 'tabel'])->name('data');
+    Route::post('/storeOer', [CountController::class, 'storeOer'])->name('oer.store');
+    Route::get('/editOer/{id}', [CountController::class, 'editOer'])->name('oer.edit');
+    Route::delete('/deleteOer/{id}', [CountController::class, 'deleteOer'])->name('oer.destroy');
+    Route::get('/oer/index', [CountController::class, 'formOer'])->name('oer.index');
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
     Route::post('/update_profile', [AuthController::class, 'updateProfile'])->name('update_profile');
     Route::get('/foto', [CountController::class, 'foto'])->name('foto');

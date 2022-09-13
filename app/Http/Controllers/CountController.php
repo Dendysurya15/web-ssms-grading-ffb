@@ -10,6 +10,7 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel as ExcelExcel;
 use Maatwebsite\Excel\Facades\Excel;
@@ -379,6 +380,9 @@ class CountController extends Controller
             }
         }
 
+
+        // dd($arrLogPerhari);
+
         foreach ($arrLogPerhari as $value) {
 
             //Perhari
@@ -414,6 +418,57 @@ class CountController extends Controller
             'jamNow' => Carbon::now()->format('H:i:s'),
             'shiBulan' => $shiBulan,
         ]);
+    }
+
+    public function storeOer(Request $request)
+    {
+        $request->validate([
+            'oer' => 'required',
+        ]);
+
+        $hourNow = new DateTime();
+        $date = new DateTime($request->timestamp);
+        $dateInput = $date->format('Y-m-d') . ' ' . $hourNow->format('H:i:s');
+
+        //check same date data 
+        // dd($date);
+        // dd(Carbon::parse($request->timestamp)->day);
+        $dbCheck = DB::table('oer')
+            ->select('oer.*')
+            ->whereDay('oer.timestamp', Carbon::parse($request->timestamp)->day)
+            ->get();
+
+        // dd($dbCheck);
+        if ($dbCheck->first() != null) {
+            return redirect()->route('oer.index')
+                ->with('error', 'Data oer dengan tanggal tersebut telah ada.');
+        }
+        DB::table('oer')->insert(
+            ['oer' => $request->oer, 'timestamp' => $date]
+        );
+        return redirect()->route('oer.index')
+            ->with('success', 'Data oer berhasil disimpan.');
+    }
+
+    public function formOer()
+    {
+        $data = DB::table('oer')->orderBy('oer.timestamp', 'DESC')->simplePaginate(10);
+        // dd($data);
+        foreach ($data as $item) {
+            $hari = Carbon::parse($item->timestamp)->locale('id');
+            $hari->settings(['formatFunction' => 'translatedFormat']);
+            $item->tanggal = $hari->format('j F Y');
+            $item->tanggal = $hari->format('j F Y');
+        }
+        return view('oer.index', ['data' => $data]);
+    }
+    public function deleteOer($id)
+    {
+        // $data = DB::table('oer')->where('id', $id)->get();
+        DB::delete('delete from oer where id = ?', [$id]);
+        // dd($data);
+        // $data->delete();
+        return Redirect::back()->with(['success' => 'Berhasil menghapus data oer']);
     }
 
     /**
