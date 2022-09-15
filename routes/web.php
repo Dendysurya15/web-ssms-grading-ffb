@@ -45,12 +45,20 @@ Route::get('/tabel', function () {
     $arrLogPerhari = array();
     $dataLog = DB::table('log')
         ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as hari"))
-        ->orderBy('log.timestamp', 'ASC')
+        ->orderBy('log.timestamp', 'DESC')
         ->get()
         ->groupBy('hari');
 
+    // dd($dataLog);
     $count = 1;
 
+    $oerLog = DB::table('oer')
+        ->select('oer.*',  DB::raw("DATE_FORMAT(oer.timestamp,'%d-%m') as hari"))
+        ->orderBy('oer.timestamp', 'DESC')
+        ->get()
+        ->groupBy('hari');
+    $oerVal = 0;
+    $oerLog = json_decode($oerLog, true);
     foreach ($dataLog as $inc =>  $value) {
         $sumUnripe = 0;
         $sumRipe = 0;
@@ -64,16 +72,23 @@ Route::get('/tabel', function () {
             $sumEmptyBunch += $data->empty_bunch;
             $sumAbnormal += $data->abnormal;
         }
+
+        if (array_key_exists($inc, $oerLog)) {
+            if ($inc == $oerLog[$inc][0]['hari']) {
+                $oerVal = $oerLog[$inc][0]['oer'];
+            }
+        }
         $arrLogPerhari[$inc]['id'] = $count;
         $arrLogPerhari[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
         $arrLogPerhari[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('D MMMM');
+        $arrLogPerhari[$inc]['oer'] = $oerVal;
         $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
         $arrLogPerhari[$inc]['hari'] = $inc;
         $arrLogPerhari[$inc]['persenRipe'] = round((($sumRipe / $arrLogPerhari[$inc]['total']) * 100), 2);
 
         $count++;
     }
-    // dd($arrLogPerhari);
+
     $LogPerhari = '';
     foreach ($arrLogPerhari as $value) {
         $jam        = $value['timestamp'];

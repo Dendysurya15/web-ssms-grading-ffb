@@ -48,9 +48,10 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Tanggal</th>
-                                            <th>Total TBS Harian</th>
+                                            <th style="width:15%;">Total TBS Masuk</th>
+                                            <th>OER Harian</th>
+                                            <th style="width:15%;">Ripeness</th>
                                             <th>Unripe</th>
-                                            <th style="width:15%;">Ripe</th>
                                             <th>Overripe</th>
                                             <th>Empty Bunch</th>
                                             <th>Abnormal</th>
@@ -92,7 +93,7 @@
     $(function() {
         $('#rekapWaterLevel').DataTable({
             "searching": true,
-            "pageLength": 25,
+            "pageLength": 10,
             "columnDefs": [
     { "width": "10%", "targets": 8 },
     { "width": "15%", "targets": 1 },
@@ -105,8 +106,9 @@
             { data: 'id', name: 'id' },
             { data: 'timestamp', name: 'timestamp' },
             { data: 'total', name: 'total' },
-            { data: 'harianUnripe', name: 'harianUnripe' },
+            { data: 'oer', name: 'oer' },
             { data: 'harianRipe', name: 'harianRipe' },
+            { data: 'harianUnripe', name: 'harianUnripe' },
             { data: 'harianOverripe', name: 'harianOverripe' },
             { data: 'harianEmptyBunch', name: 'empty_bunch' },
             { data: 'harianAbnormal', name: 'harianAbnormal' },

@@ -37,7 +37,7 @@
                     <label for="title">Oer Harian (%) </label>
                     <div class="form-group mx-sm-3 mb-2">
                         <label for="inputPassword2" class="sr-only">Password</label>
-                        <input type="number" name="oer" class="form-control" id="inputPassword2" placeholder="Exp : 23">
+                        <input type="text" name="oer" class="form-control" id="inputPassword2" placeholder="Exp : 23">
                     </div>
                     <label for="">Tanggal</label>
                     <div class="form-group mx-sm-3 mb-2">

@@ -32,15 +32,15 @@
         }
 
         .dashboard_div {
-            height: 740px;
+            height: 640px;
         }
 
         .ffb_div {
-            height: 740px;
+            height: 640px;
         }
 
         .piechart_div {
-            height: 740px;
+            height: 640px;
         }
 
         .img_pks_skm {
@@ -56,15 +56,15 @@
 
     @media only screen and (min-width: 1366px) {
         .dashboard_div {
-            height: 940px;
+            height: 840px;
         }
 
         .ffb_div {
-            height: 940px;
+            height: 840px;
         }
 
         .piechart_div {
-            height: 940px;
+            height: 840px;
         }
 
         .img_pks_skm {
@@ -114,33 +114,64 @@
                     </p>
 
                     <div class="row text-center"
-                        style="line-height:25px;height:30px;background:#DAE9F5;border: 2px solid #013C5E;border-radius:10px 10px 0 0;">
+                        style="margin-top:40px;line-height:25px;height:30px;background:#DAE9F5;border: 2px solid #013C5E;border-radius:10px 10px 0 0;">
                         <p style="color:#013C5E" class="font-weight-bold">Update {{$dateToday}} : </p>
                     </div>
                     <div class="row text-center"
-                        style="color:#013C5E;background:#DAE9F5;font-size:39px;height:120px;line-height:140px;font-weight:bold;border-left:2px solid #013C5E;border-right:2px solid #013C5E;border-bottom:2px solid #013C5E;border-radius:0 0 10px 10px;">
-                        <div class="col">
+                        style="color:#013C5E;background:#DAE9F5;font-size:35px;height:280px;line-height:140px;font-weight:bold;border-left:2px solid #013C5E;border-right:2px solid #013C5E;border-bottom:2px solid #013C5E;border-radius:0 0 10px 10px;">
+                        <div class="col-6">
                             <div
                                 style="font-size: 20px;position:absolute;left:0;right: 0;
-                                margin-left: auto; margin-right: auto;border-right:2px solid #013C5E;height:120px;line-height:150px;">
+                                margin-left: auto; margin-right: auto;border-right:2px solid #013C5E;height:280px;line-height:140px;">
                             </div>
                             <span style="font-size: 20px;position:absolute;margin-top:-30px;left:0;right: 0;
-                                margin-left: auto; margin-right: auto;">SHI
+                                margin-left: auto; margin-right: auto;">HI
                                 RIPENESS</span>
-                            {{$shiBulan}} %
+                            {{$prctgeAll[1]['persentase']}} %
                         </div>
-                        <div class="col" style="">
+                        <div class="col-6">
                             {{-- <div
                                 style="margin-left:-10px;width:100%;height:150px;line-height:160px;border:1px solid green;position: absolute;">
                             </div> --}}
                             <span style="font-size: 20px;position:absolute;margin-top:-30px;left: 0; 
                             right: 0; 
                             margin-left: auto; 
-                            margin-right: auto;">HI
+                            margin-right: auto;">SHI
                                 RIPENESS</span>
-                            {{$prctgeAll[1]['persentase']}} %
+                            {{$shiBulan}} %
+                        </div>
+                        <div class="col-6" style="border-top:2px solid #013C5E;">
+                            {{-- <div
+                                style="margin-left:-10px;width:100%;height:150px;line-height:160px;border:1px solid green;position: absolute;">
+                            </div> --}}
+                            <span style="font-size: 20px;position:absolute;margin-top:-30px;left: 0; 
+                            right: 0; 
+                            margin-left: auto; 
+                            margin-right: auto;"> HI OER
+                            </span>
+                            @if ($hiOer != '-')
+                            {{$hiOer}}%
+                            @else
+                            {{$hiOer}}
+                            @endif
+                        </div>
+                        <div class="col-6" style="border-top:2px solid #013C5E;">
+                            {{-- <div
+                                style="margin-left:-10px;width:100%;height:150px;line-height:160px;border:1px solid green;position: absolute;">
+                            </div> --}}
+                            <span style="font-size: 20px;position:absolute;margin-top:-30px;left: 0; 
+                            right: 0; 
+                            margin-left: auto; 
+                            margin-right: auto;">SHI
+                                OER</span>
+                            @if ($shiOer != '-')
+                            {{$shiOer}}%
+                            @else
+                            {{$shiOer}}
+                            @endif
                         </div>
                     </div>
+
                     {{-- <div class="row mb-5" style="height:70px;line-height: 70px;
                     text-align: center">
                         <div class="col">
@@ -169,17 +200,18 @@
                             </div>
                         </div>
                     </div> --}}
-                    <a href="https://www.google.com/maps/place/PKS+Sungai+Kuning%2FBatu+Kotam+(+CBI+)/@-2.3079174,111.4959546,764m/data=!3m2!1e3!4b1!4m5!3m4!1s0x2e089fddc54db897:0x9d08de2c7c2d1f61!8m2!3d-2.3079228!4d111.4981433"
+                    {{-- <a
+                        href="https://www.google.com/maps/place/PKS+Sungai+Kuning%2FBatu+Kotam+(+CBI+)/@-2.3079174,111.4959546,764m/data=!3m2!1e3!4b1!4m5!3m4!1s0x2e089fddc54db897:0x9d08de2c7c2d1f61!8m2!3d-2.3079228!4d111.4981433"
                         target=”_blank”>
                         <img src="{{ asset('img/foto_udara_pks_skm.jpeg') }}" class="img_pks_skm mt-4"
                             style="object-fit: cover;width: 100%;border-radius:5px;">
-                        {{-- akdsfj --}}
-                    </a>
-                    <p class="pt-3 font-italic text-center" style=" color: #013C5E;">Foto
+
+                    </a> --}}
+                    {{-- <p class="pt-3 font-italic text-center" style=" color: #013C5E;">Foto
                         Udara PKS
                         Sungai
                         Kuning Mill
-                    </p>
+                    </p> --}}
 
 
                 </div>

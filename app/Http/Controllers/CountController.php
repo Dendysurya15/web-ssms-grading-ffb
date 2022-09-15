@@ -72,6 +72,14 @@ class CountController extends Controller
 
         $count = 1;
 
+        $oerLog = DB::table('oer')
+            ->select('oer.*',  DB::raw("DATE_FORMAT(oer.timestamp,'%d-%m-%Y') as hari"))
+            ->orderBy('oer.timestamp', 'DESC')
+            ->get()
+            ->groupBy('hari');
+
+        $oerVal = 0;
+        $oerLog = json_decode($oerLog, true);
         foreach ($dataLog as $inc =>  $value) {
             $sumUnripe = 0;
             $sumRipe = 0;
@@ -85,9 +93,17 @@ class CountController extends Controller
                 $sumEmptyBunch += $data->empty_bunch;
                 $sumAbnormal += $data->abnormal;
             }
+            if (array_key_exists($inc, $oerLog)) {
+                if ($inc == $oerLog[$inc][0]['hari']) {
+                    $oerVal = $oerLog[$inc][0]['oer'];
+                } else {
+                    $oerVal = 0;
+                }
+            }
             $arrLogPerhari[$inc]['id'] = $count;
-            $arrLogPerhari[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+            $arrLogPerhari[$inc]['total'] =  $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
             $arrLogPerhari[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('dddd, D MMMM Y');
+            $arrLogPerhari[$inc]['oer'] = $oerVal;
             $arrLogPerhari[$inc]['harianUnripe'] = $sumUnripe;
             $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
             $arrLogPerhari[$inc]['harianOverripe'] = $sumOverripe;
@@ -103,7 +119,13 @@ class CountController extends Controller
             $count++;
         }
 
+        // dd($arrLogPerhari);
+
         return DataTables::of($arrLogPerhari)
+            ->editColumn('oer', function ($model) {
+                return $model['oer'] . ' %';
+                // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
+            })
             ->editColumn('harianUnripe', function ($model) {
                 return $model['harianUnripe'] . ' (' . $model['persenUnripe'] . '%)';
                 // return '<span style="font-size:10px;">' . $model['harianUnripe'] . ' </span>';
@@ -242,7 +264,42 @@ class CountController extends Controller
             ->get()
             ->groupBy('hari');
 
-        // dd($shi['01-08-2022']['0']->unripe);
+        $oerLog = DB::table('oer')
+            ->select('oer.*',  DB::raw("DATE_FORMAT(oer.timestamp,'%d-%m') as hari"))
+            ->whereDay('oer.timestamp', '=', Carbon::parse($tglData)->day)
+            ->whereMonth('oer.timestamp', '=', Carbon::parse($tglData)->month)
+            ->whereYear('oer.timestamp', '=', Carbon::parse($tglData)->year)
+            ->orderBy('oer.timestamp', 'DESC')
+            ->first();
+
+
+        $oerMonth = DB::table('oer')
+            ->select('oer.*',  DB::raw("DATE_FORMAT(oer.timestamp,'%d-%m') as hari"))
+            ->whereMonth('oer.timestamp', '=', Carbon::parse($tglData)->month)
+            ->whereYear('oer.timestamp', '=', Carbon::parse($tglData)->year)
+            ->orderBy('oer.timestamp', 'DESC')
+            ->get();
+
+        $shiOer = 0;
+        if ($oerMonth->first() != null) {
+            $sumOer = 0;
+            $inc = 0;
+            foreach ($oerMonth as $key => $value) {
+                $sumOer += floatval($value->oer);
+                $inc++;
+            }
+            $shiOer = round($sumOer / $inc, 2);
+        } else {
+            $shiOer = '-';
+        }
+
+
+        if ($oerLog != null) {
+            $hiOer = $oerLog->oer;
+        } else {
+            $hiOer = '-';
+        }
+
         $count = 1;
         foreach ($shi as $inc =>  $value) {
             $sumUnripe = 0;
@@ -417,6 +474,8 @@ class CountController extends Controller
             'totalAll' => number_format($totalAll, 0, ".", "."),
             'jamNow' => Carbon::now()->format('H:i:s'),
             'shiBulan' => $shiBulan,
+            'hiOer' => $hiOer,
+            'shiOer' => $shiOer,
         ]);
     }
 
@@ -436,6 +495,8 @@ class CountController extends Controller
         $dbCheck = DB::table('oer')
             ->select('oer.*')
             ->whereDay('oer.timestamp', Carbon::parse($request->timestamp)->day)
+            ->whereMonth('oer.timestamp', Carbon::parse($request->timestamp)->month)
+            ->whereYear('oer.timestamp', Carbon::parse($request->timestamp)->year)
             ->get();
 
         // dd($dbCheck);
