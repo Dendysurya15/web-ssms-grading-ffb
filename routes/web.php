@@ -32,6 +32,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/editOer/{id}', [CountController::class, 'editOer'])->name('oer.edit');
     Route::delete('/deleteOer/{id}', [CountController::class, 'deleteOer'])->name('oer.destroy');
     Route::get('/oer/index', [CountController::class, 'formOer'])->name('oer.index');
+    Route::post('/storeCH', [CountController::class, 'storeCH'])->name('ch.store');
+    Route::get('/editCH/{id}', [CountController::class, 'editCH'])->name('ch.edit');
+    Route::delete('/deleteCH/{id}', [CountController::class, 'deleteCH'])->name('ch.destroy');
+    Route::get('/ch/index', [CountController::class, 'formCH'])->name('ch.index');
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile');
     Route::post('/update_profile', [AuthController::class, 'updateProfile'])->name('update_profile');
     Route::get('/foto', [CountController::class, 'foto'])->name('foto');

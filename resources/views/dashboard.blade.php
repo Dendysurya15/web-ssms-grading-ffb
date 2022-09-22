@@ -127,7 +127,11 @@
                             <span style="font-size: 20px;position:absolute;margin-top:-30px;left:0;right: 0;
                                 margin-left: auto; margin-right: auto;">HI
                                 RIPENESS</span>
+                            @if ($prctgeAll[1]['persentase'] != 0)
                             {{$prctgeAll[1]['persentase']}} %
+                            @else
+                            -
+                            @endif
                         </div>
                         <div class="col-6">
                             {{-- <div
@@ -138,7 +142,7 @@
                             margin-left: auto; 
                             margin-right: auto;">SHI
                                 RIPENESS</span>
-                            {{$shiBulan}} %
+                            {{$shiRipeness}} %
                         </div>
                         <div class="col-6" style="border-top:2px solid #013C5E;">
                             {{-- <div
@@ -149,10 +153,10 @@
                             margin-left: auto; 
                             margin-right: auto;"> HI OER
                             </span>
-                            @if ($hiOer != '-')
-                            {{$hiOer}}%
+                            @if ($hiOer != '-' && $hiOer != '0')
+                            {{$hiOer}} %
                             @else
-                            {{$hiOer}}
+                            -
                             @endif
                         </div>
                         <div class="col-6" style="border-top:2px solid #013C5E;">
@@ -261,9 +265,9 @@
                 <p style="color:#013C5E;font-size: 17px"> Update hasil grading TBS berdasarkan AI pada hari <span
                         class="font-weight-bold">
                         {{$dateToday}} </span>
-                    @if (!request()->has('tgl'))
-                    hingga pukul <span class="font-weight-bold"> {{$jamNow}} wib</span>
-                    @endif
+                    {{-- @if (!request()->has('tgl')) --}}
+                    hingga pukul <span class="font-weight-bold"> {{$jamLast}} wib</span>
+                    {{-- @endif --}}
                     dengan
                     total TBS
                     <span class="font-weight-bold"> {{$totalAll}}</span> buah
@@ -411,7 +415,7 @@
                 <div class=" card-title">
                     <i class="fas fa-chart-line pr-2"></i>Grafik Realtime Jumlah Janjang masuk
                     PKS SKM pada hari
-                    {{$dateToday}} pukul {{$jamNow}}
+                    {{$dateToday}} hingga pukul {{$jamLast}}
                 </div>
                 <div class="float-right">
                     <div class="list-inline">
@@ -609,7 +613,7 @@
         ]);
 
         var options = {
-            title: 'Persebaran TBS yang masuk ke PKS Sungai Kuning pada <?php echo  $dateToday; ?>',
+            title: 'Persebaran TBS yang masuk ke PKS Sungai Kuning pada <?php echo  $dateToday; ?> hingga pukul <?php  echo $jamLast ?>',
             titleTextStyle: {
                 color: "#013C5E",               // color 'red' or '#cc00cc'
                 fontName: "",    // 'Times New Roman'

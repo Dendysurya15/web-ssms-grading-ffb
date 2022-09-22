@@ -255,14 +255,44 @@ class CountController extends Controller
 
         $to = date($dateTo);
 
-        $arrPerBulan = array();
-        $shi = DB::table('log')
-            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m-%Y') as hari"))
-            ->whereMonth('log.timestamp', '=', Carbon::parse($dateHiShi)->month)
-            ->whereYear('log.timestamp', '=', Carbon::parse($dateHiShi)->year)
-            ->where('log.ripe', '<>', 0)
+        $startShi = Carbon::now()->startOfMonth();
+        $toShi = Carbon::parse($tglData)->addDays();
+
+        $arrShi      = '';
+        $arrShi = DB::table('log')
+            ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as hari"))
+            ->whereBetween('log.timestamp', [$startShi, $toShi])
+            ->orderBy('log.timestamp')
             ->get()
             ->groupBy('hari');
+
+        $arrShiLog = array();
+        $count = 1;
+        foreach ($arrShi as $key => $value) {
+            $sumUnripe = 0;
+            $sumRipe = 0;
+            $sumOverripe = 0;
+            $sumEmptyBunch = 0;
+            $sumAbnormal = 0;
+            foreach ($value as $key2 => $data) {
+                $sumUnripe += $data->unripe;
+                $sumRipe += $data->ripe;
+                $sumOverripe += $data->overripe;
+                $sumEmptyBunch += $data->empty_bunch;
+                $sumAbnormal += $data->abnormal;
+            }
+            $arrShiLog[$key]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
+            $arrShiLog[$key]['persenRipe'] = round((($sumRipe / $arrShiLog[$key]['total']) * 100), 2);
+
+            $count++;
+        }
+        $sumRipePerhari = 0;
+        $hariPerShi = 0;
+        foreach ($arrShiLog as $key => $value) {
+            $sumRipePerhari += $value['persenRipe'];
+            $hariPerShi++;
+        }
+        $shiRipeness = round(($sumRipePerhari / $hariPerShi), 2);
 
         $oerLog = DB::table('oer')
             ->select('oer.*',  DB::raw("DATE_FORMAT(oer.timestamp,'%d-%m') as hari"))
@@ -272,78 +302,35 @@ class CountController extends Controller
             ->orderBy('oer.timestamp', 'DESC')
             ->first();
 
+        $toShiOer = Carbon::parse($tglData)->addDays()->subMinutes();
 
-        $oerMonth = DB::table('oer')
+        $oerShi = DB::table('oer')
             ->select('oer.*',  DB::raw("DATE_FORMAT(oer.timestamp,'%d-%m') as hari"))
-            ->whereMonth('oer.timestamp', '=', Carbon::parse($tglData)->month)
-            ->whereYear('oer.timestamp', '=', Carbon::parse($tglData)->year)
-            ->orderBy('oer.timestamp', 'DESC')
+            ->whereBetween('oer.timestamp', [$startShi, $toShiOer])
+            ->orderBy('oer.timestamp', 'ASC')
             ->get();
 
         $shiOer = 0;
-        if ($oerMonth->first() != null) {
+        if ($oerShi->first() != null) {
             $sumOer = 0;
             $inc = 0;
-            foreach ($oerMonth as $key => $value) {
+            foreach ($oerShi as $key => $value) {
                 $sumOer += floatval($value->oer);
-                $inc++;
+                if ($value->oer != '0') {
+                    $inc++;
+                }
             }
             $shiOer = round($sumOer / $inc, 2);
         } else {
             $shiOer = '-';
         }
 
-
         if ($oerLog != null) {
             $hiOer = $oerLog->oer;
         } else {
             $hiOer = '-';
         }
-
-        $count = 1;
-        foreach ($shi as $inc =>  $value) {
-            $sumUnripe = 0;
-            $sumRipe = 0;
-            $sumOverripe = 0;
-            $sumEmptyBunch = 0;
-            $sumAbnormal = 0;
-            foreach ($value as $key => $data) {
-                // dd($data->unripe);
-                $sumUnripe += $data->unripe;
-                $sumRipe += $data->ripe;
-                $sumOverripe += $data->overripe;
-                $sumEmptyBunch += $data->empty_bunch;
-                $sumAbnormal += $data->abnormal;
-            }
-            // dd($sumOverripe);
-            $arrPerBulan[$inc]['id'] = $count;
-            $arrPerBulan[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
-            $arrPerBulan[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('dddd, D MMMM Y');
-            $arrPerBulan[$inc]['harianUnripe'] = $sumUnripe;
-            $arrPerBulan[$inc]['harianRipe'] = $sumRipe;
-            $arrPerBulan[$inc]['harianOverripe'] = $sumOverripe;
-            $arrPerBulan[$inc]['harianEmptyBunch'] = $sumEmptyBunch;
-            $arrPerBulan[$inc]['harianAbnormal'] = $sumAbnormal;
-            $arrPerBulan[$inc]['hari'] = $inc;
-            $arrPerBulan[$inc]['persenUnripe'] = round((($sumUnripe / $arrPerBulan[$inc]['total']) * 100), 2);
-            $arrPerBulan[$inc]['persenRipe'] = round((($sumRipe / $arrPerBulan[$inc]['total']) * 100), 2);
-            $arrPerBulan[$inc]['persenOverripe'] = round((($sumOverripe / $arrPerBulan[$inc]['total']) * 100), 2);
-            $arrPerBulan[$inc]['persenEmptyBunch'] = round((($sumEmptyBunch / $arrPerBulan[$inc]['total']) * 100), 2);
-            $arrPerBulan[$inc]['persenAbnormal'] = round((($sumAbnormal / $arrPerBulan[$inc]['total']) * 100), 2);
-
-            $count++;
-        }
-
-        $sumRipePerhari = 0;
-        $hariPerShi = 1;
-        foreach ($arrPerBulan as $key => $value) {
-            $sumRipePerhari += $value['persenRipe'];
-            $hariPerShi++;
-        }
-        $shiBulan = round(($sumRipePerhari / $hariPerShi), 2);
-
-
-        // dd($shiBulan);
+        // dd($shiOer);
 
         $logHariini      = '';
         $logHariini = DB::table('log')
@@ -353,6 +340,9 @@ class CountController extends Controller
             ->get()
             ->groupBy('jam_ke');
 
+        // dd($logHariini['08-19']['38']);
+        // $getlastData =
+        $jamLast = '';
         $file = DB::table('log_file')->get();
         $file_image = array();
         foreach ($file as $key => $value) {
@@ -395,6 +385,7 @@ class CountController extends Controller
                 $dataArr[$increment]['harianEmptyBunch'] = $sumEmptyBunch;
                 $dataArr[$increment]['harianAbnormal'] = $sumAbnormal;
 
+                $jamLast = $data->timestamp;
                 $totalUnripe += $sumUnripe;
                 $totalRipe += $sumRipe;
                 $totalOverripe += $sumOverripe;
@@ -437,9 +428,6 @@ class CountController extends Controller
             }
         }
 
-
-        // dd($arrLogPerhari);
-
         foreach ($arrLogPerhari as $value) {
 
             //Perhari
@@ -465,18 +453,70 @@ class CountController extends Controller
         $getDate->settings(['formatFunction' => 'translatedFormat']);
         // dd($getDate);
 
-        // dd($prctgeAll[1]);
         return view('dashboard', [
             'arrLogHariini' => $arrLogHariini,
             'prctgeAll' => $prctgeAll,
             'file' => $file_image,
             'dateToday' => $getDate->format('l, j F Y'),
             'totalAll' => number_format($totalAll, 0, ".", "."),
-            'jamNow' => Carbon::now()->format('H:i:s'),
-            'shiBulan' => $shiBulan,
+            'jamLast' => Carbon::parse($jamLast)->format('H:i'),
+            'shiRipeness' => $shiRipeness,
             'hiOer' => $hiOer,
             'shiOer' => $shiOer,
         ]);
+    }
+
+    public function storeCH(Request $request)
+    {
+        $request->validate([
+            'rain_fall' => 'required',
+        ]);
+
+        $hourNow = new DateTime();
+        $date = new DateTime($request->timestamp);
+        $dateInput = $date->format('Y-m-d') . ' ' . $hourNow->format('H:i:s');
+
+        //check same date data 
+        // dd($date);
+        // dd(Carbon::parse($request->timestamp)->day);
+        $dbCheck = DB::table('curah_hujan')
+            ->select('curah_hujan.*')
+            ->whereDay('curah_hujan.timestamp', Carbon::parse($request->timestamp)->day)
+            ->whereMonth('curah_hujan.timestamp', Carbon::parse($request->timestamp)->month)
+            ->whereYear('curah_hujan.timestamp', Carbon::parse($request->timestamp)->year)
+            ->get();
+
+        // dd($dbCheck);
+        if ($dbCheck->first() != null) {
+            return redirect()->route('ch.index')
+                ->with('error', 'Data curah hujan dengan tanggal tersebut telah ada.');
+        }
+        DB::table('curah_hujan')->insert(
+            ['rain_fall' => $request->rain_fall, 'timestamp' => $date]
+        );
+        return redirect()->route('ch.index')
+            ->with('success', 'Data curah hujan berhasil disimpan.');
+    }
+
+    public function formCH()
+    {
+        $data = DB::table('curah_hujan')->orderBy('curah_hujan.timestamp', 'DESC')->simplePaginate(10);
+        // dd($data);
+        foreach ($data as $item) {
+            $hari = Carbon::parse($item->timestamp)->locale('id');
+            $hari->settings(['formatFunction' => 'translatedFormat']);
+            $item->tanggal = $hari->format('j F Y');
+            $item->tanggal = $hari->format('j F Y');
+        }
+        return view('curah_hujan.index', ['data' => $data]);
+    }
+    public function deleteCH($id)
+    {
+        // $data = DB::table('oer')->where('id', $id)->get();
+        DB::delete('delete from curah_hujan where id = ?', [$id]);
+        // dd($data);
+        // $data->delete();
+        return Redirect::back()->with(['success' => 'Berhasil menghapus data oer']);
     }
 
     public function storeOer(Request $request)
