@@ -63,6 +63,24 @@ Route::get('/tabel', function () {
         ->groupBy('hari');
     $oerVal = 0;
     $oerLog = json_decode($oerLog, true);
+
+    $chLog = DB::connection('mysql2')->table('db_aws_bke')
+        ->select('db_aws_bke.*',  DB::raw("DATE_FORMAT(db_aws_bke.datetime,'%d-%m-%Y') as hari"))
+        ->orderBy('db_aws_bke.datetime', 'DESC')
+        ->get()
+        ->groupBy('hari');
+
+    $arrCh = array();
+    foreach ($chLog as $key => $data) {
+        $sum_rain = 0;
+        foreach ($data as $key2 => $value) {
+            $sum_rain += $value->rain_fall_real;
+        }
+        $arrCh[$key]['rain_fall'] = $sum_rain;
+        $arrCh[$key]['hari'] = $key;
+    }
+
+    $chVal = 0;
     foreach ($dataLog as $inc =>  $value) {
         $sumUnripe = 0;
         $sumRipe = 0;
@@ -82,16 +100,26 @@ Route::get('/tabel', function () {
                 $oerVal = $oerLog[$inc][0]['oer'];
             }
         }
+        if (array_key_exists($inc, $arrCh)) {
+            if ($inc == $arrCh[$inc]['hari']) {
+                $chVal = $arrCh[$inc]['rain_fall'];
+            } else {
+                $chVal = 0;
+            }
+        }
         $arrLogPerhari[$inc]['id'] = $count;
         $arrLogPerhari[$inc]['total'] = $sumUnripe + $sumRipe + $sumOverripe + $sumEmptyBunch + $sumAbnormal;
         $arrLogPerhari[$inc]['timestamp'] = Carbon::createFromFormat('Y-m-d H:i:s', $data->timestamp)->isoFormat('D MMMM');
         $arrLogPerhari[$inc]['oer'] = $oerVal;
+        $arrLogPerhari[$inc]['curah_hujan'] = $chVal;
         $arrLogPerhari[$inc]['harianRipe'] = $sumRipe;
         $arrLogPerhari[$inc]['hari'] = $inc;
         $arrLogPerhari[$inc]['persenRipe'] = round((($sumRipe / $arrLogPerhari[$inc]['total']) * 100), 2);
 
         $count++;
     }
+
+    // dd($arrLogPerhari);
 
     $LogPerhari = '';
     foreach ($arrLogPerhari as $value) {

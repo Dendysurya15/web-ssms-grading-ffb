@@ -50,6 +50,7 @@
                                             <th>Tanggal</th>
                                             <th style="width:15%;">Total TBS Masuk</th>
                                             <th>OER Harian</th>
+                                            <th>Curah Hujan</th>
                                             <th style="width:15%;">Ripeness</th>
                                             <th>Unripe</th>
                                             <th>Overripe</th>
@@ -107,6 +108,7 @@
             { data: 'timestamp', name: 'timestamp' },
             { data: 'total', name: 'total' },
             { data: 'oer', name: 'oer' },
+            { data: 'curah_hujan', name: 'curah_hujan' },
             { data: 'harianRipe', name: 'harianRipe' },
             { data: 'harianUnripe', name: 'harianUnripe' },
             { data: 'harianOverripe', name: 'harianOverripe' },
