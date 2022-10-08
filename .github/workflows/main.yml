@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: CI
+name: Auto Deploy
 
 # Controls when the workflow will run
 on:
@@ -32,7 +32,7 @@ jobs:
         with:
           switches: -avzr --delete --exclude=".git" --exclude=".github"
           path: /
-          remote_path: ${{ secrets.DEPLOY_GRADING_AI }} 
+          remote_path: ${{ secrets.DEPLOY_PATH_GRADING_AI }} 
           remote_host: ${{ secrets.DEPLOY_HOST_GRADING_AI }}
           remote_user: ${{ secrets.DEPLOY_USER_GRADING_AI }}
           remote_key: ${{ secrets.DEPLOY_KEY_GRADING_AI }}
