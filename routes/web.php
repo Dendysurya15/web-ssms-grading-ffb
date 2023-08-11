@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CountController;
+use App\Http\Controllers\SamplingController;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/grafik', [CountController::class, 'grafik'])->name('grafik');
     // Route::get('/tabel', [CountControLler::class, 'tabel']);
     Route::get('/data', [CountController::class, 'tabel'])->name('data');
+    Route::get('/dashboard_sampling', [SamplingController::class, 'index'])->name('dashboard_sampling');
+    Route::get('/get_table', [SamplingController::class, 'getDataTable'])->name('get_table');
+    Route::get('/filter_sampling', [SamplingController::class, 'filterDataSampling'])->name('filter_sampling');
     Route::post('/storeOer', [CountController::class, 'storeOer'])->name('oer.store');
     Route::get('/editOer/{id}', [CountController::class, 'editOer'])->name('oer.edit');
     Route::delete('/deleteOer/{id}', [CountController::class, 'deleteOer'])->name('oer.destroy');
