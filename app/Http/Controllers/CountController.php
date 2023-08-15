@@ -1064,14 +1064,17 @@ class CountController extends Controller
 
     public function foto()
     {
-        $file = DB::table('log_file')->get();
-        $file_image = array();
-        foreach ($file as $key => $value) {
-            $file_image[] = $value->file . '.JPG';
-        }
+        $folderPath = public_path('img/ffb');
+        $files = scandir($folderPath);
 
-        return view('foto', ['file' => $file_image]);
+        // Remove "." and ".." from the list of files
+        $files = array_diff($files, ['.', '..']);
+
+        // dd($files);
+
+        return view('foto', ['files' => $files]);
     }
+
 
     public function export($hari)
     {

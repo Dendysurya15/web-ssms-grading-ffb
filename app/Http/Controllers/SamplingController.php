@@ -8,6 +8,9 @@ use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Yajra\Datatables\Datatables;
+use Carbon\Carbon;
+
+
 
 class SamplingController extends Controller
 {
@@ -238,39 +241,106 @@ class SamplingController extends Controller
             ->select([
                 DB::raw("SUM(tp) as total_tp"),
                 DB::raw("SUM(kastrasi) as total_kastrasi"),
-                DB::raw("SUM(ripe) as ripe"),
-                DB::raw("SUM(unripe) as unripe"),
-                DB::raw("SUM(overripe) as overripe"),
-                DB::raw("SUM(empty_bunch) as empty_bunch"),
-                DB::raw("SUM(abnormal) as abnormal")
+                DB::raw("SUM(ripe) as total_ripe"),
+                DB::raw("SUM(unripe) as total_unripe"),
+                DB::raw("SUM(overripe) as total_overripe"),
+                DB::raw("SUM(empty_bunch) as total_bunch"),
+                DB::raw("SUM(abnormal) as total_abnormal"),
+                DB::raw("MAX(log_sampling.waktu_selesai) as date"), // Use MAX as an example
+                DB::raw("MAX(log_sampling.bisnis_unit) as est"),   // Use MAX as an example
+
             ])
             ->where('log_sampling.waktu_mulai', 'like', '%' . $req_tgl . '%')
+            ->where('log_sampling.bisnis_unit', '=', $estate)
             ->where('log_sampling.mill_id', '=', $mill)
             ->get();
 
-        $total_tp = $Chart->sum('total_tp'); // Calculate the sum of tp
-        $total_kastrasi = $Chart->sum('total_kastrasi'); // Calculate the sum of kastrasi
-        $total_janjang = $total_tp + $total_kastrasi; // Calculate the sum of tp and kastrasi
+        $total_tp = $Chart->sum('total_tp');
+        $total_kastrasi = $Chart->sum('total_kastrasi');
+        $total_ripe = $Chart->sum('total_ripe');
+        $total_unripe = $Chart->sum('total_unripe');
+        $total_overripe = $Chart->sum('total_overripe');
+        $total_bunch = $Chart->sum('total_bunch');
+        $total_abnormal = $Chart->sum('total_abnormal');
+        $est = $Chart[0]->est;
+        $date = date('Y-m-d', strtotime($Chart[0]->date));
 
+
+        $total_janjang = $total_tp + $total_kastrasi + $total_ripe + $total_unripe + $total_overripe + $total_bunch + $total_abnormal;
+
+        // dd($Chart);
         $ChartResult = [
-            'total_tp' => $total_tp,
+            // 'total_tp' => $total_tp,
             'total_kastrasi' => $total_kastrasi,
-            'total_janjang' => $total_janjang
+            'total_ripe' => $total_ripe,
+            'total_unripe' => $total_unripe,
+            'total_overripe' => $total_overripe,
+            'total_bunch' => $total_bunch,
+            'total_abnormal' => $total_abnormal,
+            'total_janjang' => $total_janjang,
+            'est' => $est,
+            'date' => $date
+
         ];
 
-        // return response()->json($ChartResult);
+        $chart_persen = DB::table('log_sampling')
 
-        dd($ChartResult);
+            ->where('log_sampling.waktu_mulai', 'like', '%' . $req_tgl . '%')
+            ->where('log_sampling.bisnis_unit', '=', $estate)
+            ->where('log_sampling.mill_id', '=', $mill)
+            ->orderBy('waktu_mulai', 'asc')
+            ->get();
 
-        $pie_chart = array();
-        foreach ($Chart as $key => $value) {
+        $grouped_data = [];
+
+        foreach ($chart_persen as $item) {
+            $waktu_mulai = $item->waktu_mulai;
+            $hourly_interval = date('H' . '.' . '00', strtotime($waktu_mulai));
+
+            if (!isset($grouped_data[$hourly_interval])) {
+                $grouped_data[$hourly_interval] = [];
+            }
+
+            $grouped_data[$hourly_interval][] = $item;
         }
 
+        // $grouped_data now contains the data grouped by hours in the "waktu_mulai" field
+        $percen = array();
+        foreach ($grouped_data as $key => $value) {
+            $ripe = 0;
+            $kastrasi = 0;
+            $unripe = 0;
+            $overripe = 0;
+            $empty_bunch = 0;
+            $abnormal = 0;
+            foreach ($value as $key1 => $value2) {
+                $ripe = +$value2->ripe;
+                $kastrasi = +$value2->kastrasi;
+                $unripe = +$value2->unripe;
+                $overripe = +$value2->overripe;
+                $empty_bunch = +$value2->empty_bunch;
+                $abnormal = +$value2->abnormal;
+            }
+
+            $total = $ripe + $kastrasi + +$unripe + $overripe + $empty_bunch + $abnormal;
+            $percenRipe = round(($ripe / $total) * 100, 2);
+
+            // $percen[$key]['ripe'] = $ripe;
+            // $percen[$key]['kastrasi'] = $kastrasi;
+            // $percen[$key]['unripe'] = $unripe;
+            // $percen[$key]['overripe'] = $overripe;
+            // $percen[$key]['empty_bunch'] = $empty_bunch;
+            // $percen[$key]['abnormal'] = $abnormal;
+            // $percen[$key]['total'] = $total;
+            $percen[$key]['Percen_ripe'] = $percenRipe;
+        }
+        // dd($percen);
         // dd($data, $estate, $req_tgl);
         return response()->json([
             'draw' => intval($request->input('draw')),
-
+            'chart' => $ChartResult,
             'data' => $data,
+            'percen' => $percen,
         ]);
     }
 }

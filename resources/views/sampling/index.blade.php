@@ -114,6 +114,11 @@
 
         <div class="card">
             <div class="row">
+                <div id="title">
+                    <h1 style="text-align: center;"></h1>
+
+                </div>
+
                 <div class="col-md-6">
                     <div id="chart-pie"></div>
                 </div>
@@ -121,6 +126,9 @@
                     <div id=chart-line></div>
                 </div>
 
+                <div class="col-md-12">
+                    <div id=ripeness></div>
+                </div>
             </div>
         </div>
 
@@ -371,7 +379,11 @@
             }
         }]
     };
-    var Lines = {
+    var chart = new ApexCharts(document.querySelector("#chart-pie"), options);
+    chart.render();
+
+
+    var Options2 = {
         series: [{
             name: "Desktops",
             data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
@@ -404,12 +416,12 @@
         }
     };
 
-    var Lines = new ApexCharts(document.querySelector("#chart-line"), Lines);
+    var Lines = new ApexCharts(document.querySelector("#chart-line"), Options2);
     Lines.render();
+    var ripenes = new ApexCharts(document.querySelector("#ripeness"), Options2);
+    ripenes.render();
 
-    var chart = new ApexCharts(document.querySelector("#chart-pie"), options);
 
-    chart.render();
     $(document).ready(function() {
         // Initialize initial values
         var date = $("#inputDate").val() || getCurrentDate();
@@ -489,7 +501,7 @@
                 // Add a delay before performing the AJAX request
                 setTimeout(function() {
                     performAjaxRequest();
-                }, 2000);
+                }, 3500);
             }
         });
 
@@ -501,7 +513,7 @@
                 // Add a delay of 2 seconds (2000 milliseconds) before performing the AJAX request
                 setTimeout(function() {
                     performAjaxRequest();
-                }, 2000);
+                }, 3500);
             }
         });
 
@@ -514,7 +526,7 @@
             var no_plat = $("#list_plat").val();
             var driver = $("#list_driver").val();
             var driverStatus = $("#status").val();
-
+            $('#chart-pie').empty()
             $.ajax({
                 url: "{{ route('newDatatables') }}",
                 method: "GET",
@@ -532,6 +544,8 @@
                 success: function(result) {
                     // Handle the success response
                     var data = result.data;
+                    var chart = result.chart;
+                    var percen = result.percen;
 
                     dataTable.clear().draw();
 
@@ -539,6 +553,116 @@
                     dataTable.rows.add(data);
                     dataTable.draw();
 
+                    // Get the reference to the h1 element inside the title div
+                    var titleElement = document.querySelector("#title h1");
+
+                    // Set the dynamic value as the innerHTML of the h1 element
+                    titleElement.innerHTML = chart.est + " " + chart.date; // Concatenate the values with a space in between
+
+
+
+
+                    // Destroy the existing chart container
+                    var chartContainer = document.querySelector("#chart-pie");
+                    while (chartContainer.firstChild) {
+                        chartContainer.removeChild(chartContainer.firstChild);
+                    }
+
+                    // console.log(chart);
+                    var newSeriesData = [
+                        chart.total_kastrasi,
+                        chart.total_ripe,
+                        chart.total_unripe,
+                        chart.total_overripe,
+                        chart.total_bunch,
+                        chart.total_abnormal,
+
+                    ];
+                    var categories = [
+                        'Total Kastrasi',
+                        'Total Ripe',
+                        'Total Unripe',
+                        'Total Overripe',
+                        'Total Empty Bunch',
+                        'Total Abnormal',
+                    ];
+
+                    var LegendTotal = [
+                        chart.total_janjang,
+                        chart.est,
+                        chart.date,
+                    ];
+
+                    var legendCategories = [
+                        'Total Janjang',
+                        'Estate',
+                        'Tanggal',
+                    ]
+                    // Create a new chart with updated data
+                    var updatedChart = new ApexCharts(chartContainer, {
+                        series: newSeriesData,
+                        chart: {
+                            type: 'donut',
+                            height: 300,
+                        },
+                        labels: categories,
+                        responsive: [{
+                            breakpoint: undefined,
+                            options: {
+                                chart: {
+                                    animations: {
+                                        enabled: true,
+                                        easing: 'easeinout',
+                                        speed: 800,
+                                        animateGradually: {
+                                            enabled: true,
+                                            delay: 150
+                                        },
+                                        dynamicAnimation: {
+                                            enabled: true,
+                                            speed: 350
+                                        }
+                                    }
+                                },
+                            },
+                        }]
+                    });
+
+                    updatedChart.render();
+
+                    Lines.updateSeries([{
+                        name: 'Janjang',
+                        data: newSeriesData,
+
+                    }])
+                    Lines.updateOptions({
+                        xaxis: {
+                            categories: categories
+                        },
+                        title: {
+                            text: 'Grading AI ',
+                            align: 'left'
+                        },
+                    })
+                    // Extract time values (categories) and Percen_ripe values (data points)
+                    const timeValues = Object.keys(percen);
+                    const percenRipeValues = Object.values(percen).map(entry => entry.Percen_ripe);
+
+                    // Assuming you have initialized the ApexCharts instance as "ripenes"
+                    ripenes.updateSeries([{
+                        name: 'Janjang',
+                        data: percenRipeValues,
+                    }, ]);
+
+                    ripenes.updateOptions({
+                        xaxis: {
+                            categories: timeValues,
+                        },
+                        title: {
+                            text: 'Ripeness by Hours',
+                            align: 'left',
+                        },
+                    });
 
 
                     isUpdating = false;

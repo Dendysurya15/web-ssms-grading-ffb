@@ -136,6 +136,14 @@ session_start();
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ asset('/dashboard_sampling') }}" class="nav-link">
+                                <i class="nav-icon fa fa-image"></i>
+                                <p>
+                                    Grading Ai
+                                </p>
+                            </a>
+                        </li>
                         <li class="nav-item fixed-bottom mb-3" heig style="position: absolute;">
                             <a href="{{ asset('/logout') }}" class="nav-link ">
                                 <i class="nav-icon fa fa-sign-out-alt"></i>
