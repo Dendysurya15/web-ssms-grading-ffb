@@ -1,5 +1,5 @@
 <?php
- session_start();
+session_start();
 ?>
 <!DOCTYPE html>
 <html>
@@ -33,7 +33,7 @@
     <!--download-->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/buttons.dataTables.min.css') }}" />
     <!--download-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/jquery.dataTables.min.css') }}" />
+    <!-- <link rel="stylesheet" type="text/css" href="{{ asset('css/jquery.dataTables.min.css') }}" /> -->
 
 
     <style type="text/css">
@@ -82,29 +82,24 @@
                     <a class="nav-link">Selamat datang !</a>
                 </li>
                 <li class="nav-item dropdown ml-auto">
-                    <a href="" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false"> {{Auth::user()->name}}</a>
+                    <a href="" class="nav-link dropdown-toggle" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> {{Auth::user()->name}}</a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                        <a href="{{asset('profile')}}" class="dropdown-item"> <i class="nav-icon fa fa-user"></i> <span
-                                class="ml-2"> Edit
+                        <a href="{{asset('profile')}}" class="dropdown-item"> <i class="nav-icon fa fa-user"></i> <span class="ml-2"> Edit
                                 Profile</span>
                         </a>
-                        <a href="{{ asset('/logout') }}" class="dropdown-item"> <i
-                                class="nav-icon fa fa-sign-out-alt"></i><span class="ml-2"> Log Out</span></a>
+                        <a href="{{ asset('/logout') }}" class="dropdown-item"> <i class="nav-icon fa fa-sign-out-alt"></i><span class="ml-2"> Log Out</span></a>
                     </div>
                 </li>
             </ul>
         </nav>
         <aside class="main-sidebar sidebar-light-primary elevation-4">
             <a href="{{ asset('/') }}" class="brand-link">
-                <img src="{{ asset('img/CBI-logo.png') }}" alt="Covid Tracker"
-                    class="brand-image img-circle elevation-3" style="opacity: .8">
+                <img src="{{ asset('img/CBI-logo.png') }}" alt="Covid Tracker" class="brand-image img-circle elevation-3" style="opacity: .8">
                 <span class="brand-text font-weight-light">Grading TBS SKM</span>
             </a>
             <div class="sidebar">
                 <nav class="" style="height: 100%">
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                        data-accordion="false" style="height: 100%">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false" style="height: 100%">
                         <!-- USER LAB -->
 
                         <!-- TABEL -->

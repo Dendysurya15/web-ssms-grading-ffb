@@ -31,6 +31,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/data', [CountController::class, 'tabel'])->name('data');
     Route::get('/dashboard_sampling', [SamplingController::class, 'index'])->name('dashboard_sampling');
     Route::get('/get_table', [SamplingController::class, 'getDataTable'])->name('get_table');
+    Route::get('/getDateTab', [SamplingController::class, 'getDataTable'])->name('getDateTab');
     Route::get('/filter_sampling', [SamplingController::class, 'filterDataSampling'])->name('filter_sampling');
     Route::post('/storeOer', [CountController::class, 'storeOer'])->name('oer.store');
     Route::get('/editOer/{id}', [CountController::class, 'editOer'])->name('oer.edit');
@@ -48,6 +49,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('testing', function () {
         return view('export.logPdf');
     })->name('testing');
+
+    Route::get('/getFilterTemuan', [SamplingController::class, 'getFilterTemuan'])->name('getFilterTemuan');
+
+    Route::get('/newDatatables', [SamplingController::class, 'newDatatables'])->name('newDatatables');
 });
 Route::get('/tabel', function () {
     $arrLogPerhari = array();
