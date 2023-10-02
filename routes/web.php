@@ -51,8 +51,8 @@ Route::group(['middleware' => 'auth'], function () {
     })->name('testing');
 
     Route::get('/getFilterTemuan', [SamplingController::class, 'getFilterTemuan'])->name('getFilterTemuan');
-
     Route::get('/newDatatables', [SamplingController::class, 'newDatatables'])->name('newDatatables');
+    Route::get('/filterLog', [SamplingController::class, 'filterLog'])->name('filterLog');
 });
 Route::get('/tabel', function () {
     $arrLogPerhari = array();

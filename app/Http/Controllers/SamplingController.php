@@ -20,33 +20,7 @@ class SamplingController extends Controller
     {
         $list_mill = DB::table('list_mill')->get();
 
-        // $dateToday = new DateTime('2023-08-01');
 
-        // $dateToday = $dateToday->format('Y-m-d');
-
-        // $queryData = DB::table('log_sampling')
-        //     ->whereDate('waktu_selesai', $dateToday)
-        //     ->get();
-
-
-
-        // $list_mill = DB::table('log_sampling')->get();
-
-        // $queryReg = $list_mill->groupBy('reg_id')->map(function ($items, $reg_id) {
-        //     return $reg_id;
-        // })->toArray();
-
-
-
-
-        // $list_reg = array();
-        // foreach ($queryReg as $key => $data) {
-        //     $query = DB::connection('mysql2')->table('reg')
-        //         ->join('srsssmsc_grading_ai.list_mill', 'reg.id', '=', 'list_mill.reg_id')
-        //         ->where('list_mill.reg_id', $data)
-        //         ->get();
-        //     $list_reg[$key] = $query[0]->nama;
-        // }
 
         $ListReg = DB::connection('mysql3')->table('reg')
             ->get();
@@ -64,9 +38,20 @@ class SamplingController extends Controller
             ->get();
         $list_mil = json_decode($list_mil, true);
 
-
+        $log_sampling = DB::table('log_sampling')->get();
         // dd($list_est, $list_wil);
+        $folderPath = public_path('img/ffb');
+        $files = scandir($folderPath);
 
+        // Remove "." and ".." from the list of files
+        $files = array_diff($files, ['.', '..']);
+
+
+        // new filter 
+
+
+
+        // dd($list_mil, $list_est);
 
 
         return view('sampling/index', [
@@ -74,6 +59,9 @@ class SamplingController extends Controller
             'list_will' => $list_wil, // Change this to 'list_will'
             'list_est' => $list_est, // Change this to 'list_will'
             'list_mil' => $list_mil, // Change this to 'list_will'
+            'files' => $files,
+            'data' => $log_sampling,
+
         ]);
     }
 
@@ -204,17 +192,43 @@ class SamplingController extends Controller
     }
 
 
+    public function filterLog(Request $request)
+    {
+        $tanggal =  $request->get('tanggal');
+        $est =  $request->get('est');
+        $list_mil =  $request->get('list_mil');
+
+        $parts = explode('-', $est);
+
+        if (count($parts) === 2) {
+            $valueAfterHyphen = $parts[1];
+        } else {
+            $valueAfterHyphen = '-';
+        }
+
+        $log_sampling = DB::table('log_sampling')
+            ->select('log_sampling.*') // Corrected the select statement
+            ->where('log_sampling.mill_id', '=', $list_mil)
+            ->where('log_sampling.waktu_mulai', 'LIKE', '%' . $tanggal . '%') // Changed '=' to 'LIKE' for partial matching
+            ->get();
+
+        // dd($log_sampling);
+        return response()->json([
+            'log' => $log_sampling,
+        ]);
+    }
+
     public function newDatatables(Request $request)
     {
-        $req_tgl =  $request->get('date');
-        $estate =  $request->get('estate');
-        $mill =  $request->get('mill');
-        $no_plat =  $request->get('no_plat');
-        $driver =  $request->get('driver');
-        $driverStatus =  $request->get('driverStatus');
+
+        $req_tgl =   $request->get('tanggal');
+        $mill =  $request->get('list_mil');
+        $no_plat =  $request->get('list_platx');
+        $driver =  $request->get('list_driverx');
+        $driverStatus =  $request->get('statusx');
 
 
-        // dd($req_tgl, $estate, $mill, $no_plat, $driver, $driverStatus)
+        // dd($req_tgl, $mill, $no_plat, $driver, $driverStatus);
         // // dd($estate);
 
         // Query without ->get()
@@ -228,7 +242,7 @@ class SamplingController extends Controller
                 DB::raw("CASE WHEN (log_sampling.unripe + log_sampling.ripe + log_sampling.overripe + log_sampling.empty_bunch + log_sampling.abnormal) > 0 THEN (ripe / (log_sampling.unripe + log_sampling.ripe + log_sampling.overripe + log_sampling.empty_bunch + log_sampling.abnormal + log_sampling.kastrasi )) * 100 ELSE 0 END as ripeness")
             )
             ->where('log_sampling.waktu_mulai', 'like', '%' . $req_tgl . '%')
-            ->where('log_sampling.bisnis_unit', '=', $estate)
+            // ->where('log_sampling.bisnis_unit', '=', $estate)
             ->where('log_sampling.mill_id', '=', $mill)
             ->where('log_sampling.no_plat', '=', $no_plat)
             ->where('log_sampling.nama_driver', '=', $driver)
@@ -251,7 +265,7 @@ class SamplingController extends Controller
 
             ])
             ->where('log_sampling.waktu_mulai', 'like', '%' . $req_tgl . '%')
-            ->where('log_sampling.bisnis_unit', '=', $estate)
+            // ->where('log_sampling.bisnis_unit', '=', $estate)
             ->where('log_sampling.mill_id', '=', $mill)
             ->get();
 
@@ -286,7 +300,7 @@ class SamplingController extends Controller
         $chart_persen = DB::table('log_sampling')
 
             ->where('log_sampling.waktu_mulai', 'like', '%' . $req_tgl . '%')
-            ->where('log_sampling.bisnis_unit', '=', $estate)
+            // ->where('log_sampling.bisnis_unit', '=', $estate)
             ->where('log_sampling.mill_id', '=', $mill)
             ->orderBy('waktu_mulai', 'asc')
             ->get();
@@ -303,7 +317,7 @@ class SamplingController extends Controller
 
             $grouped_data[$hourly_interval][] = $item;
         }
-
+        // dd($data);
         // $grouped_data now contains the data grouped by hours in the "waktu_mulai" field
         $percen = array();
         foreach ($grouped_data as $key => $value) {
@@ -323,8 +337,12 @@ class SamplingController extends Controller
             }
 
             $total = $ripe + $kastrasi + +$unripe + $overripe + $empty_bunch + $abnormal;
-            $percenRipe = round(($ripe / $total) * 100, 2);
-
+            if ($total != 0) {
+                $percenRipe = round(($ripe / $total) * 100, 2);
+            } else {
+                // Handle the case where $total is zero (division by zero)
+                $percenRipe = 0; // or set it to some other default value or handle it as needed
+            }
             // $percen[$key]['ripe'] = $ripe;
             // $percen[$key]['kastrasi'] = $kastrasi;
             // $percen[$key]['unripe'] = $unripe;
@@ -334,7 +352,7 @@ class SamplingController extends Controller
             // $percen[$key]['total'] = $total;
             $percen[$key]['Percen_ripe'] = $percenRipe;
         }
-        // dd($percen);
+        // dd($data);
         // dd($data, $estate, $req_tgl);
         return response()->json([
             'draw' => intval($request->input('draw')),

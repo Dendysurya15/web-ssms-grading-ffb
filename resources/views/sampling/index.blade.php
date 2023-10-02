@@ -7,51 +7,52 @@
 
 
     <section class="content">
+
         <div class="card">
             <div class="card-body">
-                FILTER
+                New FIlter
                 <div class="row">
                     <div class="col-12 col-lg-3">
                         <label for="">Pilih Tanggal</label>
                         <form class="" action="" method="get">
                             {{ csrf_field() }}
-                            <input class="form-control" type="date" name="tgl" id="inputDate">
+                            <input class="form-control" type="date" name="tgl" id="inputDatex">
                         </form>
                     </div>
                     <div class="col-12 col-lg-3">
-                        <label for="selectReg">Reg</label>
-                        <select name="selectReg" id="selectReg" class="form-control">
-                            @foreach ($list_reg as $key => $item)
-                            <option value="{{ $item['id'] }}">{{ $item['nama'] }}</option>
-                            @endforeach
+                        <label for="selectRegx">Reg</label>
+                        <select name="selectRegx" id="selectRegx" class="form-control" onchange="populateWil(this.value)">
+                            <!-- Options will be dynamically added using JavaScript -->
                         </select>
                     </div>
                     <div class="col-12 col-lg-3">
-                        <label for="selectWil">Wil</label>
-                        <select name="selectWil" id="selectWil" class="form-control">
+                        <label for="selectWilx">Wil</label>
+                        <select name="selectWilx" id="selectWilx" class="form-control" onchange="populateEstate(this.value)">
                             <!-- Options will be dynamically added using JavaScript -->
                         </select>
                     </div>
 
                 </div>
+
+
                 <div class="row">
                     <div class="col-12 col-lg-3">
                         <label for="">EST</label>
-                        <select name="selectEst" id="selectEst" class="form-control">
+                        <select name="selectEstx" id="selectEstx" class="form-control" onchange="populatemil(this.value)">
+                            <!-- Options will be dynamically added using JavaScript -->
+                        </select>
+                    </div>
+
+
+                    <div class="col-12 col-lg-3">
+                        <label for="">Mill</label>
+                        <select name="list_milx" id="list_milx" class="form-control">
 
                         </select>
                     </div>
                     <div class="col-12 col-lg-3">
-                        <label for="">Mill</label>
-                        <select name="list_mil" id="list_mil" class="form-control">
-                            <!-- @foreach ($list_mil as $key => $item)
-                            <option value="{{ $item['id'] }}">{{ $item['mill'] }}</option>
-                            @endforeach -->
-                        </select>
-                    </div>
-                    <div class="col-12 col-lg-3">
                         <label for="">No Plat</label>
-                        <select name="list_plat" id="list_plat" class="form-control">
+                        <select name="list_platx" id="list_platx" class="form-control">
                             <!-- <option value="">askdjf</option> -->
                         </select>
                     </div>
@@ -61,56 +62,49 @@
 
                     <div class="col-12 col-lg-3">
                         <label for="">Driver</label>
-                        <select name="list_driver" id="list_driver" class="form-control">
+                        <select name="list_driverx" id="list_driverx" class="form-control">
 
                         </select>
                     </div>
 
                     <div class="col-12 col-lg-3">
                         <label for="">STATUS</label>
-                        <select name="status" id="status" class="form-control">
+                        <select name="statusx" id="statusx" class="form-control">
 
                         </select>
                     </div>
 
+                    <div class="col-12 col-lg-3" style="margin-top: 33px;">
+                        <button type="button" id="submit" name="submit" class="btn btn-primary">Show</button>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <!-- <h1 style="text-align: center;">Tabel Mutu Ancak</h1> -->
+                        <table class="table table-striped table-bordered" id="log_sample">
+                            <thead>
+                                <!-- Table header content -->
+                            </thead>
+                            <tbody>
+                                <!-- Table body content will be dynamically generated -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
 
 
-        <div class="card">
-            <div class="card-body">
-
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover text-center" id="rekapWaterLevel">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>TANGGAL</th>
-                                <th>RIPENESS</th>
-                                <th>JANJANG</th>
-                                <th>RIPE</th>
-                                <th>UNRIPE</th>
-                                <th>OVERRIPE</th>
-                                <th>EMPTY BUNCH</th>
-                                <th>ABNORMAL</th>
-                                <th>Kastrasi</th>
-                                <th>TP</th>
-                                <th>MILL</th>
-                                <th>REG</th>
-                                <th>WIL</th>
-                                <th>EST</th>
-                                <th>INTI</th>
-                                <th>PLAT</th>
-                                <th>DRIVER</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
         <div class="card">
             <div class="row">
@@ -129,6 +123,34 @@
                 <div class="col-md-12">
                     <div id=ripeness></div>
                 </div>
+
+                <div class="col-md-12">
+                    <div class="content-wrapper">
+                        <section class="content">
+                            <div class="container-fluid pt-2 pl-3 pr-3">
+                                <div class="row">
+                                    <div class="col-12 col-lg-6" style="background-color: white; border-radius: 5px">
+                                        <p class="pl-3 pr-3 pt-3 text-center" style="color: #013C5E; font-size: 17px">
+                                            Sampel foto terakhir
+                                            <span class="font-weight-bold">kualitas baik</span> di conveyor
+                                        </p>
+                                        <div class="p-3" style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
+                                            <img src="{{ asset('img/ffb/' . $files[2]) }}" style="border-radius: 5px; max-width: 100%; max-height: 100%;">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-lg-6" style="background-color: white; border-radius: 5px">
+                                        <p class="pl-3 pr-3 pt-3 text-center" style="color: #013C5E; font-size: 17px">
+                                            Sampel foto terakhir
+                                            <span class="font-weight-bold">kualitas rendah</span> di conveyor
+                                        </p>
+                                        <div class="p-3" style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
+                                            <img src="{{ asset('img/ffb/' . $files[3]) }}" style="border-radius: 5px; max-width: 100%; max-height: 100%;">
+                                        </div>
+                                    </div>
+
+                        </section>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -143,224 +165,6 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", function() {
-        // DOM Elements
-        const elements = {
-            selectReg: document.getElementById("selectReg"),
-            selectWil: document.getElementById("selectWil"),
-            selectEst: document.getElementById("selectEst"),
-            inputDate: document.getElementById("inputDate"),
-            listMil: document.getElementById("list_mil"),
-            listplat: document.getElementById("list_plat"),
-            listdriver: document.getElementById("list_driver"),
-            status: document.getElementById("status"),
-            showButton: document.getElementById("showButton")
-        };
-
-        // Initial Setup
-        const {
-            selectReg,
-            selectWil,
-            selectEst,
-            listMil,
-            listplat,
-            listdriver,
-            status
-        } = elements;
-
-        let filtersChanged = false;
-        let isFetching = false;
-
-        // Disable Elements
-        let isUpdating = false;
-
-
-        selectReg.disabled = true;
-        selectWil.disabled = true;
-        selectEst.disabled = true;
-        listMil.disabled = true;
-        listplat.disabled = true;
-        listdriver.disabled = true;
-        status.disabled = true;
-
-
-        selectReg.addEventListener("change", handleRegionChange);
-        selectWil.addEventListener("change", handleWilayahChange);
-        selectEst.addEventListener("change", updateResults);
-        inputDate.addEventListener("change", enableFiltersAndUpdateResults);
-
-        function handleRegionChange() {
-            const selectedRegId = selectReg.value;
-            clearDropdown(selectWil);
-            clearDropdown(selectEst);
-
-            const filteredWils = filterByRegion(selectedRegId);
-            populateDropdown(selectWil, filteredWils, "id", "nama");
-
-            selectWil.dispatchEvent(new Event('change'));
-            updateResults();
-        }
-
-        function handleWilayahChange() {
-            const selectedWilId = selectWil.value;
-            clearDropdown(selectEst);
-
-            const filteredEsts = filterByWilayah(selectedWilId);
-            populateDropdown(selectEst, filteredEsts, "est", "nama");
-
-            updateResults();
-        }
-
-        function enableFiltersAndUpdateResults() {
-            enableFilters();
-            updateResults();
-        }
-
-        function filterByRegion(regionalId) {
-            return <?php echo json_encode($list_will); ?>.filter(wil => wil.regional == regionalId);
-        }
-
-        function filterByWilayah(wilayahId) {
-            return <?php echo json_encode($list_est); ?>.filter(est => est.wil == wilayahId);
-        }
-
-        function clearDropdown(dropdown) {
-            dropdown.innerHTML = "";
-        }
-
-        function populateDropdown(dropdown, options, valueProp, labelProp) {
-            options.forEach(option => {
-                const optionElement = document.createElement("option");
-                optionElement.value = option[valueProp];
-                optionElement.textContent = option[labelProp];
-                dropdown.appendChild(optionElement);
-            });
-        }
-
-        function updateResults() {
-            if (isFetching) {
-                return;
-            }
-
-            var _token = $('input[name="_token"]').val();
-            var date = $("#inputDate").val();
-            var regional = $("#selectReg").val();
-            var wilayah = $("#selectWil").val();
-            var estate = $("#selectEst").val();
-
-            $.ajax({
-                url: "{{ route('getFilterTemuan') }}",
-                method: "get",
-                data: {
-                    date: date,
-                    regional: regional,
-                    wilayah: wilayah,
-                    estate: estate,
-                    _token: _token
-                },
-                success: function(result) {
-                    const parseResult = JSON.parse(result);
-                    const {
-                        list_mill,
-                        list_plat,
-                        list_driver,
-                        list_status
-                    } = parseResult;
-
-                    clearAndEnableDropdown(listMil);
-                    populateDropdown(listMil, list_mill, "id", "nama_mill");
-                    addChangeListener(listMil, function() {
-                        const selectedMilId = parseInt(listMil.value);
-                        clearAndEnableDropdown(listplat);
-                        populateFilteredDropdown(listplat, list_plat, "no_plat", "no_plat", plat => plat.mill_id === selectedMilId);
-                        clearAndEnableDropdown(listdriver);
-                    });
-
-                    addChangeListener(listplat, function() {
-                        const selectedPlat = listplat.value;
-                        populateFilteredDropdown(listdriver, list_driver, "nama_driver", "nama_driver", drv => drv.no_plat === selectedPlat);
-                    });
-
-                    addChangeListener(listdriver, function() {
-                        const selectedDriver = listdriver.value;
-                        populateFilteredDropdown(status, list_driver, "status", "status", drv => drv.nama_driver === selectedDriver);
-                    });
-
-
-                    listMil.dispatchEvent(new Event("change"));
-                    listplat.dispatchEvent(new Event("change"));
-                    listdriver.dispatchEvent(new Event("change"));
-                    status.dispatchEvent(new Event("change"));
-
-                },
-
-                error: function(xhr, status, error) {
-                    console.error('AJAX request error:', error);
-                },
-                complete: function() {
-                    isFetching = false;
-                }
-            });
-        }
-
-        function clearAndEnableDropdown(dropdown) {
-            dropdown.innerHTML = "";
-            dropdown.disabled = false;
-        }
-
-        function populateDropdown(dropdown, options, valueProp, labelProp) {
-            options.forEach(option => {
-                const optionElement = createOptionElement(option[valueProp], option[labelProp]);
-                dropdown.appendChild(optionElement);
-            });
-        }
-
-        function populateFilteredDropdown(dropdown, options, valueProp, labelProp, filterFunction) {
-            clearAndEnableDropdown(dropdown);
-            const filteredOptions = options.filter(filterFunction);
-            populateDropdown(dropdown, filteredOptions, valueProp, labelProp);
-        }
-
-        function addChangeListener(element, changeHandler) {
-            element.addEventListener("change", changeHandler);
-        }
-
-        function createOptionElement(value, label) {
-            const option = document.createElement("option");
-            option.value = value;
-            option.textContent = label;
-            return option;
-        }
-
-        function enableFilters() {
-            selectReg.disabled = false;
-            selectWil.disabled = false;
-            selectEst.disabled = false;
-            listMil.disabled = false;
-            listplat.disabled = false;
-            listdriver.disabled = false;
-            status.disabled = false;
-        }
-
-        updateResults();
-
-        function triggerFilterChangeEvents() {
-            selectReg.dispatchEvent(new Event("change"));
-            selectWil.dispatchEvent(new Event("change"));
-            selectEst.dispatchEvent(new Event("change"));
-            inputDate.dispatchEvent(new Event("change"));
-        }
-
-        // Trigger the change events after setting up the initial state
-        triggerFilterChangeEvents();
-
-
-
-
-
-    });
-
-
     var options = {
         series: [44, 55, 41, 17, 15],
         chart: {
@@ -421,268 +225,483 @@
     var ripenes = new ApexCharts(document.querySelector("#ripeness"), Options2);
     ripenes.render();
 
+    function getCurrentDate() {
+        var today = new Date();
+        var year = today.getFullYear();
+        var month = String(today.getMonth() + 1).padStart(2, '0');
+        var day = String(today.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
+    var opt_reg = <?php echo json_encode($list_reg); ?>;
+    var opt_will = <?php echo json_encode($list_will); ?>;
+    var opt_est = <?php echo json_encode($list_est); ?>;
+    var opt_mil = <?php echo json_encode($list_mil); ?>;
+    var data = <?php echo json_encode($data); ?>;
+
+    var afdregSelect = document.getElementById('selectRegx');
+    var wilSelect = document.getElementById('selectWilx');
+    var estateSelect = document.getElementById('selectEstx');
+    var millSelect = document.getElementById('list_milx');
+
+
+
+
+
+    // Function to populate a select element with options
+    function populateSelect(selectElement, options) {
+        // Clear existing options
+        selectElement.innerHTML = '';
+
+        // Create and add new options
+        options.forEach(function(option) {
+            var optionElement = document.createElement('option');
+            optionElement.value = option.id;
+            optionElement.textContent = option.nama;
+            selectElement.appendChild(optionElement);
+        });
+    }
+
+    populateSelect(afdregSelect, opt_reg);
+
+
+    function populateWil(selectedRegionalId) {
+        // Clear existing options
+        wilSelect.innerHTML = '';
+
+        // Filter the opt_will array based on the selectedRegionalId
+        var filteredEstates = opt_will.filter(function(estate) {
+            return estate.regional == selectedRegionalId; // Use '==' for loose equality
+        });
+
+        // Create and add new options based on the filtered results
+        populateSelect(wilSelect, filteredEstates);
+
+        // Trigger a change event to populate the EST dropdown based on the selected Wil
+        wilSelect.dispatchEvent(new Event('change'));
+    }
+
+    function populateEstate(selectedWilIdx) {
+        // Clear existing options
+
+        // console.log(selectedWilIdx);
+        estateSelect.innerHTML = '';
+
+        // Filter the opt_est array based on the selectedWilIdx
+        var filteredEstates = opt_est.filter(function(estate) {
+            return estate.wil == selectedWilIdx;
+        });
+        filteredEstates.forEach(function(estate) {
+            var optionElement = document.createElement('option');
+            optionElement.value = estate.wil + '-' + estate.est;
+            optionElement.textContent = estate.nama;
+            estateSelect.appendChild(optionElement);
+        });
+
+
+
+        estateSelect.dispatchEvent(new Event('change'));
+    }
+
+
+    function populatemil(selectedEstId) {
+        // console.log(selectedEstId);
+
+        let new_id = selectedEstId;
+        var parts = new_id.split('-');
+
+        if (parts.length === 2) {
+            var valueAfterHyphen = parts[0];
+            // console.log(valueAfterHyphen);
+        } else {
+            // console.log("Invalid input format");
+        }
+
+        // console.log(opt_mil);
+        millSelect.innerHTML = '';
+
+        // Filter the opt_mil array based on the selectedEstId
+        var filteredMill = opt_mil.filter(function(mill) {
+            return mill.wil == valueAfterHyphen;
+        });
+        // console.log(filteredMill);
+
+        filteredMill.forEach(function(mill) {
+            var optionElement = document.createElement('option');
+            optionElement.value = mill.wil;
+            optionElement.textContent = mill.nama_mill;
+
+            // console.log(optionElement);
+            millSelect.appendChild(optionElement);
+        });
+
+
+        millSelect.dispatchEvent(new Event('change'));
+
+    }
+
+
+    // Get the default selected Regional option (for example, the first option)
+    var defaultSelectedRegionalId = opt_reg[0].id;
+
+    // Populate the Estate options based on the default selected Regional option
+    populateWil(defaultSelectedRegionalId);
 
     $(document).ready(function() {
-        // Initialize initial values
-        var date = $("#inputDate").val() || getCurrentDate();
-        var wilayah = $("#selectWil").val();
-        var estate = $("#selectEst").val();
-        var mill = $("#list_mil").val();
-        var no_plat = $("#list_plat").val();
-        var driver = $("#list_driver").val();
-        var driverStatus = $("#status").val();
+        // Create a flag to track whether an AJAX request is in progress
+        var ajaxInProgress = false;
 
-        // Flag to prevent multiple requests
-        var isUpdating = false;
-        var dataTable = $('#rekapWaterLevel').DataTable({
-            columns: [{
-                    data: 'id'
-                },
-                {
-                    data: 'waktu_selesai_formed'
-                },
-                {
-                    data: 'ripeness'
-                },
-                {
-                    data: 'janjang'
-                },
-                {
-                    data: 'ripe'
-                },
-                {
-                    data: 'unripe'
-                },
-                {
-                    data: 'overripe'
-                },
-                {
-                    data: 'empty_bunch'
-                },
-                {
-                    data: 'abnormal'
-                },
-                {
-                    data: 'kastrasi'
-                },
-                {
-                    data: 'tp'
-                },
-                {
-                    data: 'mill'
-                },
-                {
-                    data: 'bisnis_unit'
-                },
-                {
-                    data: 'divisi'
-                },
-                {
-                    data: 'blok'
-                },
-                {
-                    data: 'status'
-                },
-                {
-                    data: 'no_plat'
-                },
-                {
-                    data: 'nama_driver'
-                }
-            ],
-        });
-
-
-        $("#selectWil, #selectEst, #list_mil, #list_plat, #list_driver, #status, #inputDate").on("change", function() {
-            if (!isUpdating) {
-                isUpdating = true;
-                // Clear existing data in the DataTable
-                dataTable.clear().draw();
-                // Add a delay before performing the AJAX request
-                setTimeout(function() {
-                    performAjaxRequest();
-                }, 3500);
+        // Attach change event handlers to the filter elements
+        $('#inputDatex, #selectEstx, #list_milx').change(function() {
+            // Check if an AJAX request is already in progress
+            if (ajaxInProgress) {
+                return; // Do nothing if an AJAX request is still pending
             }
-        });
 
-        // Event listener for date input
-        $("#inputDate").on("change", function() {
-            date = $(this).val(); // Update the date value
-            if (!isUpdating) {
-                isUpdating = true;
-                // Add a delay of 2 seconds (2000 milliseconds) before performing the AJAX request
-                setTimeout(function() {
-                    performAjaxRequest();
-                }, 3500);
-            }
-        });
+            // Set the flag to indicate that an AJAX request is in progress
+            ajaxInProgress = true;
 
-        function performAjaxRequest() {
-            // Get the values of the dropdowns inside the function
-            var date = inputDate.value;
-            var wilayah = selectWil.value;
-            var estate = selectEst.value;
-            var mill = $("#list_mil").val();
-            var no_plat = $("#list_plat").val();
-            var driver = $("#list_driver").val();
-            var driverStatus = $("#status").val();
-            $('#chart-pie').empty()
+            // Get the selected values from the filter elements
+            var tanggal = $('#inputDatex').val();
+            var est = $('#selectEstx').val();
+            var list_milx = $('#list_milx').val();
+            var _token = $('input[name="_token"]').val();
+
+            // Make the AJAX request with the updated filter values
+
+            var ajax = false;
             $.ajax({
-                url: "{{ route('newDatatables') }}",
+                url: "{{ route('filterLog') }}",
                 method: "GET",
-
                 data: {
-                    wilayah: wilayah,
-                    estate: estate,
-                    mill: mill,
-                    no_plat: no_plat,
-                    driver: driver,
-                    driverStatus: driverStatus,
-                    date: date,
-                    _token: $('input[name="_token"]').val()
+                    tanggal: tanggal,
+                    est: est,
+                    list_mil: list_milx,
+                    _token: _token
+                },
+                headers: {
+                    'X-CSRF-TOKEN': _token
                 },
                 success: function(result) {
-                    // Handle the success response
-                    var data = result.data;
-                    var chart = result.chart;
-                    var percen = result.percen;
+                    let log = result.log;
+                    // console.log(log);
+                    var platSelect = document.getElementById('list_platx');
+                    var driverSelect = document.getElementById('list_driverx');
+                    var statusSelect = document.getElementById('statusx');
 
-                    dataTable.clear().draw();
+                    // Define your populate_plat function as before
+                    function populate_plat(log) {
+                        platSelect.innerHTML = ''; // Clear the current options
 
-                    // Repopulate the table with the updated data
-                    dataTable.rows.add(data);
-                    dataTable.draw();
+                        log.forEach(function(entry) {
+                            var optionElement = document.createElement('option');
+                            optionElement.value = entry.no_plat;
+                            optionElement.textContent = entry.no_plat;
+                            platSelect.appendChild(optionElement);
+                        });
 
-                    // Get the reference to the h1 element inside the title div
-                    var titleElement = document.querySelector("#title h1");
-
-                    // Set the dynamic value as the innerHTML of the h1 element
-                    titleElement.innerHTML = chart.est + " " + chart.date; // Concatenate the values with a space in between
-
-
-
-
-                    // Destroy the existing chart container
-                    var chartContainer = document.querySelector("#chart-pie");
-                    while (chartContainer.firstChild) {
-                        chartContainer.removeChild(chartContainer.firstChild);
+                        // Trigger a change event on the select if needed
+                        platSelect.dispatchEvent(new Event('change'));
                     }
 
-                    // console.log(chart);
-                    var newSeriesData = [
-                        chart.total_kastrasi,
-                        chart.total_ripe,
-                        chart.total_unripe,
-                        chart.total_overripe,
-                        chart.total_bunch,
-                        chart.total_abnormal,
+                    // Call the populate_plat function with the 'log' data
+                    populate_plat(log);
 
-                    ];
-                    var categories = [
-                        'Total Kastrasi',
-                        'Total Ripe',
-                        'Total Unripe',
-                        'Total Overripe',
-                        'Total Empty Bunch',
-                        'Total Abnormal',
-                    ];
-
-                    var LegendTotal = [
-                        chart.total_janjang,
-                        chart.est,
-                        chart.date,
-                    ];
-
-                    var legendCategories = [
-                        'Total Janjang',
-                        'Estate',
-                        'Tanggal',
-                    ]
-                    // Create a new chart with updated data
-                    var updatedChart = new ApexCharts(chartContainer, {
-                        series: newSeriesData,
-                        chart: {
-                            type: 'donut',
-                            height: 300,
-                        },
-                        labels: categories,
-                        responsive: [{
-                            breakpoint: undefined,
-                            options: {
-                                chart: {
-                                    animations: {
-                                        enabled: true,
-                                        easing: 'easeinout',
-                                        speed: 800,
-                                        animateGradually: {
-                                            enabled: true,
-                                            delay: 150
-                                        },
-                                        dynamicAnimation: {
-                                            enabled: true,
-                                            speed: 350
-                                        }
-                                    }
-                                },
-                            },
-                        }]
+                    // Add an event listener to platSelect to trigger the driver function
+                    platSelect.addEventListener('change', function() {
+                        var selectedPlat = platSelect.value;
+                        driver(selectedPlat); // Pass the selectedPlat value to the driver function
                     });
 
-                    updatedChart.render();
+                    // Define your driver function
+                    function driver(selectedPlat) {
+                        driverSelect.innerHTML = ''; // Clear existing options
 
-                    Lines.updateSeries([{
-                        name: 'Janjang',
-                        data: newSeriesData,
+                        // Filter the log data based on the selectedPlat
+                        var filteredLog = log.filter(function(entry) {
+                            return entry.no_plat === selectedPlat;
+                        });
 
-                    }])
-                    Lines.updateOptions({
-                        xaxis: {
-                            categories: categories
-                        },
-                        title: {
-                            text: 'Grading AI ',
-                            align: 'left'
-                        },
-                    })
-                    // Extract time values (categories) and Percen_ripe values (data points)
-                    const timeValues = Object.keys(percen);
-                    const percenRipeValues = Object.values(percen).map(entry => entry.Percen_ripe);
+                        // Populate driverSelect with the filtered data
+                        filteredLog.forEach(function(entry) {
+                            var optionElement = document.createElement('option');
+                            optionElement.value = entry.nama_driver;
+                            optionElement.textContent = entry.nama_driver;
+                            driverSelect.appendChild(optionElement);
+                        });
 
-                    // Assuming you have initialized the ApexCharts instance as "ripenes"
-                    ripenes.updateSeries([{
-                        name: 'Janjang',
-                        data: percenRipeValues,
-                    }, ]);
+                        // Trigger a change event on the select if needed
+                        driverSelect.dispatchEvent(new Event('change'));
+                    }
 
-                    ripenes.updateOptions({
-                        xaxis: {
-                            categories: timeValues,
-                        },
-                        title: {
-                            text: 'Ripeness by Hours',
-                            align: 'left',
-                        },
+                    platSelect.addEventListener('change', function() {
+                        var selecteddriver = driverSelect.value;
+                        status(selecteddriver);
                     });
 
+                    // Define your driver function
+                    function status(selecteddriver) {
+                        statusSelect.innerHTML = ''; // Clear existing options
+                        // console.log(selecteddriver);
+                        // Filter the log data based on the selecteddriver
+                        var filteredLog = log.filter(function(entry) {
+                            return entry.nama_driver === selecteddriver;
+                        });
 
-                    isUpdating = false;
+                        // Populate statusSelect with the filtered data
+                        filteredLog.forEach(function(entry) {
+                            var optionElement = document.createElement('option');
+                            optionElement.value = entry.status;
+                            optionElement.textContent = entry.status;
+                            statusSelect.appendChild(optionElement);
+                        });
+
+                        // Trigger a change event on the select if needed
+                        statusSelect.dispatchEvent(new Event('change'));
+                    }
+
+
                 },
                 error: function(xhr, status, error) {
-                    console.error('AJAX request error:', error);
-                    // Reset the flag after request completes
-                    isUpdating = false;
+                    // Handle any errors that occurred during the AJAX request
+                    console.error('Error:', error);
+                },
+                complete: function() {
+                    // Reset the flag when the AJAX request is complete
+                    ajaxInProgress = false;
                 }
             });
-        }
+        });
+    });
 
 
-        // Function to get current date in "YYYY-MM-DD" format
-        function getCurrentDate() {
-            var today = new Date();
-            var year = today.getFullYear();
-            var month = String(today.getMonth() + 1).padStart(2, '0');
-            var day = String(today.getDate()).padStart(2, '0');
-            return year + '-' + month + '-' + day;
+    $('#submit').click(function() {
+        // Your AJAX request code here
+
+        var tanggal = $('#inputDatex').val();
+        var list_milx = $('#list_milx').val();
+        var list_platx = $('#list_platx').val();
+        var list_driverx = $('#list_driverx').val();
+        var statusx = $('#statusx').val();
+        var _token = $('input[name="_token"]').val();
+
+        // Create a data object to hold the parameters
+        var requestData = {
+            tanggal: tanggal,
+            list_mil: list_milx,
+            list_platx: list_platx,
+            list_driverx: list_driverx,
+            statusx: statusx,
+            _token: _token
+        };
+        if ($.fn.DataTable.isDataTable('#log_sample')) {
+            $('#log_sample').DataTable().destroy();
         }
+        $.ajax({
+            type: "GET", // Use the appropriate HTTP method (GET or POST) for your server
+            url: "newDatatables",
+            data: requestData, // Use the requestData object
+            success: function(result) {
+
+                var log_sample = $('#log_sample').DataTable({
+                    columns: [{
+                            title: 'ID',
+                            data: 'id'
+                        },
+                        {
+                            title: 'Waktu Selesai',
+                            data: 'waktu_selesai_formed'
+                        },
+                        {
+                            title: 'Ripeness',
+                            data: 'ripeness'
+                        },
+                        {
+                            title: 'Janjang',
+                            data: 'janjang'
+                        },
+                        {
+                            title: 'Ripe',
+                            data: 'ripe'
+                        },
+                        {
+                            title: 'Unripe',
+                            data: 'unripe'
+                        },
+                        {
+                            title: 'Overripe',
+                            data: 'overripe'
+                        },
+                        {
+                            title: 'Empty',
+                            data: 'empty_bunch'
+                        },
+                        {
+                            title: 'Abnormal',
+                            data: 'abnormal'
+                        },
+                        {
+                            title: 'Kastrasi',
+                            data: 'kastrasi'
+                        },
+                        {
+                            title: 'TP',
+                            data: 'tp'
+                        },
+                        {
+                            title: 'Mill',
+                            data: 'mill'
+                        },
+                        {
+                            title: 'Bisnis Unit',
+                            data: 'bisnis_unit'
+                        },
+                        {
+                            title: 'Divisi',
+                            data: 'divisi'
+                        },
+                        {
+                            title: 'Blok',
+                            data: 'blok'
+                        },
+                        {
+                            title: 'Status',
+                            data: 'status'
+                        },
+                        {
+                            title: 'Nomor Plat',
+                            data: 'no_plat'
+                        },
+                        {
+                            title: 'Nama Driver',
+                            data: 'nama_driver'
+                        }
+                    ],
+                });
+
+                log_sample.clear().rows.add(result['data']).draw();
+
+
+
+                var chart = result.chart;
+                var percen = result.percen;
+                // Get the reference to the h1 element inside the title div
+                var titleElement = document.querySelector("#title h1");
+
+                // Set the dynamic value as the innerHTML of the h1 element
+                titleElement.innerHTML = "-" || chart.est + " " + chart.date; // Concatenate the values with a space in between
+
+
+
+
+                // Destroy the existing chart container
+                var chartContainer = document.querySelector("#chart-pie");
+                while (chartContainer.firstChild) {
+                    chartContainer.removeChild(chartContainer.firstChild);
+                }
+
+                // console.log(chart);
+                var newSeriesData = [
+                    chart.total_kastrasi,
+                    chart.total_ripe,
+                    chart.total_unripe,
+                    chart.total_overripe,
+                    chart.total_bunch,
+                    chart.total_abnormal,
+
+                ];
+                var categories = [
+                    'Total Kastrasi',
+                    'Total Ripe',
+                    'Total Unripe',
+                    'Total Overripe',
+                    'Total Empty Bunch',
+                    'Total Abnormal',
+                ];
+
+                var LegendTotal = [
+                    chart.total_janjang,
+                    chart.est,
+                    chart.date,
+                ];
+
+                var legendCategories = [
+                    'Total Janjang',
+                    'Estate',
+                    'Tanggal',
+                ]
+                // Create a new chart with updated data
+                var updatedChart = new ApexCharts(chartContainer, {
+                    series: newSeriesData,
+                    chart: {
+                        type: 'donut',
+                        height: 300,
+                    },
+                    labels: categories,
+                    responsive: [{
+                        breakpoint: undefined,
+                        options: {
+                            chart: {
+                                animations: {
+                                    enabled: true,
+                                    easing: 'easeinout',
+                                    speed: 800,
+                                    animateGradually: {
+                                        enabled: true,
+                                        delay: 150
+                                    },
+                                    dynamicAnimation: {
+                                        enabled: true,
+                                        speed: 350
+                                    }
+                                }
+                            },
+                        },
+                    }]
+                });
+
+                updatedChart.render();
+
+                Lines.updateSeries([{
+                    name: 'Janjang',
+                    data: newSeriesData,
+
+                }])
+                Lines.updateOptions({
+                    xaxis: {
+                        categories: categories
+                    },
+                    title: {
+                        text: 'Grading AI ',
+                        align: 'left'
+                    },
+                })
+                // Extract time values (categories) and Percen_ripe values (data points)
+                const timeValues = Object.keys(percen);
+                const percenRipeValues = Object.values(percen).map(entry => entry.Percen_ripe);
+
+                // Assuming you have initialized the ApexCharts instance as "ripenes"
+                ripenes.updateSeries([{
+                    name: 'Janjang',
+                    data: percenRipeValues,
+                }, ]);
+
+                ripenes.updateOptions({
+                    xaxis: {
+                        categories: timeValues,
+                    },
+                    title: {
+                        text: 'Ripeness by Hours',
+                        align: 'left',
+                    },
+                });
+
+
+            },
+            error: function(xhr, status, error) {
+                // Handle any errors that occur during the AJAX request
+                console.error("AJAX Error: " + error);
+            }
+        });
     });
 </script>
