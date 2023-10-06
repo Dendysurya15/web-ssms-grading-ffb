@@ -328,7 +328,7 @@
 
         filteredMill.forEach(function(mill) {
             var optionElement = document.createElement('option');
-            optionElement.value = mill.wil;
+            optionElement.value = mill.id;
             optionElement.textContent = mill.nama_mill;
 
             // console.log(optionElement);
@@ -400,6 +400,7 @@
                             platSelect.appendChild(optionElement);
                         });
 
+                        console.log(log);
                         // Trigger a change event on the select if needed
                         platSelect.dispatchEvent(new Event('change'));
                     }

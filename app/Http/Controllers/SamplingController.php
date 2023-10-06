@@ -206,12 +206,13 @@ class SamplingController extends Controller
             $valueAfterHyphen = '-';
         }
 
+
         $log_sampling = DB::table('log_sampling')
             ->select('log_sampling.*') // Corrected the select statement
             ->where('log_sampling.mill_id', '=', $list_mil)
             ->where('log_sampling.waktu_mulai', 'LIKE', '%' . $tanggal . '%') // Changed '=' to 'LIKE' for partial matching
             ->get();
-
+        // dd($tanggal, $valueAfterHyphen, $list_mil);
         // dd($log_sampling);
         return response()->json([
             'log' => $log_sampling,
