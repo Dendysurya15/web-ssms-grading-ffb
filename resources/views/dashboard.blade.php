@@ -81,26 +81,31 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
     </section>
+    <div id="loadingAnimation" class="text-center" style="display: none;">
+        <!-- Include your loading animation here, such as an animated GIF or Bodymovin animation -->
+    </div>
+
 
     <!-- Main content -->
     <section class="content">
-        <div class="col-12 col-lg-3">
-            Pilih Tanggal
-            <form class="" action="{{ route('dashboard') }}" method="get">
-                <input class="form-control" type="date" name="tgl" id="inputDate" onchange="this.form.submit()">
-            </form>
+        <div class="col-12">
+            {{csrf_field()}}
+            <div class="row p-1 ">
+                Filter Tanggal dan Mill :
+            </div>
+            <div class="row p-1">
+                <input class="form-control col-md-3" type="date" name="tgl" id="inputDate">
+                <br>
+                <select id="list_mill" class="form-control col-md-3">
+                    <option selected disabled>Pilih Mill</option>
+                    @foreach($listMill as $key => $value)
+                    <option value="{{$key}}" {{ $key==0 ? 'selected' : '' }}>{{$value}}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
         <div class="container-fluid pt-2 pl-3 pr-3">
             <div class="row">
-                {{-- <div class="col-12">
-                    test
-                </div>
-                <div class="col-12">
-                    test
-                </div>
-                <div class="col-12">
-                    test
-                </div> --}}
                 <div class="col-12 col-lg-4 p-5 mb-2 dashboard_div" style="background-color: white;border-radius: 5px;">
                     <h2 style="color:#013C5E;font-weight: 550">Dashboard Grading TBS
                     </h2>
@@ -115,7 +120,7 @@
 
                     <div class="row text-center"
                         style="margin-top:40px;line-height:25px;height:30px;background:#DAE9F5;border: 2px solid #013C5E;border-radius:10px 10px 0 0;">
-                        <p style="color:#013C5E" class="font-weight-bold">Update {{$dateToday}} : </p>
+                        <p style="color:#013C5E" class="font-weight-bold">Update <span id="date_request4"></span> : </p>
                     </div>
                     <div class="row text-center"
                         style="color:#013C5E;background:#DAE9F5;font-size:35px;height:280px;line-height:140px;font-weight:bold;border-left:2px solid #013C5E;border-right:2px solid #013C5E;border-bottom:2px solid #013C5E;border-radius:0 0 10px 10px;">
@@ -127,11 +132,7 @@
                             <span style="font-size: 20px;position:absolute;margin-top:-30px;left:0;right: 0;
                                 margin-left: auto; margin-right: auto;">HI
                                 RIPENESS</span>
-                            @if ($prctgeAll[1]['persentase'] != 0)
-                            {{$prctgeAll[1]['persentase']}} %
-                            @else
-                            -
-                            @endif
+                            <span id="hiRipeness"></span>
                         </div>
                         <div class="col-6">
                             {{-- <div
@@ -141,23 +142,16 @@
                             right: 0; 
                             margin-left: auto; 
                             margin-right: auto;">SHI
-                                RIPENESS</span>
-                            {{$shiRipeness}} %
+                                RIPENESS</span> <span id="shiRipeness"></span>
                         </div>
                         <div class="col-6" style="border-top:2px solid #013C5E;">
-                            {{-- <div
-                                style="margin-left:-10px;width:100%;height:150px;line-height:160px;border:1px solid green;position: absolute;">
-                            </div> --}}
+
                             <span style="font-size: 20px;position:absolute;margin-top:-30px;left: 0; 
                             right: 0; 
                             margin-left: auto; 
                             margin-right: auto;"> HI OER
                             </span>
-                            @if ($hiOer != '-' && $hiOer != '0')
-                            {{$hiOer}} %
-                            @else
-                            -
-                            @endif
+                            <span id="hiOer"></span>
                         </div>
                         <div class="col-6" style="border-top:2px solid #013C5E;">
                             {{-- <div
@@ -167,60 +161,21 @@
                             right: 0; 
                             margin-left: auto; 
                             margin-right: auto;">SHI
-                                OER</span>
-                            @if ($shiOer != '-')
-                            {{$shiOer}}%
-                            @else
-                            {{$shiOer}}
-                            @endif
+                                OER</span> <span id="shiOer"></span>
                         </div>
                     </div>
 
-                    {{-- <div class="row mb-5" style="height:70px;line-height: 70px;
-                    text-align: center">
-                        <div class="col">
-                            <div
-                                style="background:#F4F6F9;border-radius:5px;font-style: italic;font-weight: bold;color:#013C5E">
-
-                                <div>{{$totalRipeMonth}} % / <span style="font-size: 12px"> {{$thisMonth}}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div
-                                style="background:#F4F6F9;border-radius:5px;font-style: italic;font-weight: bold;color:#013C5E">
-                                HI Ripeness
-                                <div>{{$totalRipeDay}} % / <span style="font-size: 12px"> {{$thisMonth}}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
-                    {{-- <div class="row mt-3" style="height:70px;line-height: 70px;
-                    text-align: center">
-                        <div class="col">HI Ripeness</div>
-                        <div class="col-7">
-                            <div class="card" style="font-style: italic;font-weight: bold;color:#013C5E">
-                                <div>{{$totalPerDay}} % / <span style="font-size: 12px"> hari</span> </div>
-                            </div>
-                        </div>
-                    </div> --}}
-                    {{-- <a
-                        href="https://www.google.com/maps/place/PKS+Sungai+Kuning%2FBatu+Kotam+(+CBI+)/@-2.3079174,111.4959546,764m/data=!3m2!1e3!4b1!4m5!3m4!1s0x2e089fddc54db897:0x9d08de2c7c2d1f61!8m2!3d-2.3079228!4d111.4981433"
-                        target=”_blank”>
-                        <img src="{{ asset('img/foto_udara_pks_skm.jpeg') }}" class="img_pks_skm mt-4"
-                            style="object-fit: cover;width: 100%;border-radius:5px;">
-
-                    </a> --}}
-                    {{-- <p class="pt-3 font-italic text-center" style=" color: #013C5E;">Foto
-                        Udara PKS
-                        Sungai
-                        Kuning Mill
-                    </p> --}}
-
 
                 </div>
-                <div class="col-12 col-lg-4 mb-2 piechartClass" id="boxPiechart">
+                <div class=" col-12 col-lg-4 mb-2  justify-content: center;
+                align-items: center;" id="boxPiechart"
+                    style="background: white;height:640px;border-radius:5px;color:#013C5E;padding-top: 50px">
                     <div style="">
+                        <p class="text-center  font-weight-bold " style="margin-bottom:0px;"> Persebaran TBS yang masuk
+                            ke PKS Sungai Kuning pada
+                            <span id="date_request"></span>
+                            <span id="jam_last"></span>
+                        </p>
                         <div id="piechart" class="piechart_div">
                         </div>
                     </div>
@@ -244,7 +199,6 @@
                     </div>
                     <p class="text-center font-italic">Sampel foto FFB kualitas baik</p>
 
-
                     <div style="display: flex;
                     align-items: center;
                     justify-content: center;">
@@ -262,203 +216,65 @@
 
             <div>
                 <hr>
-                <p style="color:#013C5E;font-size: 17px"> Update hasil grading TBS berdasarkan AI pada hari <span
-                        class="font-weight-bold">
-                        {{$dateToday}} </span>
-                    {{-- @if (!request()->has('tgl')) --}}
-                    hingga pukul <span class="font-weight-bold"> {{$jamLast}} wib</span>
-                    {{-- @endif --}}
-                    dengan
-                    total TBS
-                    <span class="font-weight-bold"> {{$totalAll}}</span> buah
+                <p style="color:#013C5E;font-size: 17px"> <span class="font-weight-bold">
+                    </span>
+
+                    Update hasil grading TBS berdasarkan AI pada hari <span id="date_request2"
+                        class="font-weight-bold"></span>
+                    <span id="jam_last2" class="font-weight-bold"> </span> WIB dengan total <span id="totalCounter"
+                        class="font-weight-bold"></span>
+                    buah TBS.
                 </p>
-                @if($prctgeAll[0]['totalAll'] != 0)
 
-                {{-- <div id style="border:1px solid red"> --}}
-                    <div class="row">
-                        @foreach ($prctgeAll as $key => $item)
-                        @if ($item['kategori'] == 'Unripe' && $item['persentase'] <= $item['stnd_mutu']) <div
-                            class="col-6 col-xl ">
-                            <div class="card">
-                                <div class="card-header" style="background-color:#013C5E;color:white">
-                                    <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span>
-                                    <br>
-                                    <span class="font-italic stnd_mutu">Standar Mutu :
-                                        <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
-                                </div>
-                                <div class="card-body">
-                                    <div>
-                                        <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
-                                    </div>
-                                    <div class="persentase">
-                                        ({{$item['persentase']}}%)
-                                    </div>
-                                </div>
-                            </div>
-                    </div>
 
-                    @elseif ($item['kategori'] == 'Ripe' && $item['persentase'] >= $item['stnd_mutu'])
-                    <div class="col-6 col-xl ">
-                        <div class="card">
-                            <div class="card-header" style="background-color:#013C5E;color:white">
-                                <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
-                                <span class="font-italic stnd_mutu">Standar Mutu :
-                                    <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
-                            </div>
-                            <div class="card-body">
-                                <div>
-                                    <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
-                                </div>
-                                <div class="persentase">
-                                    ({{$item['persentase']}}%)
-                                </div>
-                            </div>
+                <div id="card_data_exist" class="row"></div>
+
+                <div class="hidden pb-3 " id='card_data_empty'>
+                    <div class="col-xl" style="background-color:white;border-radius:5px;">
+                        <div class="p-5 text-center">
+                            <div style="width: 100%;height:200px;" id="no_data_grading"></div>
+                            Tidak ada data yang masuk
                         </div>
                     </div>
-
-                    @elseif ($item['kategori'] == 'Overripe' && $item['persentase'] <=$item['stnd_mutu']) <div
-                        class="col-6 col-xl ">
-                        <div class="card">
-                            <div class="card-header" style="background-color:#013C5E;color:white">
-                                <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
-                                <span class="font-italic stnd_mutu">Standar Mutu :
-                                    <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
-                            </div>
-                            <div class="card-body">
-                                <div>
-                                    <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
-                                </div>
-                                <div class="persentase">
-                                    ({{$item['persentase']}}%)
-                                </div>
-                            </div>
-                        </div>
                 </div>
-                @elseif ($item['kategori'] == 'Empty Bunch' && $item['persentase'] <= $item['stnd_mutu']) <div
-                    class="col-6 col-xl ">
-                    <div class="card">
-                        <div class="card-header" style="background-color:#013C5E;color:white">
-                            <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
-                            <span class="font-italic stnd_mutu">Standar Mutu :
-                                <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
-                        </div>
-                        <div class="card-body">
-                            <div>
-                                <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
-                            </div>
-                            <div class="persentase">
-                                ({{$item['persentase']}}%)
-                            </div>
-                        </div>
-                    </div>
+
             </div>
-            @elseif ($item['kategori'] == 'Abnormal' && $item['persentase'] <= $item['stnd_mutu']) <div
-                class="col-6 col-xl ">
+        </div>
+
+        <hr>
+        <div class="row">
+
+            <div class="col-md-12">
+
                 <div class="card">
-                    <div class="card-header" style="background-color:#013C5E;color:white">
-                        <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
-                        <span class="font-italic stnd_mutu">Standar Mutu :
-                            <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
+                    <div class="card-header" style="background-color: #013C5E;color:white">
+                        <div class=" card-title">
+                            <i class="fas fa-chart-line pr-2"></i>Grafik Realtime Jumlah Janjang masuk
+                            PKS SKM pada hari
+                            <span id="date_request3"></span> <span id="jam_last3"></span>
+                        </div>
+                        <div class="float-right">
+                            <div class="list-inline">
+                            </div>
+                        </div>
+
                     </div>
                     <div class="card-body">
-                        <div>
-                            <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
+                        <div class="row">
+
+                            <div class="col">
+                                <div id="logHariini" class="linechart_div">
+                                </div>
+                            </div>
+
                         </div>
-                        <div class="persentase">
-                            ({{$item['persentase']}}%)
-                        </div>
-                    </div>
-                </div>
-        </div>
-        @else
-        <div class="col-6 col-xl">
-            <div class="card">
-                <div class="card-header" style="background-color:#C92E26;color:white">
-                    <span class="font-weight-bold" style="font-size: 18px">{{$item['kategori']}}</span> <br>
-                    <span class="font-italic stnd_mutu">Standar Mutu :
-                        <span class="font-weight-normal"> {{$item['stnd_view']}} </span> Tbs</span> <br>
-                </div>
-                <div class="card-body">
-                    <div>
-                        <span class="totalFormat"> {{$item['totalFormat']}}</span> Buah
-                    </div>
-                    <div class="persentase">
-                        ({{$item['persentase']}}%)
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
-        @endforeach
-        @else
-        <div class="pb-3">
-            <div class="col-xl" style="background-color:white;border-radius:5px;">
-                <div class="p-5 text-center">
-                    <div style="width: 100%;height:200px;" id="no_data_grading"></div>
-                    Tidak ada data yang masuk
-                </div>
-            </div>
-        </div>
-        @endif
-</div>
-</div>
-{{--
-</div> --}}
-@if ($prctgeAll[0]['totalAll'] != 0)
-<hr>
-<div class="row">
+                    </div><!-- /.card-body -->
+                </div><!-- Curah Hujan -->
 
-    <div class="col-md-12">
-        <!-- Curah Hujan -->
-        <div class="card">
-            <div class="card-header" style="background-color: #013C5E;color:white">
-                <div class=" card-title">
-                    <i class="fas fa-chart-line pr-2"></i>Grafik Realtime Jumlah Janjang masuk
-                    PKS SKM pada hari
-                    {{$dateToday}} hingga pukul {{$jamLast}}
-                </div>
-                <div class="float-right">
-                    <div class="list-inline">
-                    </div>
-                </div>
-
-            </div>
-            <div class="card-body">
-                <div class="row">
-
-                    <div class="col">
-                        {{-- @if ($arrLogHariini['data'] != '') --}}
-                        <div id="logHariini" class="linechart_div">
-                        </div>
-                        {{-- @else --}}
-                        {{-- Tidak ada data yg dikirim --}}
-                        {{-- @endif --}}
-                    </div>
-
-                </div>
-            </div><!-- /.card-body -->
-        </div><!-- Curah Hujan -->
-
-
-    </div>
-    {{-- <div class="col-md-6">
-        <div class="card">
-            <div class="row"> --}}
-
-                {{-- <div class="col"> --}}
-
-                    {{-- @if ($prctgeAll[0] != '') --}}
-
-                    {{-- @else --}}
-                    {{-- Tidak ada data yg dikirim --}}
-                    {{-- @endif --}}
-                    {{-- </div>
 
             </div>
         </div>
-    </div> --}}
-</div>
-@endif
+        {{-- @endif --}}
 
 </div>
 <!-- /.row -->
@@ -475,6 +291,7 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!-- jQuery -->
 <script src="{{ asset('/public/plugins/jquery/jquery.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Bootstrap 4 -->
 <script src="{{ asset('/public/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- ChartJS -->
@@ -487,8 +304,218 @@
 <script src="{{ asset('/public/js/loader.js') }}"></script>
 
 
-
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
+    var colorArray = ['#AB221D', '#4CAF50', '#FF9800', '#BE8C64', '#001E3C'];
+var labels = @json($nama_kategori_tbs);
+
+var seriesData = [];
+
+for (var i = 0; i < colorArray.length; i++) {
+    var series = {
+        name: labels[i],
+        data: [], // Replace this with your actual data
+        color: colorArray[i],
+    };
+    seriesData.push(series);
+}
+
+var initialData = {
+    series: seriesData,
+    chart: {
+        type: 'line',
+        height: 350,
+        curve: 'smooth',
+    },
+    dataLabels: {
+        enabled: false
+    },
+    stroke: {
+        curve: "smooth"
+    },
+    grid: {
+        padding: {
+            right: 30,
+            left: 20
+        }
+    },
+    xaxis: {
+        categories: @json($arrJam)
+    },
+    
+};
+
+// Initialize the chart
+var chartLine = new ApexCharts(document.querySelector("#logHariini"), initialData);
+chartLine.render();
+
+var initialDataPieChart = {
+            chart: {
+                type: 'pie',
+    height:'400px',
+            },
+           
+            plotOptions: {
+                pie: {
+                    size: '70%', // Set the size of the pie chart
+                },
+            },
+            legend: {
+                position: 'bottom', // Set the position of the legend (options: 'top', 'bottom', 'left', 'right')
+            },
+            series: [],
+            labels: @json($nama_kategori_tbs),
+            colors: ['#AB221D', '#4CAF50', '#FF9800', '#BE8C64', '#001E3C'],
+        };
+
+        // Create the pie chart with initial data
+        var chartPie = new ApexCharts(document.querySelector("#piechart"), initialDataPieChart);
+        chartPie.render();
+
+    // Get references to the date input and list_mill select element
+    var inputDate = document.getElementById('inputDate');
+    var listMill = document.getElementById('list_mill');
+    // var counterDay = document.getElementById('counterDay');
+
+    inputDate.valueAsDate = new Date(); // Set the date input to today's date
+    listMill.value = '1'; // Set the select element to option 1
+
+    function removeExistingCards() {
+    var container = document.getElementById('card_data_exist');
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+}
+
+// Function to create and append cards based on data
+function createAndAppendCards(dataArray) {
+    dataArray.forEach(function (item) {
+        
+        var container = document.getElementById('card_data_exist');
+        var card = document.createElement('div');
+        card.className = 'col-xl card'; // Default class for all cards
+        
+        // Determine the background color based on the condition
+        var backgroundColor = item.persentase > item.stnd_mutu ? '#013C5E' : '#C92E26';
+
+        // Populate the card content based on 'item' and the background color condition
+        card.innerHTML = `
+            <div class="card-header" style="background-color:${backgroundColor};color:white">
+                <span class="font-weight-bold" style="font-size: 18px">${item.kategori}</span> <br>
+                <span class="font-italic stnd_mutu">Standar Mutu :
+                    <span class="font-weight-normal">${item.stnd_view}</span> Tbs</span> <br>
+            </div>
+            <div class="card-body">
+                <div>
+                    <span class="totalFormat">${item.total}</span> Buah
+                </div>
+                <div class="persentase">${item.persentase}%</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+    function pushData() {
+        tgl = inputDate.value
+        mill = listMill.value
+        var _token = $('input[name="_token"]').val();
+        Swal.fire({
+                title: 'Loading',
+                html: '<span class="loading-text">Mohon Tunggu...</span>',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                willOpen: () => {
+                    Swal.showLoading();
+                }
+
+            });
+        $.ajax({
+        url:"{{ route('get_dashboard_data') }}",
+        method:"POST",
+        data:{ tgl:tgl,mill:mill, _token:_token},
+        
+        success:function(result)
+        {
+            Swal.close();
+            var currentDate = new Date();
+
+            // Convert tgl to a Date object (assuming tgl is a valid date string)
+            var tglDate = new Date(tgl);
+
+            // Check if tglDate is the same as currentDate
+            var isSameDate = tglDate.getDate() === currentDate.getDate() &&
+                tglDate.getMonth() === currentDate.getMonth() &&
+                tglDate.getFullYear() === currentDate.getFullYear();
+
+            var dateRequestElement = document.getElementById('date_request');
+            var dateRequest2Element = document.getElementById('date_request2');
+            var dateRequest3Element = document.getElementById('date_request3');
+            var dateRequest4Element = document.getElementById('date_request4');
+            dateRequestElement.textContent =  result.date_request ;
+            dateRequest2Element.textContent =  result.date_request ;
+            dateRequest3Element.textContent =  result.date_request ;
+            dateRequest4Element.textContent =  result.date_only ;
+
+            if (isSameDate) {
+                var dateJamLastElement = document.getElementById('jam_last');
+            var dateJamLast2Element = document.getElementById('jam_last2');
+            var dateJamLast3Element = document.getElementById('jam_last3');
+            dateJamLastElement.textContent = 'hingga pukul ' + result.jamLast ;
+            dateJamLast2Element.textContent = 'hingga pukul ' + result.jamLast ;
+            dateJamLast3Element.textContent = 'hingga pukul ' + result.jamLast ;
+            } else{
+                // Clear the text content of the span elements when the date is not the same
+    
+    
+    var dateJamLastElement = document.getElementById('jam_last');
+    var dateJamLast2Element = document.getElementById('jam_last2');
+    var dateJamLast3Element = document.getElementById('jam_last3');
+
+    dateJamLastElement.textContent = '';
+    dateJamLast2Element.textContent = '';
+    dateJamLast3Element.textContent = '';
+            }
+            
+            
+            var dateTotalCounterElement = document.getElementById('totalCounter');
+            dateTotalCounterElement.textContent =  result.totalCounter ;
+            var dateHiOerElement = document.getElementById('hiOer');
+            dateHiOerElement.textContent = result.hiOer;
+            var dateShiOerElement = document.getElementById('shiOer');
+            dateShiOerElement.textContent = result.shiOer;
+            var dateHiRipenessElement = document.getElementById('hiRipeness');
+            dateHiRipenessElement.textContent = result.hiRipeness;
+            var dateShiRipenessElement = document.getElementById('shiRipeness');
+            dateShiRipenessElement.textContent = result.shiRipeness;
+
+            if(result.totalCounter >0){
+    
+            $('#card_data_empty').hide();
+            removeExistingCards();
+            var dataArray = result.itemPerClass;
+            var dataChart = result.data;
+            createAndAppendCards(dataArray)
+        
+            chartLine.updateSeries([
+            { data: result.unripe },
+            { data: result.ripe },
+            { data: result.overripe },
+            { data: result.empty_bunch },
+            { data: result.abnormal }
+        ]);
+            chartPie.updateSeries(result.totalMasingKategori)
+            }else{
+            $('#card_data_empty').show();
+            }
+            
+        }
+        })
+    }
+    inputDate.addEventListener('change', pushData);
+    listMill.addEventListener('change', pushData);
+    pushData();
+
     const params = new URLSearchParams(window.location.search)
     var paramArr = [];
     for (const param of  params) {
@@ -556,79 +583,5 @@
     google.charts.load('current', {
     'packages': ['corechart']
   });
-  google.charts.setOnLoadCallback(drawChart);
-  google.charts.setOnLoadCallback(drawPie);
-
-  function drawChart() {  
-    
-    var plot_unripe = '<?php echo $arrLogHariini['plot1']; ?>';
-    var plot_ripe = '<?php echo $arrLogHariini['plot2']; ?>';
-    var plot_overripe = '<?php echo $arrLogHariini['plot3']; ?>';
-    var plot_empty_bunch = '<?php echo $arrLogHariini['plot4']; ?>';
-    var plot_abnormal = '<?php echo $arrLogHariini['plot5']; ?>';
-    
-    var dataLogHariini = new google.visualization.DataTable();
-    dataLogHariini.addColumn('string', 'Name');
-    dataLogHariini.addColumn('number', plot_unripe);
-    dataLogHariini.addColumn('number', plot_ripe);
-    dataLogHariini.addColumn('number', plot_overripe);
-    dataLogHariini.addColumn('number', plot_empty_bunch);
-    dataLogHariini.addColumn('number', plot_abnormal);
-    dataLogHariini.addRows([
-      <?php echo $arrLogHariini['data']; ?>
-    ]);
-
-    var optionsLogHariIIni = {
-        chartArea: {},
-        theme: 'material',
-        colors:[ '#AB221D','#4CAF50','#FF9800','#BE8C64','#001E3C'],
-        legend: { position: 'top',
-        textStyle: {fontSize: 15}},
-        lineWidth: 2,
-        hAxis: {
-           
-    },
-        // height:400,
-    };
-
-    var test = new google.visualization.LineChart(document.getElementById('logHariini'));
-    test.draw(dataLogHariini,optionsLogHariIIni);
-
-  }
-
-  function drawPie(){
-    var unripe = '<?php echo  $prctgeAll[0]['total']; ?>';
-    var ripe = '<?php echo   $prctgeAll[1]['total']; ?>';
-    var overripe = '<?php echo   $prctgeAll[2]['total']; ?>';
-    var empty_bunch = '<?php echo  $prctgeAll[3]['total']; ?>';
-    var abnormal = '<?php echo  $prctgeAll[4]['total']; ?>';
-    
-    var data = google.visualization.arrayToDataTable([
-          ['Task', 'Hours per Day'],
-          ['Unripe',     Number(unripe)],
-          ['Ripe',      Number(ripe)] ,
-          ['Overripe',  Number(overripe)],
-          ['Empty Bunch', Number(empty_bunch)],
-          ['Abnormal',    Number(abnormal)]
-        ]);
-
-        var options = {
-            title: 'Persebaran TBS yang masuk ke PKS Sungai Kuning pada <?php echo  $dateToday; ?> hingga pukul <?php  echo $jamLast ?>',
-            titleTextStyle: {
-                color: "#013C5E",               // color 'red' or '#cc00cc'
-                fontName: "",    // 'Times New Roman'
-                fontSize: 16,               // 12, 18
-                bold: true,                 // true or false
-                italic: false                // true of false
-            },
-          legend: {position:'bottom',maxLines: 1},
-          colors:[ '#AB221D','#4CAF50','#FF9800','#BE8C64','#001E3C'],
-        //   height:590
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
-        chart.draw(data, options);
-  }
   
 </script>
