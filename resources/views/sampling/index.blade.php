@@ -1,4 +1,6 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
+    integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @include('layout.header')
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -21,13 +23,15 @@
                     </div>
                     <div class="col-12 col-lg-3">
                         <label for="selectRegx">Reg</label>
-                        <select name="selectRegx" id="selectRegx" class="form-control" onchange="populateWil(this.value)">
+                        <select name="selectRegx" id="selectRegx" class="form-control"
+                            onchange="populateWil(this.value)">
                             <!-- Options will be dynamically added using JavaScript -->
                         </select>
                     </div>
                     <div class="col-12 col-lg-3">
                         <label for="selectWilx">Wil</label>
-                        <select name="selectWilx" id="selectWilx" class="form-control" onchange="populateEstate(this.value)">
+                        <select name="selectWilx" id="selectWilx" class="form-control"
+                            onchange="populateEstate(this.value)">
                             <!-- Options will be dynamically added using JavaScript -->
                         </select>
                     </div>
@@ -38,7 +42,8 @@
                 <div class="row">
                     <div class="col-12 col-lg-3">
                         <label for="">EST</label>
-                        <select name="selectEstx" id="selectEstx" class="form-control" onchange="populatemil(this.value)">
+                        <select name="selectEstx" id="selectEstx" class="form-control"
+                            onchange="populatemil(this.value)">
                             <!-- Options will be dynamically added using JavaScript -->
                         </select>
                     </div>
@@ -134,8 +139,10 @@
                                             Sampel foto terakhir
                                             <span class="font-weight-bold">kualitas baik</span> di conveyor
                                         </p>
-                                        <div class="p-3" style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
-                                            <img src="{{ asset('img/ffb/' . $files[2]) }}" style="border-radius: 5px; max-width: 100%; max-height: 100%;">
+                                        <div class="p-3"
+                                            style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
+                                            <img src="{{ asset('img/ffb/' . $files[2]) }}"
+                                                style="border-radius: 5px; max-width: 100%; max-height: 100%;">
                                         </div>
                                     </div>
                                     <div class="col-12 col-lg-6" style="background-color: white; border-radius: 5px">
@@ -143,8 +150,10 @@
                                             Sampel foto terakhir
                                             <span class="font-weight-bold">kualitas rendah</span> di conveyor
                                         </p>
-                                        <div class="p-3" style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
-                                            <img src="{{ asset('img/ffb/' . $files[3]) }}" style="border-radius: 5px; max-width: 100%; max-height: 100%;">
+                                        <div class="p-3"
+                                            style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
+                                            <img src="{{ asset('img/ffb/' . $files[3]) }}"
+                                                style="border-radius: 5px; max-width: 100%; max-height: 100%;">
                                         </div>
                                     </div>
 
