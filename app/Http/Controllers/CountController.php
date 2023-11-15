@@ -278,6 +278,13 @@ class CountController extends Controller
             ->get()
             ->groupBy('hari');
 
+        $millData = DB::table('list_mill')
+            ->select('list_mill.*')
+            ->where('list_mill.id', $mill)
+            ->first();
+
+
+
         $arrShiLog = array();
         $count = 1;
         $shiRipeness = 0;
@@ -480,6 +487,7 @@ class CountController extends Controller
             'hiOer' => $hiOer === '-' ? '-' : "$hiOer %",
             'shiOer' => $shiOer === '-' ? '-' : "$shiOer %",
             'classKategori' => $nama_kategori_tbs,
+            'nama_mill' => $millData->nama_mill,
         ];
 
         return response()->json($arrLogHariini);

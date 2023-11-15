@@ -114,8 +114,7 @@
                         bantuan <span style="font-style: italic;color: #4CAF50"> Aritifical Inteligence (AI)</span>
                         dengan perantara
                         kamera
-                        CCTV yang terpasang di conveyor PKS Sungai
-                        Kuning
+                        CCTV yang terpasang di conveyor <span id="nama_pks"></span>
                     </p>
 
                     <div class="row text-center"
@@ -172,7 +171,7 @@
                     style="background: white;height:640px;border-radius:5px;color:#013C5E;padding-top: 50px">
                     <div style="">
                         <p class="text-center  font-weight-bold " style="margin-bottom:0px;"> Persebaran TBS yang masuk
-                            ke PKS Sungai Kuning pada
+                            ke <span id="nama_pks2"></span> pada
                             <span id="date_request"></span>
                             <span id="jam_last"></span>
                         </p>
@@ -250,7 +249,7 @@
                     <div class="card-header" style="background-color: #013C5E;color:white">
                         <div class=" card-title">
                             <i class="fas fa-chart-line pr-2"></i>Grafik Realtime Jumlah Janjang masuk
-                            PKS SKM pada hari
+                            <span id="nama_pks3"></span> pada hari
                             <span id="date_request3"></span> <span id="jam_last3"></span>
                         </div>
                         <div class="float-right">
@@ -452,6 +451,12 @@ function createAndAppendCards(dataArray) {
             var dateRequest2Element = document.getElementById('date_request2');
             var dateRequest3Element = document.getElementById('date_request3');
             var dateRequest4Element = document.getElementById('date_request4');
+            var dateNamaMillElement = document.getElementById('nama_pks');
+            var dateNamaMill2Element = document.getElementById('nama_pks2');
+            var dateNamaMill3Element = document.getElementById('nama_pks3');
+            dateNamaMillElement.textContent =  result.nama_mill ;
+            dateNamaMill2Element.textContent =  result.nama_mill ;
+            dateNamaMill3Element.textContent =  result.nama_mill ;
             dateRequestElement.textContent =  result.date_request ;
             dateRequest2Element.textContent =  result.date_request ;
             dateRequest3Element.textContent =  result.date_request ;
