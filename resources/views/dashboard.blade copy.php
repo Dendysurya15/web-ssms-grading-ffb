@@ -23,7 +23,7 @@
     }
 
     @media only screen and (min-width: 992px) {
-        .stnd_mutu {
+        ... .stnd_mutu {
             font-size: 14px;
         }
 
@@ -85,10 +85,6 @@
         <!-- Include your loading animation here, such as an animated GIF or Bodymovin animation -->
     </div>
 
-    <div class="col">
-        <div id="chartest">
-        </div>
-    </div>
 
     <!-- Main content -->
     <section class="content">
@@ -101,7 +97,7 @@
                 <input class="form-control col-md-3" type="date" name="tgl" id="inputDate">
                 <br>
                 <select id="list_mill" class="form-control col-md-3">
-                    <Label>Pilih MIll</Label>
+                    <option selected disabled>Pilih Mill</option>
                     @foreach($listMill as $key => $value)
                     <option value="{{$key}}" {{ $key==0 ? 'selected' : '' }}>{{$value}}</option>
                     @endforeach
@@ -171,7 +167,7 @@
                 align-items: center;" id="boxPiechart" style="background: white;height:640px;border-radius:5px;color:#013C5E;padding-top: 50px">
                     <div style="">
                         <p class="text-center  font-weight-bold " style="margin-bottom:0px;"> Persebaran TBS yang masuk
-                            ke <span id="list_mil2"></span> pada
+                            ke <span id="nama_pks2"></span> pada
                             <span id="date_request"></span>
                             <span id="jam_last"></span>
                         </p>
@@ -246,7 +242,7 @@
                     <div class="card-header" style="background-color: #013C5E;color:white">
                         <div class=" card-title">
                             <i class="fas fa-chart-line pr-2"></i>Grafik Realtime Jumlah Janjang masuk
-                            PKS SKM pada hari
+                            <span id="nama_pks3"></span> pada hari
                             <span id="date_request3"></span> <span id="jam_last3"></span>
                         </div>
                         <div class="float-right">
@@ -281,61 +277,98 @@
 </div>
 @include('layout.footer')
 
+{{-- <script src="{{ asset('lottie/93121-no-data-preview.json') }}" type="text/javascript"></script> --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.9.4/lottie.min.js" integrity="sha512-ilxj730331yM7NbrJAICVJcRmPFErDqQhXJcn+PLbkXdE031JJbcK87Wt4VbAK+YY6/67L+N8p7KdzGoaRjsTg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- jQuery -->
+<script src="{{ asset('/public/plugins/jquery/jquery.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!-- Bootstrap 4 -->
-<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+<script src="{{ asset('/public/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<!-- ChartJS -->
+<script src="{{ asset('/public/plugins/chart.js/Chart.min.js') }}"></script>
+<!-- AdminLTE App -->
+<script src="{{ asset('/public/js/adminlte.min.js') }}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="{{ asset('/public/js/demo.js') }}"></script>
+
+<script src="{{ asset('/public/js/loader.js') }}"></script>
+
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-    // testing 
+    var colorArray = ['#AB221D', '#4CAF50', '#FF9800', '#BE8C64', '#001E3C'];
+    var labels = @json($nama_kategori_tbs);
 
+    var seriesData = [];
 
-    // endtesting 
+    for (var i = 0; i < colorArray.length; i++) {
+        var series = {
+            name: labels[i],
+            data: [], // Replace this with your actual data
+            color: colorArray[i],
+        };
+        seriesData.push(series);
+    }
 
+    var initialData = {
+        series: seriesData,
+        chart: {
+            type: 'line',
+            height: 350,
+            curve: 'smooth',
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: "smooth"
+        },
+        grid: {
+            padding: {
+                right: 30,
+                left: 20
+            }
+        },
+        xaxis: {
+            categories: @json($arrJam)
+        },
 
+    };
 
+    // Initialize the chart
+    var chartLine = new ApexCharts(document.querySelector("#logHariini"), initialData);
+    chartLine.render();
 
-
-
-
-
-
-    var categories = [
-        'Total Unripe',
-        'Total Ripe',
-        'Total Overripe',
-        'Total Empty Bunch',
-        'Total Abnormal',
-        'Total Kastrasi',
-    ];
-
-
-
-
-    var options = {
-        series: [44, 55, 41, 17, 15, 99],
+    var initialDataPieChart = {
         chart: {
             type: 'pie',
-            height: 300,
+            height: '400px',
         },
-        labels: categories,
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                chart: {
-                    width: 200
-                },
-                legend: {
-                    position: 'bottom'
-                },
 
-            }
-        }]
+        plotOptions: {
+            pie: {
+                size: '70%', // Set the size of the pie chart
+            },
+        },
+        legend: {
+            position: 'bottom', // Set the position of the legend (options: 'top', 'bottom', 'left', 'right')
+        },
+        series: [],
+        labels: @json($nama_kategori_tbs),
+        colors: ['#AB221D', '#4CAF50', '#FF9800', '#BE8C64', '#001E3C'],
     };
-    var chartPie = new ApexCharts(document.querySelector("#piechart"), options);
+
+    // Create the pie chart with initial data
+    var chartPie = new ApexCharts(document.querySelector("#piechart"), initialDataPieChart);
     chartPie.render();
+
+    // Get references to the date input and list_mill select element
+    var inputDate = document.getElementById('inputDate');
+    var listMill = document.getElementById('list_mill');
+    // var counterDay = document.getElementById('counterDay');
+
     inputDate.valueAsDate = new Date(); // Set the date input to today's date
+    listMill.value = '1'; // Set the select element to option 1
 
     function removeExistingCards() {
         var container = document.getElementById('card_data_exist');
@@ -373,211 +406,75 @@
         });
     }
 
-
-
-    var optionstest = {
-        series: [{
-            data: [30, 34, 51, 62, 63, 62, 21, 74, 12, 51, 24, 15, 75, 21, 12]
-        }],
-        chart: {
-            id: 'realtime',
-            height: 350,
-            type: 'line',
-            animations: {
-                enabled: true,
-                easing: 'linear',
-                dynamicAnimation: {
-                    speed: 1000
-                }
-            },
-            toolbar: {
-                show: false
-            },
-            zoom: {
-                enabled: false
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'smooth'
-        },
-        title: {
-            text: 'Dynamic Updating Chart',
-            align: 'left'
-        },
-        markers: {
-            size: 0
-        },
-        yaxis: {
-            max: 100
-        },
-        legend: {
-            show: false
-        },
-    };
-
-
-
-    var chartest = new ApexCharts(document.querySelector("#logHariini"), optionstest);
-    chartest.render();
-
-    var intervalId; // Define the intervalId variable outside the functions to access it globally
-
-
-    const dashboardRoute = "{{ route('get_dashboard_data') }}";
-
-    $(document).ready(function() {
-        // Your chart setup
-        // ...
-
-        const dashboardRoute = "{{ route('get_dashboard_data') }}";
-
-        // Call the initial function on page load
-        initialAjaxRequest();
-
-        $('#inputDate, #list_mill').on('change', function() {
-            clearInterval(intervalId); // Clear the previous interval
-            initialAjaxRequest(); // Perform the AJAX request again
-        });
-    });
-
-    function initialAjaxRequest() {
-        performAjaxRequest();
-    }
-
-    function performAjaxRequest() {
+    function pushData() {
+        tgl = inputDate.value
+        mill = listMill.value
         var _token = $('input[name="_token"]').val();
-        var getDate = $("#inputDate").val();
-        var mill = $("#list_mill").val();
+        Swal.fire({
+            title: 'Loading',
+            html: '<span class="loading-text">Mohon Tunggu...</span>',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
 
-        // Check if getDate is empty, and if so, set it to the current date
-        if (!getDate) {
-            var currentDate = new Date();
-            var year = currentDate.getFullYear();
-            var month = String(currentDate.getMonth() + 1).padStart(2, '0');
-            var day = String(currentDate.getDate()).padStart(2, '0');
-            getDate = year + '-' + month + '-' + day;
-            $("#inputDate").val(getDate);
-        }
-
-        // Make AJAX request
+        });
         $.ajax({
-            url: dashboardRoute,
-            method: "GET",
+            url: "{{ route('get_dashboard_data') }}",
+            method: "POST",
             data: {
-                tgl: getDate,
+                tgl: tgl,
                 mill: mill,
                 _token: _token
             },
+
             success: function(result) {
-                var hours = result.perJam
-
-                var currentIndex = 0;
-
-                intervalId = window.setInterval(function() {
-                    var currentHour = hours[currentIndex];
-
-                    chartest.updateOptions({
-                        xaxis: {
-                            categories: hours.slice(0, currentIndex + 1) // Update x-axis categories dynamically
-                        }
-                    });
-
-                    currentIndex++;
-                    if (currentIndex >= hours.length) {
-                        currentIndex = 0; // Reset the index to restart the animation
-                    }
-
-                    // Update series data based on the current hour index
-                    // var newData = optionstest.series[0].data.slice(0, currentIndex + 1);
-
-                    var newData2 = result.abnormal_line.slice(0, currentIndex + 1); // Assuming result.abnormal_line contains the data
-
-                    // console.log(newData);
-                    // console.log(newData2);
-                    chartest.updateSeries([{
-                        data: newData2 // Update the series data
-                    }]);
-                }, 1000);
-                var newSeriesData = [
-                    result.unripe,
-                    result.ripe,
-                    result.overripe,
-                    result.empty_bunch,
-                    result.abnormal,
-                    result.kastrasi
-                ];
-
-                chartPie.updateOptions({
-                    series: newSeriesData
-                })
-                var dataseries = [
-                    result.unripe_line,
-                    result.ripe_line,
-                    result.overripe_line,
-                    result.empty_bunch_line,
-                    result.abnormal_line,
-                ];
-
-
-                // window.setInterval(function() {
-                //     chart.updateSeries([{
-                //         name: "Unripe",
-                //         data: result.unripe_line
-                //     }, {
-                //         name: "Ripe",
-                //         data: result.ripe_line
-                //     }, {
-                //         name: "Overripe",
-                //         data: result.overripe_line
-                //     }, {
-                //         name: "Empty",
-                //         data: result.empty_bunch_line
-                //     }, {
-                //         name: "Abnormal",
-                //         data: result.abnormal_line
-                //     }]);
-
-                // chart.updateOptions({
-                //     xaxis: {
-                //         categories: result.perJam
-                //     }
-                // });
-                // }, 5000); // Update every 5 seconds (5000 milliseconds)
-                // chart.updateOptions({
-                //     xaxis: {
-                //         categories: result.perJam
-                //     }
-                // });
-                // // console.log(result.unripe_line);
-
-                // setInterval(function() {
-                //     chart.updateSeries([{
-                //         name: "Unripe",
-                //         data: result.unripe_line.slice()
-                //     }]);
-                // }, 1000);
-
-                // var hours = result.perJam; // Assuming result.perJam contains the hours data
-
-
-
+                Swal.close();
                 var currentDate = new Date();
 
                 // Convert tgl to a Date object (assuming tgl is a valid date string)
-                var tglDate = new Date(getDate);
+                var tglDate = new Date(tgl);
 
                 // Check if tglDate is the same as currentDate
                 var isSameDate = tglDate.getDate() === currentDate.getDate() &&
                     tglDate.getMonth() === currentDate.getMonth() &&
                     tglDate.getFullYear() === currentDate.getFullYear();
 
+                var dateRequestElement = document.getElementById('date_request');
+                var dateRequest2Element = document.getElementById('date_request2');
+                var dateRequest3Element = document.getElementById('date_request3');
+                var dateRequest4Element = document.getElementById('date_request4');
                 var dateNamaMillElement = document.getElementById('nama_pks');
-                var listmil2 = document.getElementById('list_mil2');
+                var dateNamaMill2Element = document.getElementById('nama_pks2');
+                var dateNamaMill3Element = document.getElementById('nama_pks3');
                 dateNamaMillElement.textContent = result.nama_mill;
-                listmil2.textContent = result.nama_mill;
+                dateNamaMill2Element.textContent = result.nama_mill;
+                dateNamaMill3Element.textContent = result.nama_mill;
+                dateRequestElement.textContent = result.date_request;
+                dateRequest2Element.textContent = result.date_request;
+                dateRequest3Element.textContent = result.date_request;
+                dateRequest4Element.textContent = result.date_only;
+
+                if (isSameDate) {
+                    var dateJamLastElement = document.getElementById('jam_last');
+                    var dateJamLast2Element = document.getElementById('jam_last2');
+                    var dateJamLast3Element = document.getElementById('jam_last3');
+                    dateJamLastElement.textContent = 'hingga pukul ' + result.jamLast;
+                    dateJamLast2Element.textContent = 'hingga pukul ' + result.jamLast;
+                    dateJamLast3Element.textContent = 'hingga pukul ' + result.jamLast;
+                } else {
+                    // Clear the text content of the span elements when the date is not the same
+
+
+                    var dateJamLastElement = document.getElementById('jam_last');
+                    var dateJamLast2Element = document.getElementById('jam_last2');
+                    var dateJamLast3Element = document.getElementById('jam_last3');
+
+                    dateJamLastElement.textContent = '';
+                    dateJamLast2Element.textContent = '';
+                    dateJamLast3Element.textContent = '';
+                }
 
 
                 var dateTotalCounterElement = document.getElementById('totalCounter');
@@ -591,51 +488,107 @@
                 var dateShiRipenessElement = document.getElementById('shiRipeness');
                 dateShiRipenessElement.textContent = result.shiRipeness;
 
-                var date_request = document.getElementById('date_request2');
-                date_request.textContent = result.date_request;
-                var totaltbs = document.getElementById('totalCounter');
-                totaltbs.textContent = result.totaltbs;
-                var date_request = document.getElementById('date_request');
-                date_request.textContent = result.date_request;
-                var jam_last = document.getElementById('jam_last');
-                jam_last.textContent = result.jamLast;
-
-                // console.log(result.date_request)
-
-                // chartPie.updateSeries(result.piechart)
-
                 if (result.totalCounter > 0) {
 
                     $('#card_data_empty').hide();
                     removeExistingCards();
                     var dataArray = result.itemPerClass;
+                    var dataChart = result.data;
                     createAndAppendCards(dataArray)
 
-                    // chartLine.updateSeries([{
-                    //         data: result.unripe
-                    //     },
-                    //     {
-                    //         data: result.ripe
-                    //     },
-                    //     {
-                    //         data: result.overripe
-                    //     },
-                    //     {
-                    //         data: result.empty_bunch
-                    //     },
-                    //     {
-                    //         data: result.abnormal
-                    //     }
-                    // ]);
-                    // chartPie.updateSeries(result.totalMasingKategori)
+                    chartLine.updateSeries([{
+                            data: result.unripe
+                        },
+                        {
+                            data: result.ripe
+                        },
+                        {
+                            data: result.overripe
+                        },
+                        {
+                            data: result.empty_bunch
+                        },
+                        {
+                            data: result.abnormal
+                        }
+                    ]);
+                    chartPie.updateSeries(result.totalMasingKategori)
                 } else {
                     $('#card_data_empty').show();
                 }
 
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
             }
-        });
+        })
     }
+    inputDate.addEventListener('change', pushData);
+    listMill.addEventListener('change', pushData);
+    pushData();
+
+    const params = new URLSearchParams(window.location.search)
+    var paramArr = [];
+    for (const param of params) {
+        paramArr = param
+    }
+
+    if (paramArr.length > 0) {
+        date = paramArr[1]
+    } else {
+        date = new Date().toISOString().slice(0, 10)
+    }
+
+    $(document).ready(function() {
+        document.getElementById("inputDate").value = date;
+    });
+
+    bodymovin.loadAnimation({
+        // animationData: { /* ... */ },
+        container: document.getElementById('no-graph'), // required
+        path: 'https://assets2.lottiefiles.com/packages/lf20_7be1jtxw.json', // required
+        renderer: 'svg', // required
+        loop: true, // optional
+        autoplay: true, // optional
+        name: "Demo Animation", // optional
+    });
+
+    var animation = bodymovin.loadAnimation({
+        // animationData: { /* ... */ },
+        container: document.getElementById('sampel_good'), // required
+        path: 'https://assets8.lottiefiles.com/packages/lf20_exi9acin.json', // required
+        renderer: 'svg', // required
+        loop: true, // optional
+        autoplay: true, // optional
+        name: "Demo Animation", // optional
+    });
+
+    bodymovin.loadAnimation({
+        // animationData: { /* ... */ },
+        container: document.getElementById('sampel_bad'), // required
+        path: 'https://assets8.lottiefiles.com/packages/lf20_exi9acin.json', // required
+        renderer: 'svg', // required
+        loop: true, // optional
+        autoplay: true, // optional
+        name: "Demo Animation", // optional
+    });
+
+    bodymovin.loadAnimation({
+        // animationData: { /* ... */ },
+        container: document.getElementById('no_data_grading'), // required
+        path: 'https://assets7.lottiefiles.com/packages/lf20_n2m0isqh.json', // required
+        renderer: 'svg', // required
+        loop: true, // optional
+        autoplay: true, // optional
+        name: "Demo Animation", // optional
+    });
+
+    width = $(window).width();
+    if (width > 700) {
+        // document.querySelector("#boxPiechart").remove('piechart');
+        const div = document.querySelector('#boxPiechart');
+        div.classList.remove('piechartClass');
+    };
+
+
+    google.charts.load('current', {
+        'packages': ['corechart']
+    });
 </script>

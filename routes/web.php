@@ -26,7 +26,7 @@ Route::get('/', [AuthController::class, 'index'])->name('login');
 
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [CountController::class, 'dashboard'])->name('dashboard');
-    Route::post('get_dashboard_data', [CountController::class, 'get_dashboard_data'])->name('get_dashboard_data');
+    Route::get('get_dashboard_data', [CountController::class, 'get_dashboard_data'])->name('get_dashboard_data');
     Route::get('/grafik', [CountController::class, 'grafik'])->name('grafik');
     // Route::get('/tabel', [CountControLler::class, 'tabel']);
     Route::get('/data', [CountController::class, 'tabel'])->name('data');

@@ -185,6 +185,9 @@ class CountController extends Controller
         $tgl = $request->get('tgl');
         $mill = $request->get('mill');
 
+
+        // dd($tgl, $mill);
+
         $getDate = Carbon::parse($tgl)->locale('id');
         $getDate->settings(['formatFunction' => 'translatedFormat']);
 
@@ -436,6 +439,8 @@ class CountController extends Controller
             $prctgeAll[$i]['totalFormat'] =  number_format($totalMasingKategori[$i], 0, ".", ".");
         }
 
+
+        // dd($prctgeAll);
         for ($i = 0; $i < 24; $i++) {
             $arrLogPerhari[$i]['timestamp'] = $arrJam[$i];
             $arrLogPerhari[$i]['harianUnripe'] = 0;
@@ -467,16 +472,211 @@ class CountController extends Controller
 
         $currentHour = Carbon::now()->format('H:i');
 
+
+
+        // new kodingan 
+
+        $getData = DB::connection('mysql')
+            ->table('log')
+            ->select('log.*', 'list_mill.mill', 'list_mill.nama_mill', DB::raw("DATE_FORMAT(log.timestamp, '%H:00') as jam_ke"))
+            ->join('list_mill', 'list_mill.id', '=', 'log.id_mill')
+            ->where('timestamp', 'LIKE', '%' . $tgl . '%')
+            ->where('id_mill', $mill)
+            ->get();
+
+
+        // dd($getData);
+
+        $getData = $getData->groupBy(['jam_ke']);
+        $getData = json_decode($getData, true);
+
+        // dd($getData);
+
+        $newdata = [];
+
+        $ripeTod = 0;
+        $unripeTod = 0;
+        $overripeTod = 0;
+        $empty_bunchTod = 0;
+        $abnormalTod = 0;
+        $kastrasiTod = 0;
+        $janjangTod2 = 0;
+        $janjangTod = 0;
+        foreach ($getData as $key => $value) {
+            $ripe = 0;
+            $unripe = 0;
+            $overripe = 0;
+            $empty_bunch = 0;
+            $abnormal = 0;
+            $kastrasi = 0;
+            $totaljjg = 0;
+            foreach ($value as $key2 => $value2) {
+                $ripe += $value2['ripe'];
+                $unripe += $value2['unripe'];
+                $overripe += $value2['overripe'];
+                $empty_bunch += $value2['empty_bunch'];
+                $abnormal += $value2['abnormal'];
+                $kastrasi += $value2['kastrasi'];
+
+                $totaljjg = $ripe + $unripe + $overripe + $empty_bunch + $abnormal + $kastrasi;
+            }
+
+            $ripeTod += $ripe;
+            $unripeTod += $unripe;
+            $overripeTod += $overripe;
+            $empty_bunchTod += $empty_bunch;
+            $abnormalTod += $abnormal;
+            $kastrasiTod += $kastrasi;
+
+
+            $newdata[$key]['ripe'] = $ripe;
+            $newdata[$key]['unripe'] = $unripe;
+            $newdata[$key]['overripe'] = $overripe;
+            $newdata[$key]['empty_bunch'] = $empty_bunch;
+            $newdata[$key]['abnormal'] = $abnormal;
+            $newdata[$key]['kastrasi'] = $kastrasi;
+            $newdata[$key]['totaljjg'] = $totaljjg;
+
+            $janjangTod2 += $totaljjg;
+        }
+
+        $janjangTod = $ripeTod . '+' . $unripeTod . '+' . $overripeTod . '+' . $empty_bunchTod . '+' . $abnormalTod . '+' . $kastrasiTod;
+        $janjangTodx = $ripeTod + $unripeTod + $overripeTod + $empty_bunchTod + $abnormalTod + $kastrasiTod;
+
+        $newdata['ripe'] = $ripeTod;
+        $newdata['unripe'] = $unripeTod;
+        $newdata['overripe'] = $overripeTod;
+        $newdata['empty_bunch'] = $empty_bunchTod;
+        $newdata['abnormal'] = $abnormalTod;
+        $newdata['kastrasi'] = $kastrasiTod;
+        $newdata['totaljjg_string'] = $janjangTod;
+        $newdata['totaljjg'] = $janjangTodx;
+        $newdata['totaljjgversi2'] = $janjangTod2;
+
+        // dd($newdata);
+        // array('Unripe', 'Ripe', 'Overripe', 'Empty Bunch', 'Abnormal');
+        $totalperkategori = [
+            0 =>  $newdata['unripe'],
+            1 => $newdata['ripe'],
+            2 => $newdata['overripe'],
+            3 => $newdata['empty_bunch'],
+            4 => $newdata['abnormal'],
+        ];
+
+        $unripePercentage = ($newdata['totaljjg'] !== 0) ? ($newdata['unripe'] / $newdata['totaljjg']) * 100 : 0;
+        $ripePercentage = ($newdata['totaljjg'] !== 0) ? ($newdata['ripe'] / $newdata['totaljjg']) * 100 : 0;
+        $overripePercentage = ($newdata['totaljjg'] !== 0) ? ($newdata['overripe'] / $newdata['totaljjg']) * 100 : 0;
+        $emptyBunchPercentage = ($newdata['totaljjg'] !== 0) ? ($newdata['empty_bunch'] / $newdata['totaljjg']) * 100 : 0;
+        $abnormalPercentage = ($newdata['totaljjg'] !== 0) ? ($newdata['abnormal'] / $newdata['totaljjg']) * 100 : 0;
+
+        $persenperktg = [
+            $unripePercentage,
+            $ripePercentage,
+            $overripePercentage,
+            $emptyBunchPercentage,
+            $abnormalPercentage,
+        ];
+
+
+        for ($i = 0; $i < 5; $i++) {
+            $newPercent[$i]['kategori'] = $nama_kategori_tbs[$i];
+            $newPercent[$i]['stnd_mutu'] = $standar_mutu_real[$i];
+            $newPercent[$i]['stnd_view'] = $standar_mutu_view[$i];
+            $newPercent[$i]['total'] =  $totalperkategori[$i];
+            $newPercent[$i]['totalAll'] =  $janjangTodx;
+            $newPercent[$i]['persentase'] = round($persenperktg[$i], 2);
+            $newPercent[$i]['totalFormat'] =  number_format($totalMasingKategori[$i], 0, ".", ".");
+        }
+
+        $start_time = strtotime('07:00');
+        $end_time = strtotime('tomorrow 07:00'); // Ending at 07:00 next day
+
+        $hours_array = array();
+
+        while ($start_time < $end_time) {
+            $hours_array[] = date('H:i', $start_time);
+            $start_time = strtotime('+30 minutes', $start_time);
+        }
+
+        // dd($hours_array, $perJam);
+
+        // $perjamdata_ripe = [];
+
+        foreach ($hours_array as $hour) {
+            if (isset($newdata[$hour])) {
+                $perjamdata_ripe[] = $newdata[$hour]['ripe'];
+            } else {
+                $perjamdata_ripe[] = 0;
+            }
+        }
+
+        $perjamdata_ripe = array_values($perjamdata_ripe);
+
+        $perjamdata_unripe = [];
+
+        foreach ($hours_array as $hour) {
+            if (isset($newdata[$hour])) {
+                $perjamdata_unripe[] = $newdata[$hour]['unripe'];
+            } else {
+                $perjamdata_unripe[] = 0;
+            }
+        }
+        $perjamdata_unripe = array_values($perjamdata_unripe);
+
+        $perjamdata_overipe = [];
+
+        foreach ($hours_array as $hour) {
+            if (isset($newdata[$hour])) {
+                $perjamdata_overipe[] = $newdata[$hour]['overripe'];
+            } else {
+                $perjamdata_overipe[] = 0;
+            }
+        }
+        $perjamdata_overipe = array_values($perjamdata_overipe);
+
+        $perjamdata_empty_bunch = [];
+
+        foreach ($hours_array as $hour) {
+            if (isset($newdata[$hour])) {
+                $perjamdata_empty_bunch[] = $newdata[$hour]['empty_bunch'];
+            } else {
+                $perjamdata_empty_bunch[] = 0;
+            }
+        }
+        $perjamdata_empty_bunch = array_values($perjamdata_empty_bunch);
+
+
+        $perjamdata_abnormal = [];
+
+        foreach ($hours_array as $hour) {
+            if (isset($newdata[$hour])) {
+                $perjamdata_abnormal[] = $newdata[$hour]['abnormal'];
+            } else {
+                $perjamdata_abnormal[] = 0;
+            }
+        }
+        $perjamdata_abnormal = array_values($perjamdata_abnormal);
+
+
+        // Outputting the generated array
+        // print_r($hours_array);
+
+        // dd($hours_array);
+
+
+        // dd($newdata, $perJam, $perjamdata_ripe);
+
         $hiRipeness = $prctgeAll[1]['persentase'];
         $arrLogHariini = [
-            'perJam' =>      $perJam,
-            'unripe' =>      $unripe,
-            'ripe' =>        $ripe,
-            'overripe' =>    $overripe,
-            'empty_bunch' => $empty_bunch,
-            'abnormal' =>    $abnormal,
+            'perJam' =>      $hours_array,
+            'unripe' =>      $newdata['unripe'],
+            'ripe' =>        $newdata['ripe'],
+            'overripe' =>    $newdata['overripe'],
+            'empty_bunch' => $newdata['empty_bunch'],
+            'abnormal' =>    $newdata['abnormal'],
+            'kastrasi' =>    $newdata['kastrasi'],
             'totalCounter' => $totalAll,
-            'itemPerClass' => $prctgeAll,
+            'itemPerClass' => $newPercent,
             'totalMasingKategori' => $totalMasingKategori,
             'date_request' => $date_request,
             'date_only' => $date_only,
@@ -488,6 +688,12 @@ class CountController extends Controller
             'shiOer' => $shiOer === '-' ? '-' : "$shiOer %",
             'classKategori' => $nama_kategori_tbs,
             'nama_mill' => $millData->nama_mill,
+            'totaltbs' =>        $newdata['totaljjg'],
+            'unripe_line' =>      $perjamdata_unripe,
+            'ripe_line' =>        $perjamdata_ripe,
+            'overripe_line' =>    $perjamdata_overipe,
+            'empty_bunch_line' => $perjamdata_empty_bunch,
+            'abnormal_line' =>    $perjamdata_abnormal
         ];
 
         return response()->json($arrLogHariini);
@@ -511,6 +717,7 @@ class CountController extends Controller
             $file_image[] = $value->file . '.JPG';
         }
 
+        // dd($file_image);
 
         return view('dashboard', [
             'file' => $file_image,
