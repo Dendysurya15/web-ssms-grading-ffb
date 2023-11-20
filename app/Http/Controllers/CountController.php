@@ -902,8 +902,26 @@ class CountController extends Controller
 
     public function grafik(Request $request)
     {
+        // dd($arrLogPerminggu);
+
+        $getmil = DB::connection('mysql')->table('list_mill')
+            ->select('list_mill.*')
+            ->get();
+
+        // $getmil = $getmil->groupBy('id');
+
+        $getmil = json_decode($getmil, true);
+        // dd($getmil->1);
+
+        // dd($getmil);
+        // dd($getmil[0]['id']);
+
+
         $dateToday = Carbon::now()->format('Y-m-d');
         $tglData = $request->has('tgl') ? $request->input('tgl') : $defaultHari = $dateToday;
+        $getmillid =  $request->has('getmillid') ? $request->input('getmillid') : $getmil[0]['id'];
+
+        // dd($getmillid);
 
         $LogPerHariView = [
             'plot1'     => 'Unripe',
@@ -960,6 +978,7 @@ class CountController extends Controller
         $logHariini = DB::table('log')
             ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%H') as jam_ke"))
             ->whereBetween('log.timestamp', [$from, $to])
+            ->where('id_mill', $getmillid)
             ->orderBy('log.timestamp')
             ->get()
             ->groupBy('jam_ke');
@@ -1055,6 +1074,7 @@ class CountController extends Controller
             ->select('log.*')
             ->orderBy('log.timestamp', 'desc')
             ->where(DB::raw("(DATE_FORMAT(log.timestamp,'%Y-%m-%d'))"), '=',  Carbon::now()->format('Y-m-d'))
+            ->where('id_mill', $getmillid)
             ->first();
 
 
@@ -1081,6 +1101,7 @@ class CountController extends Controller
         $logMingguan = DB::table('log')
             ->select('log.*',  DB::raw("DATE_FORMAT(log.timestamp,'%d-%m') as day_month"))
             ->whereBetween('log.timestamp', [$pastWeek, $to])
+            ->where('id_mill', $getmillid)
             ->orderBy('log.timestamp', 'asc')
             ->get()
             ->groupBy('day_month');
@@ -1255,7 +1276,8 @@ class CountController extends Controller
             ];
         }
 
-        // dd($arrLogPerminggu);
+
+
         $getDate = Carbon::parse($tglData)->locale('id');
         $getDate->settings(['formatFunction' => 'translatedFormat']);
         return view('grafik', [
@@ -1264,6 +1286,8 @@ class CountController extends Controller
             'arrLogMingguan' => $arrLogPerminggu,
             'dateToday' => $getDate->format('l, j F Y'),
             'nama_kategori_tbs' => $nama_kategori_tbs,
+            'getmil' => $getmil,
+            'getmillid' => $getmillid,
         ]);
     }
 
