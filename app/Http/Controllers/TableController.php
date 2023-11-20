@@ -249,7 +249,7 @@ class TableController extends Controller
 
         // dd($ripenes);
 
-        $datenow = \Carbon\Carbon::now()->format('d-m-Y');
+        $datenow = \Carbon\Carbon::now()->format('Y-m-d');
 
         // dd($datenow);
 
@@ -257,14 +257,14 @@ class TableController extends Controller
         $datalog = DB::connection('mysql')->table('log')
             ->select('log.*', DB::raw("DATE_FORMAT(log.timestamp,'%H:00') as jam_ke"))
             ->where('id_mill', $mill)
-            ->where('timestamp', 'LIKE', '%' . '2023-11-15' . '%')
+            ->where('timestamp', 'LIKE', '%' . $datenow . '%')
             ->orderBy('jam_ke', 'asc')
             ->get();
 
         $datalog = $datalog->groupBy('jam_ke');
         $getData = json_decode($datalog, true);
 
-        // dd($getData);
+        // dd($getData, $datenow);
         $millnama = DB::connection('mysql')->table('list_mill')
             ->select('list_mill.*')
             ->where('id', $mill)
@@ -362,9 +362,14 @@ class TableController extends Controller
         $date = $request->input('date');
         $millnama = $request->input('millnama');
 
+        // dd($idArray);
+
+        $datenow = \Carbon\Carbon::now()->format('Y-m-d');
+
+
         $datalog = DB::connection('mysql')->table('log')
             ->select('log.*', DB::raw("DATE_FORMAT(log.timestamp,'%H:00') as jam_ke"))
-            ->where('timestamp', 'LIKE', '%' . '2023-11-15' . '%')
+            ->where('timestamp', 'LIKE', '%' . $datenow . '%')
             ->orderBy('jam_ke', 'asc')
             ->get();
 
@@ -440,11 +445,10 @@ class TableController extends Controller
         $idArray = explode(",", $id);
         $idArray = array_map('intval', $idArray); // Convert string IDs to integers
 
-        // dd($idArray);
 
         $datamins = DB::connection('mysql')->table('log')
             ->select('log.*', DB::raw("DATE_FORMAT(log.timestamp,'%H:%i') as jam_ke"))
-            ->where('timestamp', 'LIKE', '%' . '2023-11-15' . '%')
+            ->where('timestamp', 'LIKE', '%' . $datenow . '%')
             ->whereIn('id', $idArray)
             ->orderBy('jam_ke', 'asc')
             ->get();

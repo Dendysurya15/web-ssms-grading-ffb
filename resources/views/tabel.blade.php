@@ -23,7 +23,7 @@
                     <div class="card">
                         <div class="card-header" style="background-color: #02A452;color:white">
                             <div class=" card-title">
-                                <i class="fas fa-chart-line pr-2"></i>Grafik Ripeness Harian Grading Ai Sungai Kuning
+                                <i class="fas fa-chart-line pr-2"></i>Grafik Ripeness Harian Grading Ai <span id="namgrading"></span>
                             </div>
                         </div>
                         <div class="card-body mb-3">
@@ -162,6 +162,8 @@
         $('#getmillid').on('change', function() {
             clearInterval(intervalId); // Clear the previous interval
             initialAjaxRequest(); // Perform the AJAX request again
+
+
         });
     });
 
@@ -175,6 +177,13 @@
         var _token = $('input[name="_token"]').val();
 
         var mill = $("#getmillid").val();
+        var millText = $("#getmillid option:selected").text(); // Get the selected text
+
+        var namaMill = document.getElementById('namgrading');
+        namaMill.textContent = millText
+        // console.log("Text:", millText);
+
+        // console.log(mill);
         if ($.fn.DataTable.isDataTable('#tbsperhour')) {
             $('#tbsperhour').DataTable().destroy();
         }
