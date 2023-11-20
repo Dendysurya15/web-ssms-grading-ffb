@@ -52,16 +52,6 @@ class CountController extends Controller
 
     public function tabel()
     {
-        // Carbon::setLocale('id');
-        // $dataLog = DB::table('log')
-        //     ->select('log.*')
-        //     ->orderBy('log.timestamp', 'desc');
-
-        // setlocale(LC_TIME, 'id_ID');
-        // \Carbon\Carbon::setLocale('id');
-        // dd(\Carbon\Carbon::now()->subDays(3)->diffForHumans());
-
-
 
         $arrLogPerhari = array();
         $dataLog = DB::table('log')
@@ -81,21 +71,6 @@ class CountController extends Controller
         $oerVal = 0;
         $oerLog = json_decode($oerLog, true);
 
-        // $chLog = DB::connection('mysql2')->table('db_aws_bke')
-        //     ->select('db_aws_bke.*',  DB::raw("DATE_FORMAT(db_aws_bke.datetime,'%d-%m-%Y') as hari"))
-        //     ->orderBy('db_aws_bke.datetime', 'DESC')
-        //     ->get()
-        //     ->groupBy('hari');
-
-        // $arrCh = array();
-        // foreach ($chLog as $key => $data) {
-        //     $sum_rain = 0;
-        //     foreach ($data as $key2 => $value) {
-        //         $sum_rain += $value->rain_fall_real;
-        //     }
-        //     $arrCh[$key]['rain_fall'] = $sum_rain;
-        //     $arrCh[$key]['hari'] = $key;
-        // }
 
         $chVal = 0;
         foreach ($dataLog as $inc =>  $value) {
@@ -146,6 +121,12 @@ class CountController extends Controller
         }
 
         // dd($arrLogPerhari);
+
+
+
+
+        // dd($newdata);
+
 
         return DataTables::of($arrLogPerhari)
             ->editColumn('oer', function ($model) {

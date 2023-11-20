@@ -410,9 +410,9 @@
         markers: {
             size: 0
         },
-        yaxis: {
-            max: 100
-        },
+        // yaxis: {
+        //     max: 100
+        // },
         legend: {
             show: false
         },
@@ -493,14 +493,33 @@
                     // Update series data based on the current hour index
                     // var newData = optionstest.series[0].data.slice(0, currentIndex + 1);
 
-                    var newData2 = result.abnormal_line.slice(0, currentIndex + 1); // Assuming result.abnormal_line contains the data
+                    var unripe = result.unripe_line.slice(0, currentIndex + 1);
+                    var ripe = result.ripe_line.slice(0, currentIndex + 1);
+                    var overripe = result.overripe_line.slice(0, currentIndex + 1);
+                    var empty = result.empty_bunch_line.slice(0, currentIndex + 1);
+                    var abnormal = result.abnormal_line.slice(0, currentIndex + 1);
 
                     // console.log(newData);
-                    // console.log(newData2);
+                    // console.log(abnormal);
                     chartest.updateSeries([{
-                        data: newData2 // Update the series data
+                        name: "Unripe",
+                        data: unripe
+                    }, {
+                        name: "Ripe",
+                        data: ripe
+                    }, {
+                        name: "Overripe",
+                        data: overripe
+                    }, {
+                        name: "Empty",
+                        data: empty
+                    }, {
+                        name: "Abnormal",
+                        data: abnormal
                     }]);
                 }, 1000);
+
+
                 var newSeriesData = [
                     result.unripe,
                     result.ripe,
