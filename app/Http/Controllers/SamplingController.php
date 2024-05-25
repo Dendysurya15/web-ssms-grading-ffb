@@ -224,15 +224,10 @@ class SamplingController extends Controller
 
         $req_tgl =   $request->get('tanggal');
         $mill =  $request->get('list_mil');
-        $no_plat =  $request->get('list_platx');
-        $driver =  $request->get('list_driverx');
+        $no_plat =  ($request->get('list_platx') === 'isnull') ? '' : $request->get('list_platx');
+        $driver =  ($request->get('list_driverx') === 'isnull') ? '' : $request->get('list_driverx');
         $driverStatus =  $request->get('statusx');
 
-
-        // dd($req_tgl, $mill, $no_plat, $driver, $driverStatus);
-        // // dd($estate);
-
-        // Query without ->get()
         $log = DB::table('log_sampling')
             ->join('list_mill', 'log_sampling.mill_id', '=', 'list_mill.id')
             ->select(

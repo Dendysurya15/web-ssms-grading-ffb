@@ -9,17 +9,18 @@ class Wilayah extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mysql2';
+    protected $connection = 'mysql3';
 
     protected $table = 'wil';
 
-    public function Estate()
-    {
-        return $this->hasMany(Estate::class);
-    }
 
     public function Regional()
     {
         return $this->belongsTo(Regional::class, 'regional');
+    }
+
+    public function Estate()
+    {
+        return $this->hasMany(Estate::class, 'wil', 'id');
     }
 }

@@ -17,9 +17,4 @@ class LogSampling extends Model
     {
         return $this->belongsTo(ListMill::class, 'mill_id');
     }
-
-    // public function estate()
-    // {
-    //     return $this->belongsTo(Estate::class, 'bisnis_unit', 'bisnis_unit')->on('mysql2');
-    // }
 }

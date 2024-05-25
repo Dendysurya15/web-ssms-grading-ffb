@@ -1,6 +1,4 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
-    integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @include('layout.header')
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -23,15 +21,13 @@
                     </div>
                     <div class="col-12 col-lg-3">
                         <label for="selectRegx">Reg</label>
-                        <select name="selectRegx" id="selectRegx" class="form-control"
-                            onchange="populateWil(this.value)">
+                        <select name="selectRegx" id="selectRegx" class="form-control" onchange="populateWil(this.value)">
                             <!-- Options will be dynamically added using JavaScript -->
                         </select>
                     </div>
                     <div class="col-12 col-lg-3">
                         <label for="selectWilx">Wil</label>
-                        <select name="selectWilx" id="selectWilx" class="form-control"
-                            onchange="populateEstate(this.value)">
+                        <select name="selectWilx" id="selectWilx" class="form-control" onchange="populateEstate(this.value)">
                             <!-- Options will be dynamically added using JavaScript -->
                         </select>
                     </div>
@@ -42,8 +38,7 @@
                 <div class="row">
                     <div class="col-12 col-lg-3">
                         <label for="">EST</label>
-                        <select name="selectEstx" id="selectEstx" class="form-control"
-                            onchange="populatemil(this.value)">
+                        <select name="selectEstx" id="selectEstx" class="form-control" onchange="populatemil(this.value)">
                             <!-- Options will be dynamically added using JavaScript -->
                         </select>
                     </div>
@@ -139,10 +134,8 @@
                                             Sampel foto terakhir
                                             <span class="font-weight-bold">kualitas baik</span> di conveyor
                                         </p>
-                                        <div class="p-3"
-                                            style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
-                                            <img src="{{ asset('img/ffb/' . $files[2]) }}"
-                                                style="border-radius: 5px; max-width: 100%; max-height: 100%;">
+                                        <div class="p-3" style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
+                                            <img src="{{ asset('img/ffb/' . $files[2]) }}" style="border-radius: 5px; max-width: 100%; max-height: 100%;">
                                         </div>
                                     </div>
                                     <div class="col-12 col-lg-6" style="background-color: white; border-radius: 5px">
@@ -150,10 +143,8 @@
                                             Sampel foto terakhir
                                             <span class="font-weight-bold">kualitas rendah</span> di conveyor
                                         </p>
-                                        <div class="p-3"
-                                            style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
-                                            <img src="{{ asset('img/ffb/' . $files[3]) }}"
-                                                style="border-radius: 5px; max-width: 100%; max-height: 100%;">
+                                        <div class="p-3" style="display: flex; align-items: center; justify-content: center; margin-bottom: 30px">
+                                            <img src="{{ asset('img/ffb/' . $files[3]) }}" style="border-radius: 5px; max-width: 100%; max-height: 100%;">
                                         </div>
                                     </div>
 
@@ -398,24 +389,24 @@
                     var driverSelect = document.getElementById('list_driverx');
                     var statusSelect = document.getElementById('statusx');
 
-                    // Define your populate_plat function as before
                     function populate_plat(log) {
                         platSelect.innerHTML = ''; // Clear the current options
 
                         log.forEach(function(entry) {
                             var optionElement = document.createElement('option');
-                            optionElement.value = entry.no_plat;
-                            optionElement.textContent = entry.no_plat;
+                            optionElement.value = entry.no_plat === "" ? "isnull" : entry.no_plat;;
+                            optionElement.textContent = entry.no_plat === "" ? "Plat not set" : entry.no_plat;
                             platSelect.appendChild(optionElement);
                         });
 
-                        console.log(log);
+                        // console.log(log);
                         // Trigger a change event on the select if needed
                         platSelect.dispatchEvent(new Event('change'));
                     }
 
                     // Call the populate_plat function with the 'log' data
                     populate_plat(log);
+
 
                     // Add an event listener to platSelect to trigger the driver function
                     platSelect.addEventListener('change', function() {
@@ -433,10 +424,11 @@
                         });
 
                         // Populate driverSelect with the filtered data
-                        filteredLog.forEach(function(entry) {
+                        log.forEach(function(entry) {
                             var optionElement = document.createElement('option');
-                            optionElement.value = entry.nama_driver;
-                            optionElement.textContent = entry.nama_driver;
+                            optionElement.value = entry.nama_driver === "" ? "isnull" : entry.nama_driver;;
+                            optionElement.textContent = entry.nama_driver === "" ? "Driver Name not set" : entry.nama_driver;
+                            // optionElement.textContent = entry.nama_driver;
                             driverSelect.appendChild(optionElement);
                         });
 
@@ -452,14 +444,10 @@
                     // Define your driver function
                     function status(selecteddriver) {
                         statusSelect.innerHTML = ''; // Clear existing options
-                        // console.log(selecteddriver);
-                        // Filter the log data based on the selecteddriver
-                        var filteredLog = log.filter(function(entry) {
-                            return entry.nama_driver === selecteddriver;
-                        });
+
 
                         // Populate statusSelect with the filtered data
-                        filteredLog.forEach(function(entry) {
+                        log.forEach(function(entry) {
                             var optionElement = document.createElement('option');
                             optionElement.value = entry.status;
                             optionElement.textContent = entry.status;
@@ -494,7 +482,7 @@
         var list_driverx = $('#list_driverx').val();
         var statusx = $('#statusx').val();
         var _token = $('input[name="_token"]').val();
-
+        // console.log(tanggal);
         // Create a data object to hold the parameters
         var requestData = {
             tanggal: tanggal,

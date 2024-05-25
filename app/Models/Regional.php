@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Regional extends Model
 {
-    protected $connection = 'mysql2';
+    protected $connection = 'mysql3';
 
     protected $table = 'reg';
     use HasFactory;
